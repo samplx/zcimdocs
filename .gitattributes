@@ -1,2 +1,6 @@
-link80/originals/html/*    text=crlf
+/link80/originals/html/*    binary
+/mac80/originals/mac.txt    text eol=crlf
+/cpm22/originals/html/*     binary
+/cpm22/originals/ps/*       binary
+/cpm22/originals/tex/*      binary
 

@@ -1,0 +1,745 @@
+<title>Section 2: The CP/M Editor</title>
+<body>
+<center><h1>Section 2<br>The CP/M Editor</h1></center>
+<p align="center"><b>Table of Contents</b>
+<p><a href="#Section_2.1">2.1 Introduction to ED</a>
+<br><blockquote><a href="#Section_2.1.1">2.1.1 ED Operation</a>
+<br><a href="#Section_2.1.2">2.1.2 Text Transfer Functions</a>
+<br><a href="#Section_2.1.3">2.1.3 Memory Buffer Organization</a>
+<br><a href="#Section_2.1.4">2.1.4 Line Numbers and ED Start Up</a>
+<br><a href="#Section_2.1.5">2.1.5 Memory Buffer Operations</a>
+<br><a href="#Section_2.1.6">2.1.6 Command Strings</a>
+<br><a href="#Section_2.1.7">2.1.7 Text Search and Alteration</a>
+<br><a href="#Section_2.1.8">2.1.8 Source Libraries</a>
+<br><a href="#Section_2.1.9">2.1.9 Repetitive Command Execution</a>
+</blockquote>
+<br><a href="#Section_2.2">2.2 ED Error Conditions</a>
+<br><a href="#Section_2.3">2.3 Control Characters and Commands</a>
+<p align="Center"><b>Tables</b>
+<p><a href="#Table_2-1">2-1 ED Text Transfer Commands</a>
+<br><a href="#Table_2-2">2-2 Editing Commands</a>
+<br><a href="#Table_2-3">2-3 Line-editing Controls</a>
+<br><a href="#Table_2-4">2-4 Error Message Symbols</a>
+<br><a href="#Table_2-5">2-5 ED Control Characters</a>
+<br><a href="#Table_2-6">2-6 ED Commands</a>
+<p align="center"><b>Figures</b>
+<p><a href="#Figure_2-1">2-1 Overall ED Operation</a>
+<br><a href="#Figure_2-2">2-2 Memory Buffer Organization</a>
+<br><a href="#Figure_2-3">2-3 Logical Organization of the Memory Buffer</a>
+<p><hr>
+<p><a name="Section_2.1"><h1>2.1 Introduction to ED</h1></a>
+<p>ED is the context editor for CP/M, and is used to create and
+alter CP/M source files. To start ED, type a command of the
+following form:
+<pre>
+     ED filename
+</pre>
+<p>or
+<pre>
+     ED filename.typ
+</pre>
+<p>Generally, ED reads segments of the source file given by filename
+or filename.typ into the central memory, where you edit the file
+and it is subsequently written back to disk after alterations. If
+the source file does not exist before editing, it is created by
+ED and initialized to empty. The overall operation of ED is shown
+in <a href="#Figure_2-1">Figure 2-1</a>.
+<p><a name="Section_2.1.1"><h1>2.1.1 ED Operation</h1></a>
+<P>ED operates upon the source file, shown in 
+<a href="#Figure_2-1">Figure 2-1</a> by x.y, and
+passes all text through a memory buffer where the text can be
+viewed or altered. The number of lines that can be maintained in
+the memory buffer varies with the line length, but has a total
+capacity of about 5000 characters in a 20K CP/M system.
+<p>Edited text material is written into a temporary work file under
+your command. Upon termination of the edit, the memory buffer is
+written to the temporary file, followed by any remaining (unread)
+text in the source file. The name of the original file is changed
+from x.y to x.BAK so that the most recent edited source file can
+be reclaimed if necessary. See the CP/M commands ERASE and
+RENAME. The temporary file is then changed from x.$$$ to x.y,
+which becomes the resulting edited file.
+<p><a name="Figure_2-1"><center><table border="1">
+<caption align="bottom">Figure 2-1. Overall ED Operation</caption>
+<tr><td><img src="fig2-1.gif">
+</table></center></a>
+<p>The memory buffer is logically between the source file and
+working file, as shown in 
+<a href="#Figure_2-2">Figure 2-2</a>.
+<p><a name="Figure_2-2"><center><table border="1">
+<caption align="bottom">Figure 2-2. Memory Buffer Organization</caption>
+<tr><td><img src="fig2-2.gif">
+</table></center></a>
+<p><a name="Section_2.1.2"><h1>2.1.2 Text Transfer Functions</h1></a>
+<p>Given that n is an integer value in the range 0 through 65535,
+several single-letter ED commands transfer lines of text from the
+source file through the memory buffer to the temporary (and
+eventually final) file. Single letter commands are shown in
+upper-case, but can be typed in either upper- or lower-case.
+<p><a name="Table_2-1"><center><table border="1">
+<caption align="bottom">Table 2-1. ED Text Transfer Commands</caption>
+<tr><th>Command<th>Result
+<tr><td>nA<td>Appends the next n unprocessed source lines
+from the source file at SP to the end of the
+memory buffer at MP. Increment SP and MP by
+n. If upper-case translation is set (see the
+U command) and the A command is typed in
+upper-case, all input lines will
+automatically be translated to upper-case.
+<tr><td>nW<td>Writes the first n lines of the memory buffer
+to the temporary file free space. Shift the
+remaining lines n + 1 through MP to the top
+of the memory buffer. Increment TP by n.
+<tr><td>E<td>Ends the edit. Copy all buffered text to
+temporary file and copy all unprocessed
+source lines to temporary file. Rename files.
+<tr><td>H<td>Moves to head of new file by performing
+automatic E command. The temporary file
+becomes the new source file, the memory
+buffer is emptied, and a new temporary file
+is created. The effect is equivalent to
+issuing an E command, followed by a
+reinvocation of ED, using x.y as the file to
+edit.
+<tr><td>O<td>Returns to original file. The memory buffer
+is emptied, the temporary file is deleted,
+and the SP is returned to position 1 of the
+source file. The effects of the previous
+editing commands are thus nullified.
+<tr><td>Q<td>Quits edit with no file alterations, returns
+to CP/M.
+</table></center></a>
+<p>There are a number of special cases to consider. If the integer n
+is omitted in any ED command where an integer is allowed, then 1
+is assumed. Thus, the commands A and W append one line and write
+one line, respectively. In addition, if a pound sign # is given
+in the place of n, then the integer 65535 is assumed (the largest
+value for n that is allowed). Because most source files can be
+contained entirely in the memory buffer, the command #A is often
+issued at the beginning of the edit to read the entire source
+file to memory. Similarly, the command #W writes the entire
+buffer to the temporary file.
+<p>Two special forms of the A and W commands are provided as a
+convenience. The command OA fills the current memory buffer at
+least half full, while OW writes lines until the buffer is at
+least half empty. An error is issued if the memory buffer size is
+exceeded. You can then enter any command, such as W, that does
+not increase memory requirements. The remainder of any partial
+line read during the overflow will be brought into memory on the
+next successful append.
+<p><a name="Section_2.1.3"><h1>2.1.3 Memory Buffer Organization</h1></a>
+<p>The memory buffer can be considered a sequence of source lines
+brought in with the A command from a source file. The memory
+buffer has an imaginary character pointer (CP) that moves
+throughout the memory buffer under command of the operator.
+<p>The memory buffer appears logically as shown in Figure 2-3, where
+the dashes represent characters of the source line of indefinite
+length, terminated by carriage return (&lt;cr&gt;) and line-feed 
+(&lt;If&gt;)
+characters, and CP represents the imaginary character pointer.
+Note that the CP is always located ahead of the first character
+of the first line, behind the last character of the last line, or
+between two characters. The current line CL is the source line
+that contains the CP.
+<p><a name="Figure_2-3"><center><table border="1">
+<caption align="bottom">Figure 2-3. Logical Organization of Memory Buffer
+</caption>
+<tr><td><img src="fig2-3.gif">
+</table></center></a>
+<p><a name="Section_2.1.4"><h1>2.1.4 Line Numbers and ED Start-up</h1></a>
+<p>ED produces absolute line number prefixes that are used to
+reference a line or range of lines. The absolute line number is
+displayed at the beginning of each line when ED is in insert mode
+(see the I command in 
+<a href="#Section_2.1.5">Section 2.1.5</a>). Each line number takes the
+form
+<pre>
+     nnnnn:
+</pre>
+<p>where nnnnn is an absolute line number in the range of 1 to
+65535. If the memory buffer is empty or if the current line is at
+the end of the memory buffer, nnnnn appears as 5 blanks.
+<p>You can reference an absolute line number by preceding any
+command by a number followed by a colon, in the same format as
+the line number display. In this case, the ED program moves the
+current line reference to the absolute line number, if the line
+exists in the current memory buffer. The line denoted by the
+absolute line number must be in the memory buffer (see the A
+command). Thus, the command
+<Pre>
+     345:T
+</pre>
+<p>is interpreted as move to absolute 345, and type the line.
+Absolute line numbers are produced only during the editing
+process and are not recorded with the file. In particular, the
+line numbers will change following a deleted or expanded section
+of text.
+<p>You can also reference an absolute line number as a backward or
+forward distance from the current line by preceding the absolute
+number by a colon. Thus, the command
+<pre>
+     :400T
+</pre>
+<p>is interpreted as type from the current line number through the
+line whose absolute number is 400. Combining the two line
+reference forms, the command
+<pre>
+     345::400T
+</pre>
+<p>is interpreted as move to absolute line 345, then type through
+absolute line 400. Absolute line references of this sort can
+precede any of the standard ED commands.
+<p>Line numbering is controlled by the V (Verify Line Numbers)
+command. Line numbering can be turned off by typing the -V
+command.
+<p>If the file to edit does not exist, ED displays the following
+message:
+<pre>
+     NEW FILE
+</pre>
+<p>To move text into the memory buffer, you must enter an i command
+before typing input lines and terminate each line with a carriage
+return. A single CTRL-Z character returns ED to command mode.
+<p><a name="Section_2.1.5"><h1>2.1.5 Memory Buffer Operation</h1></a>
+<p>When ED begins, the memory buffer is empty. You can either append
+lines from the source file with the A command, or enter the lines
+directly from the console with the insert command.  The insert
+command takes the following form:
+<pre>
+     I
+</pre>
+<p>ED then accepts any number of input lines. You must terminate
+each line with a &lt;cr&gt; (the &lt;If&gt; is supplied automatically). A
+single CTRL-Z, denoted by an up arrow (T)Z, returns ED to command
+mode. The CP is positioned after the last character entered. The
+following sequence:
+<pre>
+     I&lt;cr&gt;
+     NOW IS THE&lt;cr&gt;
+     TIME FOR&lt;cr&gt;
+     ALL GOOD MEN&lt;cr&gt;
+     ^Z
+</pre>
+<p>leaves the memory buffer as
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<p>Generally, ED accepts command letters in upper- or lower-case.
+If the command is upper-case, all input values associated with
+the command are translated to upper-case. If the I command is
+typed, all input lines are automatically translated internally to
+upper-case. The lower-case form of the i command is most often
+used to allow both upper- and lower-case letters to be entered.
+<p>Various commands can be issued that control the CP or display
+source text in the vicinity of the CP. The commands shown below
+with a preceding n indicate that an optional unsigned value can
+be specified. When preceded by +-, the command can be unsigned,
+or have an optional preceding plus or minus sign. As before, the
+pound sign # is replaced by 65535. If an integer n is optional,
+but not supplied, then n=1 is assumed. Finally, if a plus sign is
+optional, but none is specified, then + is assumed.
+<p><a name="Table_2-2"><center><table border="1">
+<caption align="bottom">Table 2-2. Editing Commands</caption>
+<tr><th>Command<th>Action
+<tr><td>+-B<td>Move CP to beginning of memory buffer if +
+and to bottom if
+<tr><td>+-nC<td>Move CP by +-n characters (moving ahead if
++), counting the &lt;cr&gt;&lt;lf&gt; as two characters.
+<tr><td>+-nD<td>Delete n characters ahead of CP if plus and
+behind CP if minus.
+<tr><td>+-nK<td>Kill (remove) +-n lines of source text using
+CP as the current reference. If CP is not at
+the beginning of the current line when K is
+issued, the characters before CP remain if +
+is specified, while the characters after CP
+remain if - is given in the command.
+<tr><td>+-nL<td>If n = 0, move CP to the beginning of the
+current line, if it is not already there. If
+n &lt;&gt; 0, first move the CP to the beginning of
+the current line and then move it to the
+beginning of the line that is n lines down
+(if +) or up (if -). The CP will stop at the
+top or bottom of the memory buffer if too
+large a value of n is specified.
+<tr><td>+-nT<td>If n = 0, type the contents of the current
+line up to CP. If n = 1, type the contents of
+the current line from CP to the end of the
+line. If n&gt;1, type the current line along
+with n +- 1 lines that follow, if + is
+specified. Similarly, if n&gt;1 and - is given,
+type the previous n lines up to the CP. Any
+key can be depressed to abort long type-outs.
+<tr><td>+-n<td>Equivalent to +-nLT, which moves up or down
+and types a single line.
+</table></center></a>
+<p><a name="Section_2.1.6"><h1>2.1.6 Command Strings</h1></a>
+<p>Any number of commands can be typed contiguously (up to the
+capacity of the console buffer) and are executed only after you
+press the &lt;cr&gt;. <a href="#Table_2-3">Table 2-3</a> 
+summarizes the CP/M console line-editing commands used 
+to control the input command line.
+<p><a name="Table_2-3"><center><table border="1">
+<caption align="bottom">Table 2-3. Line-editing Controls</caption>
+<tr><th>Command<th>Result
+<tr><td>CTRL-C<td>Reboots the CP/M system when typed at the
+start of a line.
+<tr><td>CTRL-E<td>Physical end of line: carriage is returned,
+but line is not sent until the carriage
+return key is depressed.
+<tr><td>CTRL-H<td>Backspaces one character position.
+<tr><td>CTRL-J<td>Terminates current input (line-feed).
+<tr><td>CTRL-M<td>Terminates current input (carriage return).
+<tr><td>CTRL-R<td>Retypes current command line: types a clean
+line character deletion with rubouts.
+<tr><td>CTRL-U<td>Deletes the entire line typed at the console.
+<tr><td>CTRL-X<td>Same as CTRL-U.
+<Tr><td>CTRL-Z<td>Ends input from the console (used in PIP and
+ED).
+<tr><td>rub/del<td>Deletes and echos the last character typed at
+the console.
+</table></center></a>
+<p>Suppose the memory buffer contains the characters shown in the
+previous section, with the CP following the last character of the
+buffer. In the following example, the command strings on the left
+produce the results shown to the right. Use lower-case command
+letters to avoid automatic translation of strings to upper-case.
+<p><center><table border="1">
+<tr><th>Command String<td>Effect
+<tr><td>B2T&lt;cr&gt;<td>Move to beginning of the buffer and type two
+lines:
+<pre>
+     NOW IS THE
+     TIME FOR
+</pre>
+<p>The result in the memory buffer is
+<pre>
+     ^NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>5C0T&lt;cr&gt;<td>Move CP five characters and type the
+beginning of the line NOW I. The result in
+the memory buffer is
+<pre>
+     NOW I^S THE&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>2L-T&lt;cr&gt;<td>Move two lines down and type the previous
+line TIME FOR. The result in the memory
+buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME FOR&lt;cr&gt;&lt;lf&gt;
+     ^ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>-L#K&lt;cr&gt;<td>Move up one line, delete 65535 lines that
+follow. The result in the memory buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;^
+</pre>
+<tr><td>I&lt;cr&gt;<br>
+TIME TO&lt;cr&gt<br>
+INSERT&lt;cr&gt;<br>
+^Z<td>Insert two lines of text with automatic
+translation to upper-case. The result in the
+memory buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME TO&lt;cr&gt;&lt;lf&gt;
+     INSERT&lt;cr&gt;&lt;lf&gt;^
+</pre>
+<tr><td>-2L#T&lt;cr&gt;<td>Move up two lines and type 65535 lines ahead
+of CP NOW IS THE. The result in the memory
+buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     ^TIME TO&lt;cr&gt;&lt;lf&gt;
+     INSERT&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>&lt;cr&gt;<td>Move down one line and type one line INSERT.
+The result in the memory buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME TO&lt;cr&gt;&lt;lf&gt;
+     ^INSERT&lt;cr&gt;&lt;lf&gt;
+</pre>
+</table></center>
+<p><a name="Section_2.1.7"><h1>2.1.7 Text Search and Alteration</h1></a>
+<p>ED has a command that locates strings within the memory buffer.
+The command takes the form
+<pre>
+     nFs&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     nFs^Z
+</pre>
+<p>where s represents the string to match, followed by either a &lt;cr&gt;
+or CTRL-Z, denoted by ^Z. ED starts at the current position of CP
+and attempts to match the string. The match is attempted n times
+and, if successful, the CP is moved directly after the string. If
+the n matches are not successful, the CP is not moved from its
+initial position. Search strings can include CTRL-L, which is
+replaced by the pair of symbols &lt;cr&gt;&lt;lf&gt;.
+<p>The following commands illustrate the use of the F command:
+<p><center><table border="1">
+<tr><th>Command String<th>Effect
+<tr><td>B#T&lt;cr&gt;<td>Move to the beginning and type the entire
+buffer. The result in the memory buffer is
+<pre>
+     ^NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TIME FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>FS T&lt;cr&gt;<td>Find the end of the string S T. The result in
+the memory buffer is
+<pre>
+     NOW IS T^HE&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>FIs^Z0TT<td>Find the next I and type to the CP; then type
+the remainder of the current line ME FOR. The
+result in the memory buffer is
+<pre>
+     NOW IS THE&lt;cr&gt;&lt;lf&gt;
+     TI^ME FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre></table></center>
+<p>An abbreviated form of the insert command is also allowed, which
+is often used in conjunction with the F command to make simple
+textual changes. The form is
+<Pre>
+     Is^Z
+</pre>
+<p>or
+<pre>
+     Is&lt;cr&gt;
+</pre>
+<p>where s is the string to insert. If the insertion string is
+terminated by a CTRL-Z, the string is inserted directly following
+the CP, and the CP is positioned directly after the string. The
+action is the same if the command is followed by a &lt;cr&gt; except
+that a &lt;cr&gt;&lt;lf&gt; is automatically inserted into the text following
+the string. The following command sequences are examples of the F
+and I commands:
+<p><center><table border="1">
+<tr><th>Command String<th>Effect
+<tr><td>BITHIS IS ^Z&lt;cr&gt;<td>Insert THIS IS at the beginning of the
+text. The result in the memory buffer is
+<pre>
+     THIS IS ^NOW THE&lt;cr&gt;&lt;lf&gt;
+     TIME FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>FTIME^Z-4DIPLACE^Z&lt;cr&gt;<td>Find TIME and delete it; then insert
+PLACE. The result in the memory buffer
+is
+<pre>
+     THIS IS NOW THE&lt;cr&gt;&lt;lf&gt;
+     PLACE ^FOR&lt;cr&gt;&lt;lf&gt;
+     ALL GOOD MEN&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>3FO^Z-3D5DI<br>
+CHANGES^Z&lt;cr&gt;<td>Find third occurrence of O (that is, the
+second O in GOOD), delete previous 3
+characters and the subsequent 5
+characters; then insert CHANGES. The
+result in the memory buffer is
+<pre>
+     THIS IS NOW THE&lt;cr&gt;&lt;lf&gt;
+     PLACE FOR&lt;cr&gt;&lt;lf&gt;
+     ALL CHANGES^&lt;cr&gt;&lt;lf&gt;
+</pre>
+<tr><td>-8CISOURCE&lt;cr&gt;<td>Move back 8 characters and insert the
+line SOURCE&lt;cr&gt;&lt;lf&gt;. The result in the
+memory buffer is
+<pre>
+     THIS IS NOW THE&lt;cr&gt;&lt;lf&gt;
+     PLACE FOR&lt;cr&gt;&lt;lf&gt;
+     ALL SOURCE&lt;cr&gt;&lt;lf&gt;
+     ^CHANGES&lt;cr&gt;&lt;lf&gt;
+</pre>
+</table></center>
+<p>ED also provides a single command that combines the F and I
+commands to perform simple string substitutions. The command
+takes the following form:
+<pre>
+     nSs1^Zs2&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     nSs1^Zs2^Z
+</pre>
+<p>and has exactly the same effect as applying the following command
+string a total of n times:
+<pre>
+     Fs1^Z-kDIs2&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     Fs1^Z-kDIs2^Z
+</pre>
+<p>where k is the length of the string. ED searches the memory
+buffer starting at the current position of CP and successively
+substitutes the second string for the first string untill the end
+of buffer, or until the substitution has been performed n times.
+<p>As a convenience, a command similar to F is provided by ED that
+automatically appends and writes lines as the search proceeds.
+The form is
+<pre>
+     nNs&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     nNs^Z
+</pre>
+<p>which searches the entire source file for the nth occurrence of
+the strings (you should recall that F fails if the string cannot
+be found in the current buffer). The operation of the N command
+is precisely the same as F except in the case that the string
+cannot be found within the current memory buffer. In this case,
+the entire memory content is written (that is, an automatic #W is
+issued). Input lines are then read until the buffer is at least
+half full, or the entire source file is exhausted. The search
+continues in this manner until the string has been found n times,
+or until the source file has been completely transferred to the
+temporary file.
+<p>A final line editing function, called the Juxtaposition comniand,
+takes the form
+<pre>
+     nJs1^Zs2^Zs3&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     nJs1^Zs2^Zs3^Z
+</pre>
+<p>with the following action applied n times to the memory buffer:
+search from the current CP for the next occurrence of the string
+S1. If found, insert the string S2, and move CP to follow S2.
+Then delete all characters following CP up to, but not including,
+the string S3, leaving CP directly after S2. If S3 cannot be
+found, then no deletion is made. If the current line is
+<pre>
+     NOW IS THE TIME&lt;cr&gt;&lt;lf&gt;
+</pre>
+<p>the command
+<pre>
+     JW^ZWHAT^Z^L&lt;cr&gt;
+</pre>
+<p>results in
+<pre>
+     NOW WHAT&lt;cr&gt;&lt;lf&gt;
+</pre>
+<p>You should recall that ^L (CTRL-L) represents the pair
+&lt;cr&gt;&lt;lf&gt;
+in search and substitute strings.
+<p>The number of characters ED allows in the F, S, N, and J commands
+is limited to 100 symbols.
+<p><a name="Section_2.1.8"><h1>2.1.8 Source Libraries</h1></a>
+<p>ED also allows the inclusion of source libraries during the
+editing process with the R command. The form of this command is
+<pre>
+     Rfilename^Z
+</pre>
+<p>or
+<pre>
+     Rfilename&lt;cr&gt;
+</pre>
+<p>where filename is the primary filename of a source file on the
+disk with an assumed filetype of LIB. ED reads the specified
+file, and places the characters into the memory buffer after CP,
+in a manner similar to the I command. Thus, if the command
+<pre>
+     RMACRO&lt;cr&gt;
+</pre>
+<p>is issued by the operator, ED reads from the file MACRO.LIB until
+the end-of-file and automatically inserts the characters into the
+memory buffer.
+<p>ED also includes a block move facility implemented through the X
+(Transfer) command. The form
+<pre>
+     nX
+</pre>
+<p>transfers the next n lines from the current line to a temporary
+file called
+<pre>
+     X$$$$$$.LIB
+</pre>
+<p>which is active only during the editing process. You can
+reposition the current line reference to any portion of the
+source file and transfer lines to the temporary file. The
+transferred lines accumulate one after another in this file and
+can be retrieved by simply typing
+<pre>
+     R
+</pre>
+<p>which is the trivial case of the library read command. In this
+case, the entire transferred set of lines is read into the memory
+buffer. Note that the X command does not remove the transferred
+lines from the memory buffer, although a K command can be used
+directly after the X, and the R command does not empty the
+transferred LIB file. That is, given that a set of lines has been
+transferred with the X command, they can be reread any number of
+times back into the source file. The command
+<pre>
+     0X
+</pre>
+<p>is provided to empty the transferred line file.
+<p>Note that upon normal completion of the ED program through Q or
+E, the temporary LIB file is removed. If ED is aborted with a
+CTRL-C, the LIB file will exist if lines have been transferred,
+but will generally be empty (a subsequent ED invocation will
+erase the temporary file).
+<p><a name="Section_2.1.9"><h1>2.1.9 Repetitive Command Execution</h1></a>
+<p>The macro command M allows you to group ED commands together for
+repeated evaluation. The M command takes the following form:
+<pre>
+     nMCS&lt;cr&gt;
+</pre>
+<p>or
+<pre>
+     nMCS^Z
+</pre>
+<p>where CS represents a string of ED commands, not including
+another M command. ED executes the command string n times if n&gt;1.
+If n=0 or 1, the command string is executed repetitively until an
+error condition is encountered (for example, the end of the
+memory buffer is reached with an F command).
+<p>As an example, the following macro changes all occurrences of
+GAMMA to DELTA within the current buffer, and types each line
+that is changed:
+<pre>
+     MFGAMMA^Z-5DIDELTA^Z0TT&lt;cr&gt;
+</pre>
+<p>or equivalently
+<pre>
+     MSGAMMA^ZDELTA^Z0TT&lt;cr&gt;
+</pre>
+<p><a name="Section_2.2"><h1>2.2 ED Error Conditions</h1>
+<p>On error conditions, ED prints the message BREAK X AT C where X
+is one of the error indicators shown in <a href="#Table_2-4">Table 2-4</a>.
+<p><a name="Table_2-4"><center><table border="1">
+<caption align="bottom">Table 2-4. Error Message Symbols</caption>
+<tr><th>Symbol<th>Meaning
+<tr><td>?<td>Unrecognized command.
+<tr><td>&gt;<td>Memory buffer full (use one of the commands
+D, K, N, S, or W to remove characters); F, N,
+or S strings too long.
+<tr><td>#<td>Cannot apply command the number of times
+specified (for example, in F command).
+<tr><td>O<td>Cannot open LIB file in R command.
+</table></center></a>
+<p>If there is a disk error, CP/M displays the following message:
+<pre>
+     BDOS ERR on d: BAD SECTOR
+</pre>
+<p>You can choose to ignore the error by pressing RETURN at the
+console (in this case, the memory buffer data should be examined
+to see if they were incorrectly read), or you can reset the
+system with a CTRL-C and reclaim the backup file if it exists.
+The file can be reclaimed by first typing the contents of the BAK
+file to ensure that it contains the proper information. For
+example, type the following:
+<pre>
+     TYPE x.BAK
+</pre>
+<P>where x is the file being edited. Then remove the primary file
+<pre>
+     ERA x.y
+</pre>
+<p>and rename the BAK file
+<pre>
+     REN x.y=x.BAK
+</pre>
+<p>The file can then be reedited, starting with the previous
+version.
+<p>ED also takes file attributes into account. If you attempt to
+edit a Read-Only file, the message
+<pre>
+     ** FILE IS READ/ONLY **
+</pre>
+<p>appears at the console. The file can be loaded and examined, but
+cannot be altered. You must end the edit session and use STAT to
+change the file attribute to Riw. If the edited file has the
+system attribute set, the following message:
+<pre>
+     'SYSTEM' FILE NOT ACCESSIBLE
+</pre>
+<p>is displayed and the edit session is aborted. Again, the STAT
+program can be used to change the system attribute, if desired.
+<p><a name="Section_2.3"><h1>2.3 Control Characters and Commands</h1></a>
+<p><a href="#Table_2-5">Table 2-5</a> summarizes the control characters 
+and commands
+available in ED.
+<p><a name="Table_2-5"><center><table border="1">
+<caption align="bottom">Table 2-5. ED Control Characters</caption>
+<tr><th>Control Cbaracter<th>Function
+<tr><td>CTRL-C<td>System reboot
+<tr><td>CTRL-E<td>Physical &lt;cr&gt;&lt;lf&gt; (not actually entered in
+command)
+<tr><td>CTRL-H<td>Backspace
+<tr><td>CTRL-J<td>Logical tab (cols 1, 9, 16,...)
+<tr><td>CTRL-L<td>Logical &lt;cr&gt;&lt;lf&gt; in search and substitute
+strings
+<tr><td>CTRL-R<Td>Repeat line
+<tr><td>CTRL-U<Td>Line delete
+<tr><td>CTRL-X<td>Line delete
+<Tr><td>CTRL-Z<td>String terminator
+<Tr><td>rub/del<td>Character delete
+</table></center></a>
+<p><a href="#Table_2-6">Table 2-6</a> summarizes the commands used in ED.
+<p><a name="Table_2-6"><center><table border="1">
+<caption align="bottom">Table 2-6. ED Commands</caption>
+<tr><th>Command<th>Function
+<tr><td>nA<td>Append lines
+<tr><td>+-B<td>Begin or bottom of buffer
+<tr><td>+-nC<td>Move character positions
+<tr><td>+-nD<td>Delete characters
+<tr><td>E<td>End edit and close files (normal end)
+<tr><td>nF<td>Find string
+<tr><td>H<td>End edit, close and reopen files
+<Tr><td>I<td>Insert characters, use i if both upper- and
+lower-case characters are to be entered.
+<tr><td>nJ<td>Place strings in juxtaposition
+<tr><td>+-nK<td>Kill lines
+<tr><td>+-nL<td>Move down/up lines
+<Tr><tD>nM<td>Macro definition
+<tr><td>nN<td>Find next occurrence with autoscan
+<tr><td>O<td>Return to original file
+<tr><td>+-nP<td>Move and print pages
+<Tr><td>Q<td>Quit with no file changes
+<tr><td>R<td>Read library file
+<tr><td>nS<td>Substitute strings
+<tr><td>+-nT<td>Type lines
+<tr><td>U<td>Translate lower- to upper-case if U, no
+translation if -U
+<tr><td>V<td>Verify line numbers, or show remaining free
+character space
+<tr><td>0V<td>A special case of the V command, 0V, prints
+the memory buffer statistics in the form
+<pre>
+     free/total
+</pre>
+<p>where free is the number of free bytes in the
+memory buffer (in decimal) and total is the
+size of the memory buffer
+<tr><td>nW<td>Write lines
+<tr><td>nZ<td>Wait (sleep) for approximately n seconds
+<tr><td>+-n<Td>Move and type (+-nLT).
+</table></center></a>
+<p>Because of common typographical errors, ED requires several
+potentially disastrous commands to be typed as single letters,
+rather than in composite commands. The following commands:
+<p><ul><li>E(end)
+    <li>H(head)
+    <li>O(original)
+    <li>Q(quit)
+</ul>
+<p>must be typed as single letter commands.
+<p>The commands I, J, M, N, R, and S should be typed as i, j, m, n,
+r, and s if both upper- and lower-case characters are used in the
+operation, otherwise all characters are converted to upper-case.
+When a command is entered in upper-case, ED automatically
+converts the associated string to upper-case, and vice versa.
+<p><hr><p><a href="index.htm">Back to title page</a>
+&nbsp;&nbsp&nbsp&nbsp&nbsp<a href="ch3.htm"> Next</a></body></html>

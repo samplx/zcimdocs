@@ -1,0 +1,20 @@
+;	macro library for street treadles
+;
+trinp	equ	01h	;treadle input port
+trout	equ	01h	;treadle output port
+;
+tread?	macro	tr,iftrue
+;;	"tread?" is invoked to check if
+;;	treadle given by tr has been sensed.
+;;	if so, the latch is cleared and control
+;;	transfers to the label "iftruell
+	local	iffalse	;;in case not set
+;;
+	in	trinp	;;read treadle switches
+	ani	1 shl tr	;;mask proper bit
+	jz	iffalse	;;skip reset if 0
+	mvi	a,1 shl tr	;;to reset the bit
+	out	trout	;;clear it
+	jmp	iftrue	;;go to true label
+iffalse:
+	endm

@@ -1,0 +1,1972 @@
+<html>
+<title>Section 5: CP/M 2 System Interface</title>
+<body>
+<center><p><h1>Section 5<br>CP/M 2 System Interface</h1></center>
+<p align="center"><b>Table of Contents</b>
+<p><a href="#Section_5.1">5.1 Introduction</a>
+<br><a href="#Section_5.2">5.2 Operating System Call Conventions</a>
+<br><a href="#Section_5.3">5.3 A Sample File-to-File Copy Program</a>
+<br><a href="#Section_5.4">5.4 A Sample File Dump Utility</a>
+<br><a href="#Section_5.5">5.5 A Sample Random Access Program</a>
+<br><a href="#Section_5.6">5.6 System Function Summary</a>
+<p align="center"><b>Tables</b>
+<p><a href="#Table_5-1">5-1 CP/M Filetypes</a>
+<br><a href="#Table_5-2">5-2 File Control Block Fields</a>
+<br><a href="#Table_5-3">5-3 Edit Control Characters</a>
+<p align="center"><b>Figures</b>
+<p><a href="#Figure_5-1">5-1 CP/M Memory Organization</a>
+<br><a href="#Figure_5-2">5-2 File Control Block Format</a>
+<hr>
+<p><a name="Section_5.1"><h1>5.1 Introduction</h1>
+<p>This chapter describes CP/M (release 2) system organization
+including the structure of memory and system entry points. This
+section provides the information you need to write programs that
+operate under CP/M and that use the peripheral and disk I/O
+facilities of the system.
+<p>CP/M is logically divided into four parts, called the Basic
+Input/Output System (BIOS), the Basic Disk Operating System
+(BDOS), the Console Command Processor (CCP), and the Transient
+Program Area (TPA). The BIOS is a hardware-dependent module that
+defines the exact low level interface with a particular computer
+system that is necessary for peripheral device I/O.  Although a
+standard BIOS is supplied by Digital Research, explicit
+instructions are provided for field reconfiguration of the BIOS
+to match nearly any hardware environment, see 
+<a href="ch6.htm">Section 6</a>.
+<p>The BIOS and BDOS are logically combined into a single module
+with a common entry point and referred to as the FDOS. The CCP is
+a distinct program that uses the FDOS to provide a human-oriented
+interface with the information that is cataloged on the back-up
+storage device. The TPA is an area of memory, not used by the
+FDOS and CCP, where various nonresident operating system commands
+and user programs are executed. The lower portion of memory is
+reserved for system information and is detailed in later
+sections. Memory organization of the CP/M system is shown in
+<a href="#Figure_5-1">Figure 5-1</a>.
+<p><a name="Figure_5-1"><center><table border="1">
+<caption align="bottom">Figure 5-1. CP/M Memory Organization</caption>
+<tr><td><img src="fig5-1.gif">
+</table></center></a>
+<p>The exact memory addresses corresponding to BOOT, TBASE, CBASE,
+and FBASE vary from version to version and are described fully in
+<a href="ch6.htm">Section 6</a>. 
+All standard CP/M versions assume BOOT=0000H, which is
+the base of random access memory. The machine code found at
+location BOOT performs a system warm start, which loads and
+initializes the programs and variables necessary to return
+control to the CCP. Thus, transient programs need only jump to
+location BOOT to return control to CP/M at the command level.
+further, the standard versions assume TBASE=BOOT+0100H, which is
+normally location 0100H. The principal entry point to the FDOS is
+at location BOOT+0005H (normally 0005H) where a jump to BASE is
+found. The address field at BOOT+0006H (normally 006H) contains
+the value of FBASE and can be used to determine the size of
+available memory, assuming that the CCP is being overlaid by a
+transient program.
+<p>Transient programs are loaded into the TPA and executed as
+follows. The operator communicates with the CCP by typing command
+lines following each prompt. Each command line takes one of the
+following forms:
+<pre>
+        command
+        command file1
+        command file1 file2
+</pre>
+<p>where command is either a built-in function, such as DIR or TYPE,
+or the name of a transient command or program. If the command is
+a built-in function of CP/M, it is executed immediately.
+Otherwise, the CCP searches the currently addressed disk for a
+file by the name
+<pre>
+        command.COM
+</pre>
+<p>If the file is found, it is assumed to be a memory image of a
+program that executes in the TPA and thus implicity originates at
+TBASE in memory. The CCP loads the COM file from the disk into
+memory starting at TBASE and can extend up to CBASE.
+<p>If the command is followed by one or two file specifications, the
+CCP prepares one or two File Control Block (FCB) names in the
+system parameter area. These optional FCBs are in the form
+necessary to access files through the FDOS and are described in
+<a href="#Section_5.2">Section 5.2</a>.
+<p>The transient program receives control from the CCP and begins
+execution, using the I/O facilities of the FDOS. The transient
+program is called from the CCP. Thus, it can simply return to the
+CCP upon completion of its processing, or can Jump to BOOT to
+pass control back to CP/M. In the first case, the transient
+program must not use memory above CBASE, while in the latter
+case, memory up through FBASE-1 can be used.
+<p>The transient program can use the CP/M I/O facilities to
+communicate with the operator's console and peripheral devices,
+including the disk subsystem. The I/O system is accessed by
+passing a function number and an information address to CP/M
+through the FDOS entry point at BOOT+0005H. In the case of a disk
+read, for example, the transient program sends the number
+corresponding to a disk read, along with the address of an FCB to
+the CP/M FDOS. The FDOS, in turn, performs the operation and
+returns with either a disk read completion indication or an error
+number indicating that the disk read was unsuccessful.
+<p><a name="Section_5.2"><h1>5.2 Operating System Call Conventions</h1>
+<p>This section provides detailed information for performing direct
+operating system calls from user programs. Many of the functions
+listed below, however, are accessed more simply through the I/O
+macro library provided with the MAC macro assembler and listed in
+the Digital Research manual entitled <i>Programmer's Utilities
+Guide for the CP/M Family of Operating Systems</i>.
+<p>CP/M facilities that are available for access by transient
+programs fall into two general categories: simple device I/O and
+disk file I/O. The simple device operations are
+<ul>
+<li>read a console character
+<li>write a console character
+<li>read a sequential character
+<li>write a sequential character
+<li>get or set I/O status
+<li>print console buffer
+<li>interrogate console ready
+</ul>
+<p>The following FDOS operations perform disk I/O:
+<ul>
+<li>disk system reset
+<li>drive selection
+<li>file creation
+<li>file close
+<li>directory search
+<li>file delete
+<li>file rename
+<li>random or sequential read
+<li>random or sequential write
+<li>interrogate available disks
+<li>interrogate selected disk
+<li>set DMA address
+<li>set/reset file indicators.
+</ul>
+<p>As mentioned above, access to the FDOS functions is accomplished
+by passing a function number and information address through the
+primary point at location BOOT+0005H. In general, the function
+number is passed in register C with the information address in
+the double byte pair DE. Single byte values are returned in
+register A, with double byte values returned in HL, a zero value
+is returned when the function number is out of range. For reasons
+of compatibility, register A = L and register B = H upon return
+in all cases.  Note that the register passing conventions of CP/M
+agree with those of the Intel PL/M systems programming language.
+CP/M functions and their numbers are listed below.
+<p>&nbsp;
+<center>
+<table>
+<tr><td>0<td>System Reset<td>19<td>Delete File
+<tr><td>1<td>Console Input<td>20<td>Read Sequential
+<tr><td>2<td>Console Output<td>21<td>Write Sequential
+<tr><td>3<td>Reader Input<td>22<td>Make File
+<tr><td>4<td>Punch Output<td>23<td>Rename File
+<tr><td>5<td>List Output<td>24<td>Return Login Vector
+<tr><td>6<td>Direct Console I/O<td>25<td>Return Current Disk
+<tr><td>7<td>Get I/O Byte<td>26<td>Set DMA Address
+<tr><td>8<td>Set I/O Byte<td>27<td>Get Addr(Alloc)
+<tr><td>9<td>Print String<td>28<td>Write Protect Disk
+<tr><td>10<td>Read Console Buffer<td>29<td>Get R/O Vector
+<tr><td>11<td>Get Console Status<td>30<td>Set File Attributes
+<tr><td>12<td>Return Version Number<td>31<td>Get Addr(Disk Parms)
+<tr><td>13<td>Reset Disk System<td>32<td>Set/Get User Code
+<tr><td>14<td>Select Disk<td>33<td>Read Random
+<tr><td>15<td>Open File<td>34<td>Write Random
+<tr><td>16<td>Close File<td>35<td>Compute File Size
+<tr><td>17<td>Search for First<td>36<td>Set Random Record
+<tr><td>18<td>Search for Next<td>37<td>Reset Drive
+<tr><td><td><td>40<td>Write Random with Zero Fill
+</table></center>
+<p>
+<a href="#Function_28">Functions 28</a> and 
+<a href="#Fucntion_32">32</a> should be avoided in application programs to
+maintain upward compatibility with CP/M.
+<p>Upon entry to a transient program, the CCP leaves the stack
+pointer set to an eight-level stack area with the CCP return
+address pushed onto the stack, leaving seven levels before
+overflow occurs. Although this stack is usually not used by a
+transient program (most transients return to the CCP through a
+jump to location 0000H) it is large enough to make CP/M system
+calls because the FDOS switches to a local stack at system entry.
+For example, the assembly-language program segment below reads
+characters continuously until an asterisk is encountered, at
+which time control returns to the CCP, assuming a standard CP/M
+system with BOOT = 0000H.
+<pre>
+BDOS   EQU 0005H    ;STANDARD CP/M ENTRY
+CONIN  EQU 1        ;CONSOLE INPUT FUNCTION
+;
+       ORG 0100H    ;BASE OF TPA
+NEXTC: MVI C,CONIN  ;READ NEXT CHARACTER
+       CALL BDOS    ;RETURN CHARACTER IN &lt;A&gt;
+       CPI  '*'     ;END OF PROCESSING?
+       JNZ  NEXTC   ;LOOP IF NOT
+       RET          ;RETURN TO CCP
+       END
+</pre>
+<p>CP/M implements a named file structure on each disk, providing a
+logical organization that allows any particular file to contain
+any number of records from completely emptv to the full capacity
+of the drive. Each drive is logically distinct with a disk
+directory and file data area. The disk filenames are in three
+parts: the drive select code, the filename (consisting of one to
+eight nonblank characters), and the filetype (consisting of zero
+to three nonblank characters). The filetype names the generic
+category of a particular file, while the filename distinguishes
+individual files in each category. The filetypes listed in 
+<a href="#Table_5-1">Table 5-1</a> 
+name a few generic categories that have been established,
+although they are somewhat arbitrary.
+<p>&nbsp;
+<center>
+<a name="Table_5-1">
+<table>
+<caption align="bottom">Table 5-1. CP/M Filetypes</caption>
+<tr><th>Filetype<th>Meaning
+<tr><td>ASM<td>Assembler Source
+<tr><td>PRN<td>Printer Listing
+<tr><td>HEX<td>Hex Machine Code
+<tr><td>BAS<td>Basic Source File
+<tr><td>INT<td>Intermediate Code
+<tr><td>COM<td>Command File
+<tr><td>PLI<td>PL/I Source File
+<tr><td>REL<td>Relocatable Module
+<tr><td>TEX<td>TEX Formatter Source
+<tr><td>BAK<td>ED Source Backup
+<tr><td>SYM<td>SID Symbol File
+<tr><td>$$$<td>Temporary File
+</table></center></a>
+<p>Source files are treated as a sequence of ASCII characters, where
+each line of the source file is followed by a carriage return,
+and line-feed sequence (0DH followed by 0AH). Thus, one 128-byte
+CP/M record can contain several lines of source text.  The end of
+an ASCII file is denoted by a CTRL-Z character (1AH) or a real
+end-of-file returned by the CP/M read operation.  CTRL-Z
+characters embedded within machine code files (for example, COM
+files) are ignored and the end-of-file condition returned by CP/M
+is used to terminate read operations.
+<p>Files in CP/M can be thought of as a sequence of up to 65536
+records of 128 bytes each, numbered from 0 through 65535, thus
+allowing a maximum of 8 megabytes per file. Note, however, that
+although the records may be considered logically contiguous, they
+may not be physically contiguous in the disk data area.
+Internally, all files are divided into 16K byte segments called
+logical extents, so that counters are easily maintained as 8-bit
+values. The division into extents is discussed in the paragraphs
+that follow: however, they are not particularly significant for
+the programmer, because each extent is automatically accessed in
+both sequential and random access modes.
+<p>In the file operations starting with 
+<a href="#Function_15">Function 15</a>, DE usually
+addresses a FCB. Transient programs often use the default FCB
+area reserved by CP/M at location BOOT+005CH (normally 005CH) for
+simple file operations. The basic unit of file information is a
+128-byte record used for all file operations. Thus, a default
+location for disk I/O is provided by CP/M at location BOOT+0080H
+(normally 0080H) which is the initial default DMA address. See
+<a href="#Function_26">Function 26</a>.
+<p>All directory operations take place in a reserved area that does
+not affect write buffers as was the case in release 1, with the
+exception of 
+<a href="#Function_17">Search First</a> and 
+<a href="#Function_18">Search Next</a>, where compatibility is
+required.
+<p>The FCB data area consists of a sequence of 33 bytes for
+sequential access and a series of 36 bytes in the case when the
+file is accessed randomly. The default FCB, normally located at
+005CH, can be used for random access files, because the three
+bytes starting at BOOT+007DH are available for this purpose.
+<a href="#Figure_5-2">Figure 5-2</a> 
+shows the FCB format with the following fields.
+<p>&nbsp;
+<a name="Figure_5-2">
+<center>
+<table border="1">
+<caption align="bottom">Figure 5-2. File Control Block Format</caption>
+<tr><td>DR<td colspan="4" align="center">F1 - F8<td colspan="3"
+align="center">T1 - T3<td>EX<td>S1<td>S2<td>RC
+<td colspan="3" align="center">D0 - DN<td>CR<td>R0<td>R1<td>R2
+<tr>
+<td>00<td>01<td>02<td>...<td>08<td>09
+<td>10<td>11<td>12<td>13<td>14<td>15<td>16<td>...
+<td>31<td>32<td>33<td>34<td>35
+</table></center></a>
+<p>The following table lists and describes each of the fields in the
+File Control Block figure.
+<p>&nbsp;
+<a name="Table_5-2">
+<center><table border="1">
+<caption align="bottom">Table 5-2. File Control Block Fields</caption>
+<tr><th>Field<th>Definition
+<tr><td>dr<td>drive code (0-16)<br>
+0 = use default drive for file<br>
+1 = auto disk select drive A,<br>
+2 = auto disk select drive B,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+16 = auto disk select drive P.
+<tr><td>f1...f8<td>contain the filename in ASCII upper-case,
+with high bit = 0
+<tr><td>t1,t2,t3<td>contain the filetype in ASCII upper-case,
+with high bit = 0. t1', t2', and t3' denote
+the bit of these positions,<br>
+t1' = 1 = Read-Only file,<br>
+t2' = 1 = SYS file, no DIR list
+<tr><td>ex<td>contains the current extent number, normally
+set to 00 by the user, but in range 0-31
+during file I/O
+<tr><td>s1<td>reserved for internal system use
+<tr><td>s2<td>reserved for internal system use, set to zero
+on call to 
+<a href="#Function_15">OPEN</a>, <a href="#Function_22">MAKE</a>, 
+<a href="#Function_18">SEARCH</a>
+<tr><td>rc<td>record count for extent ex; takes on values
+from 0-127
+<tr><td>d0...dn<td>filled in by CP/M; reserved for system use
+<tr><td>cr<td>current record to read or write in a
+sequential file operation; normally set to
+zero by user
+<tr><td>r0,r1,r2<td>optional random record number in the range 0-
+65535, with overflow to r2, r0, r1 constitute
+a 16-bit value with low byte r0, and high
+byte r1
+</table></center></a>
+<p>Each file being accessed through CP/M must have a corresponding
+FCB, which provides the name and allocation information for all
+subsequent file operations. When  accessing files, it is the
+programmer's responsibility to fill the lower 16 bytes of the FCB
+and initialize the cr field.  Normally, bytes 1 through 11 are
+set to the ASCII character values for the filename and filetype,
+while all other fields are zero.
+<p>FCBs are stored in a directory area of the disk, and are brought
+into central memory before the programmer proceeds with file
+operations (see the 
+<a href="#Function_15">OPEN</a> and 
+<a href="#Function_22">MAKE</a> functions). The memory copy of
+the FCB is updated as file operations take place and later
+recorded permanently on disk at the termination of the file
+operation, (see the 
+<a href="#Function_16">CLOSE</a> command).
+<p>The CCP constructs the first 16 bytes of two optional FCBs for a
+transient by scanning the remainder of the line following the
+transient name, denoted by file1 and file2 in the prototype
+command line described above, with unspecified fields set to
+ASCII blanks. The first FCB is constructed at location BOOT+005CH
+and can be used as is for subsequent file operations. The second
+FCB occupies the d0 ... dn portion of the first FCB and must be
+moved to another area of memory before use. If, for example, the
+following command line is typed:
+<pre>
+        PROGNAME B:X.ZOT Y.ZAP
+</pre>
+<p>the file PROGNAME.COM is loaded into the TPA, and the default FCB
+at BOOT+005CH is initialized to drive code 2, filename X, and
+filetype ZOT. The second drive code takes the default value 0,
+which is placed at BOOT+006CH, with the filename Y placed into
+location BOOT+006DH and filetype ZAP located 8 bytes later at
+BOOT+0075H. All remaining fields through cr are set to zero. Note
+again that it is the programmer's responsibility to move this
+second filename and filetype to another area, usually a separate
+file control block, before opening the file that begins at
+BOOT+005CH, because the open operation overwrites the second name
+and type.
+<p>If no filenames are specified in the original command, the fields
+beginning at BOOT+005DH and BOOT+006DH contain blanks. In all
+cases, the CCP translates lower-case alphabetics to upper-case to
+be consistent with the CP/M file naming conventions.
+<p>As an added convenience, the default buffer area at location
+BOOT+0080H is initialized to the command line tail typed by the
+operator following the program name. The first position contains
+the number of characters, with the characters themselves
+following the character count. Given the above command line, the
+area beginning at BOOT+0080H is initialized as follows:
+<p>&nbsp;
+<center><table>
+<tr><td colspan="15" align="left">BOOT+0080H:
+<tr><td>+00<td>+01<td>+02<td>+03<td>+04<td>+05<td>+06<td>+07<td>+08<td>+09
+<td>+0A<td>+0B<td>+0C<td>+0D<td>+0E
+<tr><td>0EH<td>'&nbsp'<td>'B'<td>':'<td>'X'<td>'.'<td>'Z'<td>'O'<td>'T'
+<td>'&nbsp'<td>'Y'<td>'.'<td>'Z'<td>'A'<td>'P'
+</table></center>
+<p>where the characters are translated to upper-case ASCII with
+uninitialized memory following the last valid character. Again,
+it is the responsibility of the programmer to extract the
+information from this buffer before any file operations are
+performed, unless the default DMA address is explicitly changed.
+<p>Individual functions are described in detail in the pages that
+follow.
+<hr>
+<a name="Function_0"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 0: System Reset
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>00H
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The System Reset function returns control to the CP/M operating
+system at the CCP level. The CCP reinitializes the disk subsystem
+by selecting and logging-in disk drive A. This function has
+exactly the same effect as a jump to location BOOT.
+<hr>
+<a name="Function_1"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 1: Console Input
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>01H
+<tr><th>Return<td>A<td>ASCII Character
+</table></center>
+<p>The Console Input function reads the next console character to
+register A. Graphic characters, along with carriage return, line-
+feed, and back space (CTRL-H) are echoed to the console.  Tab
+characters, CTRL-I, move the cursor to the next tab stop. A check
+is made for start/stop scroll, CTRL-S, and start/stop printer
+echo, CTRL-P. The FDOS does not return to the calling program
+until a character has been typed, thus suspending execution if a
+character is not ready.
+<hr>
+<a name="Function_2"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 2: Console Output
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>01H
+<tr><td>E<td>ASCII Character
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The ASCII character from register E is sent to the console
+device. As in 
+<a href="#Function_1">Function 1</a>, tabs are expanded and checks are made
+for start/stop scroll and printer echo.
+<hr>
+<a name="Function_3"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 3: Reader Input
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>03H
+<tr><th>Return<td>A<td>ASCII Character
+</table></center>
+<p>The Reader Input function reads the next character from the
+logical reader into register A. See the IOBYTE definition in
+<a href="ch6.htm">Section 6</a>. 
+Control does not return until the character has been
+read.
+<hr>
+<a name="Function_4"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 4: Punch Output
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>04H
+<tr><td>E<td>ASCII Character
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The Punch Output function sends the character from register E to
+the logical punch device.
+<hr>
+<a name="Function_5"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 5: List Output
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>05H
+<tr><td>E<td>ASCII Character
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The List Output function sends the ASCII character in register E
+to the logical listing device.
+<hr>
+<a name="Function_6"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 6: Direct Console I/O
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>06H
+<tr><td>E<td>0FFH (input) or<br>char (output)
+<tr><th>Return<td>A<td>char or status
+</table></center>
+<p>Direct Console I/O is supported under CP/M for those specialized
+applications where basic console input and output are required.
+Use of this function should, in general, be avoided since it
+bypasses all of the CP/M normal control character functions (for
+example, CTRL-S and CTRL-P). Programs that perform direct I/O
+through the BIOS under previous releases of CP/M, however, should
+be changed to use direct I/O under BDOS so that they can be fully
+supported under future releases of MP/M and CP/M.
+<p>Upon entry to Function 6, register E either contains hexadecimal
+FF, denoting a console input request, or an ASCII character. If
+the input value is FF, Function 6 returns A = 00 if no character
+is ready, otherwise A contains the next console input character.
+<p>If the input value in E is not FF, Function 6 assumes that E
+contains a valid ASCII character that is sent to the console.
+<p>Function 6 must not be used in conjunction with other console I/O
+functions.
+<hr>
+<a name="Function_7"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 7: Get I/O Byte
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>07H
+<tr><th>Return<td>A<td>I/O Byte Value
+</table></center>
+<p>The Get I/O Byte function returns the current value of IOBYTE in
+register A. See <a href="ch6.htm">Section 6</a> for IOBYTE definition.
+<hr>
+<a name="Function_8"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 8: Set I/O Byte
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>08H
+<tr><td>E<td>I/O Byte Value
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The SET I/O Byte function changes the IOBYTE value to that given
+in register E.
+<hr>
+<a name="Function_9"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 9: Print String
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>09H
+<tr><td>DE<td>String Address
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The Print String function sends the character string stored in
+memory at the location given by DE to the console device, until a
+$ is encountered in the string. Tabs are expanded as in 
+<a href="#Function_2">Function 2</a>, 
+and checks are made for start/stop scroll and printer echo.
+<hr>
+<a name="Function_10"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 10: Read Console Buffer
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>0AH
+<tr><td>DE<td>Buffer Address
+<tr><th>Return<td colspan="2">Console Characters in Buffer
+</table></center>
+<p>The Read Buffer function reads a line of edited console input
+into a buffer addressed by registers DE. Console input is
+terminated when either input buffer overflows or a carriage
+return or line-feed is typed. The Read Buffer takes the form:
+<center>
+<table>
+<tr><td>DE:<td>+0<td>+1<td>+2<td>+3<td>+4<td>+5<td>+6<td>+7<td>+8<td>...<td>+n
+<tr><td><td>mx<td>nc<td>cl<td>c2<td>c3<td>c4<td>c5<td>c6<td>c7<td>...<td>??
+</table></center>
+<p>where mx is the maximum number of characters that the buffer will
+hold, 1 to 255, and nc is the number of characters read (set by
+FDOS upon return) followed by the characters read from the
+console. If nc &lt; mx, then uninitialized positions follow the last
+character, denoted by ?? in the above figure. A number of control
+functions, summarized in 
+<a href="#Table_5-3">Table 5-3</a>, are recognized during line
+editing.
+<p><a name="Table_5-3">
+<center><table border="1">
+<caption align="bottom">Table 5-3. Edit Control Characters</caption>
+<tr><th>Character<th>Edit Control Function
+<tr><td>rub/del<td>removes and echoes the last character
+<tr><td>CTRL-C<td>reboots when at the beginning of line
+<tr><td>CTRL-E<td>causes physical end of line
+<tr><td>CTRL-H<td>backspaces one character position
+<tr><td>CTRL-J<td>(line-feed) terminates input line
+<tr><td>CTRL-M<td>(return) terminates input line
+<tr><td>CTRL-R<td>retypes the current line after new line
+<tr><td>CTRL-U<td>removes current line
+<tr><td>CTRL-X<td>same as CTRL-U
+</table></center></a>
+<p>The user should also note that certain functions that return the
+carriage to the leftmost position (for example, CTRL-X) do so
+only to the column position where the prompt ended. In earlier
+releases, the carriage returned to the extreme left margin.  This
+convention makes operator data input and line correction more
+legible.
+<hr>
+<a name="Function_11"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 11: Get Console Status
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>0BH
+<tr><th>Return<td>A<td>Console Status
+</table></center>
+<p>The Console Status function checks to see if a character has been
+typed at the console. If a character is ready, the value 0FFH is
+returned in register A. Otherwise a 00H value is returned.
+<hr>
+<a name="Function_12"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 12: Return Version Number
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>0CH
+<tr><th>Return<td>HL<td>Version Number
+</table></center>
+<p>Function 12 provides information that allows version independent
+programming. A two-byte value is returned, with H = 00
+designating the CP/M release (H = 01 for MP/M) and L = 00 for all
+releases previous to 2.0. CP/M 2.0 returns a hexadecimal 20 in
+register L, with subsequent version 2 releases in the hexadecimal
+range 21, 22, through 2F. Using Function 12, for example, the
+user can write application programs that provide both sequential
+and random access functions.
+<hr>
+<a name="Function_13"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 13: Reset Disk System
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>0DH
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The Reset Disk function is used to programmatically restore the
+file system to a reset state where all disks are set to Read-Write. 
+See 
+<a href="#Function_28">functions 28</a> and 
+<a href="#Function_29">29</a>, only disk drive A is selected,
+and the default DMA address is reset to BOOT+0080H.  This
+function can be used, for example, by an application program that
+requires a disk change without a system reboot.
+<hr>
+<a name="Function_14"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 14: Select Disk
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>0EH
+<tr><td>E<td>Selected Disk
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The Select Disk function designates the disk drive named in
+register E as the default disk for subsequent file operations,
+with E = 0 for drive A, 1 for drive B, and so on through 15,
+corresponding to drive P in a full 16 drive system. The drive is
+placed in an on-line status, which activates its directory until
+the next cold start, warm start, or disk system reset operation.
+If the disk medium is changed while it is on-line, the drive
+automatically goes to a Read-Only status in a standard CP/M
+environment, see 
+<a href="#Function_28">Function 28</a>. 
+FCBs that specify drive code zero
+(dr = 00H) automatically reference the currently selected default
+drive. Drive code values between 1 and 16 ignore the selected
+default drive and directly reference drives A through P.
+<hr>
+<a name="Function_15"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 15: Open File
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>0FH
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Open File operation is used to activate a file that currently
+exists in the disk directory for the currently active user
+number. The FDOS scans the referenced disk directory for a match
+in positions 1 through 14 of the FCB referenced by DE (byte s1 is
+automatically zeroed) where an ASCII question mark (3FH) matches
+any directory character in any of these positions. Normally, no
+question marks are included, and bytes ex and s2 of the FCB are
+zero.
+<p>If a directory element is matched, the relevant directory
+information is copied into bytes d0 through dn of FCB, thus
+allowing access to the files through subsequent read and write
+operations. The user should note that an existing file must not
+be accessed until a successful open operation is completed. Upon
+return, the open function returns a directory code with the value
+0 through 3 if the open was successful or 0FFH (255 decimal) if
+the file cannot be found. If question marks occur in the FCB, the
+first matching FCB is activated. Note that the current record,
+(cr) must be zeroed by the program if the file is to be accessed
+sequentially from the first record.
+<hr>
+<a name="Function_16"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 16: Close File
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>10H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Close File function performs the inverse of the 
+<a href="#Function_15">Open File</a>
+function. Given that the FCB addressed by DE has been previously
+activated through an 
+<a href="#Function_15">open</a> or 
+<a href="#Function_22">make</a> function, the close function
+permanently records the new FCB in the reference disk directory
+(see 
+<a href="#Function_15">functions 15</a> and 
+<a href="#Function_22">22</a>). The FCB matching process for the close
+is identical to the open function. The directory code returned
+for a successful close operation is 0, 1, 2, or 3, while a 0FFH
+(255 decimal) is returned if the filename cannot be found in the
+directory. A file need not be closed if only read operations have
+taken place. If write operations have occurred, the close
+operation is necessary to record the new directory information
+permanently.
+<hr>
+<a name="Function_17"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 17: Search for First
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>11H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>Search First scans the directory for a match with the file given
+by the FCB addressed by DE. The value 255 (hexadecimal FF) is
+returned if the file is not found; otherwise, 0, 1, 2, or 3 is
+returned indicating the file is present. When the file is found,
+the current DMA address is filled with the record containing the
+directory entry, and the relative starting position is A * 32
+(that is, rotate the A register left 5 bits, or ADD A five
+times). Although not normally required for application programs,
+the directory information can be extracted from the buffer at
+this position.
+<p>An ASCII question mark (63 decimal, 3F hexadecimal) in any
+position from f1 through ex matches the corresponding field of
+any directory entry on the default or auto-selected disk drive.
+If the dr field contains an ASCII question mark, the auto disk
+select function is disabled and the default disk is searched,
+with the search function returning any matched entry, allocated
+or free, belonging to any user number. This latter function is
+not normally used by application programs, but it allows complete
+flexibility to scan all current directory values. If the dr field
+is not a question mark, the s2 byte is automatically zeroed.
+<hr>
+<a name="Function_18"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 18: Search for Next
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>12H
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Search Next function is similar to the Search First function,
+except that the directory scan continues from the last matched
+entry. Similar to Function 17, Function 18 returns the decimal
+value 255 in A when no more directory items match.
+<hr>
+<a name="Function_19"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 19: Delete File
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>13H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Delete File function removes files that match the FCB
+addressed by DE. The filename and type may contain ambiguous
+references (that is, question marks in various positions), but
+the drive select code cannot be ambiguous, as in the 
+<a href="#Function_17">Search</a> and
+<a href="#Function_18">Search Next</a> functions.
+<p>Function 19 returns a decimal 255 if the referenced file or
+files cannot be found; otherwise, a value in the range 0 to 3
+returned.
+<hr>
+<a name="Function_20"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 20: Read Sequential
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>14H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>Given that the FCB addressed by DE has been activated through an
+<a href="#Function_15">Open</a> or 
+<a href="#Function_22">Make</a> 
+function, the Read Sequential function reads the
+next 128-byte record from the file into memory at the current DMA
+address. The record is read from position cr of the extent, and
+the cr field is automatically incremented to the next record
+position. If the cr field overflows, the next logical extent is
+automatically opened and the cr field is reset to zero in
+preparation for the next read operation. The value 00H is
+returned in the A register if the read operation was successful,
+while a nonzero value is returned if no data exist at the next
+record position (for example, end-of-file occurs).
+<hr>
+<a name="Function_21"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 21: Write Sequential
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>15H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>Given that the FCB addressed by DE has been activated through an
+<a href="#Function_15">Open</a> or 
+<a href="#Function_22">Make</a> 
+function, the Write Sequential function writes the
+128-byte data record at the current DMA address to the file named
+by the FCB. The record is placed at position cr of the file, and
+the cr field is automatically incremented to the next record
+position. If the cr field overflows, the next logical extent is
+automatically opened and the cr field is reset to zero in
+preparation for the next write operation. Write operations can
+take place into an existing file, in which case newly written
+records overlay those that already exist in the file.  Register A
+= 00H upon return from a successful write operation, while a
+nonzero value indicates an unsuccessful write caused by a full
+disk.
+<hr>
+<a name="Function_22"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 22: Make File
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>16H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Make File operation is similar to the 
+<a href="#Function_15">Open</a> File operation
+except that the FCB must name a file that does not exist in the
+currently referenced disk directory (that is, the one named
+explicitly by a nonzero dr code or the default disk if dr is
+zero). The FDOS creates the file and initializes both the
+directory and main memory value to an empty file. The programmer
+must ensure that no duplicate filenames occur, and a preceding
+<a href="#Function_19">delete</a> 
+operation is sufficient if there is any possibility of
+duplication. Upon return, register A = 0, 1, 2, or 3 if the
+operation was successful and 0FFH (255 decimal) if no more
+directory space is available. The Make function has the side
+effect of activating the FCB and thus a subsequent 
+<a href="#Function_15">open</a> is not
+necessary.
+<hr>
+<a name="Function_23"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 23: Rename File
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>17H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Rename function uses the FCB addressed by DE to change all
+occurrences of the file named in the first 16 bytes to the file
+named in the second 16 bytes. The drive code dr at postion 0 is
+used to select the drive, while the drive code for the new
+filename at position 16 of the FCB is assumed to be zero. Upon
+return, register A is set to a value between 0 and 3 if the
+rename was successful and 0FFH (255 decimal) if the first
+filename could not be found in the directory scan.
+<hr>
+<a name="Function_24"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 24: Return Log-in Vector
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>18H
+<tr><th>Return<td>HL<td>Log-in Vector
+</table></center>
+<p>The log-in vector value returned by CP/M is a 16-bit value in HL,
+where the least significant bit of L corresponds to the first
+drive A and the high-order bit of H corresponds to the sixteenth
+drive, labeled P. A 0 bit indicates that the drive is not on-
+line, while a 1 bit marks a drive that is actively on-line as a
+result of an explicit disk drive selection or an implicit drive
+select caused by a file operation that specified a nonzero dr
+field. The user should note that compatibility is maintained with
+earlier releases, because registers A and L contain the same
+values upon return.
+<hr>
+<a name="Function_25"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 25: Return Current Disk
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>19H
+<tr><th>Return<td>A<td>Current Disk
+</table></center>
+<p>Function 25 returns the currently selected default disk number in
+register A. The disk numbers range from 0 through 15
+corresponding to drives A through P.
+<hr>
+<a name="Function_26"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 26: Set DMA Address
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>1AH
+<tr><td>DE<td>DMA Address
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>DMA is an acronym for Direct Memory Address, which is often used
+in connection with disk controllers that directly access the
+memory of the mainframe computer to transfer data to and from the
+disk subsystem. Although many computer systems use non-DMA access
+(that is, the data is transferred through programmed I/O
+operations), the DMA address has, in CP/M, come to mean the
+address at which the 128-byte data record resides before a disk
+write and after a disk read. Upon cold start, warm start, or disk
+system reset, the DMA address is automatically set to BOOT+0080H.
+The Set DMA function can be used to change this default value to
+address another area of memory where the data records reside.
+Thus, the DMA address becomes the value specified by DE until it
+is changed by a subsequent Set DMA function, cold start, warm
+start, or disk system reset.
+<hr>
+<a name="Function_27"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 27: Get Addr (ALLOC)
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>1BH
+<tr><th>Return<td>HL<td>ALLOC Address
+</table></center>
+<p>An allocation vector is maintained in main memory for each on-line 
+disk drive. Various system programs use the information
+provided by the allocation vector to determine the amount of
+remaining storage (see the STAT program). Function 27 returns the
+base address of the allocation vector for the currently selected
+disk drive. However, the allocation information might be invalid
+if the selected disk has been marked Read-Only.  Although this
+function is not normally used by application programs, additional
+details of the allocation vector are found in 
+<a href="ch6.htm">Section 6</a>.
+<hr>
+<a name="Function_28"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 28: Write Protect Disk
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>1CH
+<tr><th>Return<td colspan="2" align="center">(none)
+</table></center>
+<p>The Write Protect Disk function provides temporary write
+protection for the currently selected disk. Any attempt to write
+to the disk before the next cold or warm start operation
+produces the message:
+<pre>
+        BDOS ERR on d: R/O
+</pre>
+<hr>
+<a name="Function_29"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 29: Get Read-Only Vector
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>1DH
+<tr><th>Return<td>HL<td>R/O Vector Value
+</table></center>
+<p>Function 29 returns a bit vector in register pair HL, which
+indicates drives that have the temporary Read-Only bit set. As in
+<a href="#Function_24">Function 24</a>, 
+the least significant bit corresponds to drive A,
+while the most significant bit corresponds to drive P. The R/O
+bit is set either by an explicit call to 
+<a href="#Function_28">Function 28</a> or by the
+automatic software mechanisms within CP/M that detect changed
+disks.
+<hr>
+<a name="Function_30"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 30: Set File Attributes
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>1EH
+<tr><td>DE<td>FCB Address>
+<tr><th>Return<td>A<td>Directory Code
+</table></center>
+<p>The Set File Attributes function allows programmatic manipulation
+of permanent indicators attached to files. In particular, the R/O
+and System attributes (t1' and t2') can be set or reset. The DE
+pair addresses an unambiguous filename with the appropriate
+attributes set or reset. Function 30 searches for a match and
+changes the matched directory entry to contain the selected
+indicators. Indicators f1' through f4' are not currently used,
+but may be useful for applications programs, since they are not
+involved in the matching process during file open and close
+operations. Indicators f5' through f8' and t3' are reserved for
+future system expansion.
+<hr>
+<a name="Function_31"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 31: Get Addr (DISKPARMS)
+<tr><td><th>Register<th>Value
+<tr><th>Entry<td>C<td>1FH
+<tr><th>Return<td>HL<td>DPB Address
+</table></center>
+<p>The address of the BIOS resident disk parameter block is returned
+in HL as a result of this function call. This address can be used
+for either of two purposes. First, the disk parameter values can
+be extracted for display and space computation purposes, or
+transient programs can dynamically change the values of current
+disk parameters when the disk environment changes, if required.
+Normally, application programs will not require this facility.
+<hr>
+<a name="Function_32"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 32: Set/Get User Code
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>20H
+<tr><td>E<td>0FFH (get) or<br>User Code (set)
+<tr><th>Return<td>A<td>Current Code (get) or<br>(no value)
+</table></center>
+<p>An application program can change or interrogate the currently
+active user number by calling Function 32. If register E = 0FFH,
+the value of the current user number is returned in register A,
+where the value is in the range of 0 to 15. If register E is not
+0FFH, the current user number is changed to the value of E,
+modulo 16.
+<hr>
+<a name="Function_33"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 33: Read Random
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>21H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Return Code
+</table></center>
+<p>The Read Random function is similar to the 
+<a href="#Function_20">sequential file read</a> 
+operation of previous releases, except that the read operation
+takes place at a particular record number, selected by the 24-bit
+value constructed from the 3-byte field following the FCB (byte
+positions r0 at 33, r1 at 34, and r2 at 35). The user should note
+that the sequence of 24 bits is stored with least significant
+byte first (r0), middle byte next (r1), and high byte last (r2).
+CP/M does not reference byte r2, except in computing the size of
+a file (see 
+<a href="#Function_35">Function 35</a>). 
+Byte r2 must be zero, however, since a
+nonzero value indicates overflow past the end of file.
+<p>Thus, the r0, r1 byte pair is treated as a double-byte, or word
+value, that contains the record to read. This value ranges from 0
+to 65535, providing access to any particular record of the 8-megabyte 
+file. To process a file using random access, the base
+extent (extent 0) must first be opened. Although the base extent
+might or might not contain any allocated data, this ensures that
+the file is properly recorded in the directory and is visible in
+DIR requests. The selected record number is then stored in the
+random record field (r0, r1), and the BDOS is called to read the
+record.
+<p>Upon return from the call, register A either contains an error
+code, as listed below, or the value 00, indicating the operation
+was successful. In the latter case, the current DMA address
+contains the randomly accessed record. Note that contrary to the
+sequential read operation, the record number is not advanced.
+Thus, subsequent random read operations continue to read the same
+record.
+<p>Upon each random read operation, the logical extent and current
+record values are automatically set. Thus, the file can be
+sequentially read or written, starting from the current randomly
+accessed position. However, note that, in this case, the last
+randomly read record will be reread as one switches from random
+mode to sequential read and the last record will be rewritten as
+one switches to a sequential write operation. The user can simply
+advance the random record position following each random read or
+write to obtain the effect of sequential I/O operation.
+<p>Error codes returned in register A following a random read are
+listed below.
+<center><table>
+<tr><td>01<td>reading unwritten data
+<tr><td>02<td>(not returned in random mode)
+<tr><td>03<td>cannot close current extent
+<tr><td>04<td>seek to unwritten extent
+<tr><td>05<td>(not returned in read mode)
+<tr><td>06<td>seek Past Physical end of disk
+</table></center>
+<p>Error codes 01 and 04 occur when a random read operation accesses
+a data block that has not been previously written or an extent
+that has not been created, which are equivalent conditions. Error
+code 03 does not normally occur under proper system operation. If
+it does, it can be cleared by simply rereading or reopening
+extent zero as long as the disk is not physically write
+protected. Error code 06 occurs whenever byte r2 is nonzero under
+the current 2.0 release. Normally, nonzero return codes can be
+treated as missing data, with zero return codes indicating
+operation complete.
+<hr>
+<a name="Function_34"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 34: Write Random
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>22H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Return Code
+</table></center>
+<p>The Write Random operation is initiated similarly to the 
+<a href="#Function_33">Read
+Random</a> call, except that data is written to the disk from the
+current DMA address. Further, if the disk extent or data block
+that is the target of the write has not yet been allocated, the
+allocation is performed before the write operation continues.  As
+in the 
+<a href="#Function_33">Read Random</a> operation, 
+the random record number is not
+changed as a result of the write. The logical extent number and
+current record positions of the FCB are set to correspond to the
+random record that is being written. Again, sequential read or
+write operations can begin following a random write, with the
+notation that the currently addressed record is either read or
+rewritten again as the sequential operation begins. You can also
+simply advance the random record position following each write to
+get the effect of a sequential write operation. Note that reading
+or writing the last record of an extent in random mode does not
+cause an automatic extent switch as it does in sequential mode.
+<p>The error codes returned by a random write are identical to the
+<a href="#Function_33">random read</a> operation 
+with the addition of error code 05, which
+indicates that a new extent cannot be created as a result of
+directory overflow.
+<hr>
+<a name="Function_35"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 35: Compute File Size
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>23H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td colspan="2">Random Record Field Set
+</table></center>
+<p>When computing the size of a file, the DE register pair addresses
+an FCB in random mode format (bytes r0, r1, and r2 are present).
+The FCB contains an unambiguous filename that is used in the
+directory scan. Upon return, the random record bytes contain the
+virtual file size, which is, in effect, the record address of the
+record following the end of the file. Following a call to
+Function 35, if the high record byte r2 is 01, the file contains
+the maximum record count 65536. Otherwise, bytes r0 and r1
+constitute a 16-bit value as before (r0 is the least significant
+byte), which is the file size.
+<p>Data can be appended to the end of an existing file by simply
+calling Function 35 to set the random record position to the end-of-file 
+and then performing a sequence of random writes starting
+at the preset record address.
+<p>The virtual size of a file corresponds to the physical size when
+the file is written sequentially. If the file was created in
+random mode and holes exist in the allocation, the file might
+contain fewer records than the size indicates. For example, if
+only the last record of an 8-megabyte file is written in random
+mode (that is, record number 65535), the virtual size is 65536
+records, although only one block of data is actually allocated.
+<hr>
+<a name="Function_36"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 36: Set Random Record
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>24H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td colspan="2">Random Record Field Set
+</table></center>
+<p>The Set Random Record function causes the BDOS automatically to
+produce the random record position from a file that has been read
+or written sequentially to a particular point. The function can
+be useful in two ways.
+<p>First, it is often necessary initially to read and scan a
+sequential file to extract the positions of various key fields.
+As each key is encountered, Function 36 is called to compute the
+random record position for the data corresponding to this key.
+If the data unit size is 128 bytes, the resulting record position
+is placed into a table with the key for later retrieval. After
+scanning the entire file and tabulating the keys and their record
+numbers, the user can move instantly to a particular keyed record
+by performing a random read, using the corresponding random
+record number that was saved earlier. The scheme is easily
+generalized for variable record lengths, because the program need
+only store the buffer-relative byte position along with the key
+and record number to find the exact starting position of the
+keyed data at a later time.
+<p>A second use of Function 36 occurs when switching from a
+sequential read or write over to random read or write. A file is
+sequentially accessed to a particular point in the file, Function
+36 is called, which sets the record number, and subsequent random
+read and write operations continue from the selected point in the
+file.
+<hr>
+<a name="Function_37"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 37: Reset Drive
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>25H
+<tr><td>DE<td>Drive Vector
+<tr><th>Return<td>A<td>00H
+</table></center>
+<p>The Reset Drive function allows resetting of specified drives.
+The passed parameter is a 16-bit vector of drives to be reset;
+the least significant bit is drive A:.
+<p>To maintain compatibility with MP/M, CP/M returns a zero value.
+<hr>
+<a name="Function_40"></a>
+<center><table border="1">
+<tr><td colspan="3" align="center">Function 40: Write Random with Zero Fill
+<tr><td><th>Register<th>Value
+<tr><th rowspan="2">Entry<td>C<td>28H
+<tr><td>DE<td>FCB Address
+<tr><th>Return<td>A<td>Return Code
+</table></center>
+<p>The Write With Zero Fill operation is similar to 
+<a href="#Function_34">Function 34</a>,
+with the exception that a previously unallocated block is filled
+with zeros before the data is written.
+<p><a name="Section_5.3"><h1>5.3 A Sample File-to-File Copy Program</h1></a>
+<p>The following program provides a relatively simple example of
+file operations. The program source file is created as COPY.ASM
+using the CP/M ED program and then assembled using ASM or MAC,
+resulting in a HEX file. The LOAD program is used to produce a
+COPY.COM file that executes directly under the CCP. The program
+begins by setting the stack pointer to a local area and proceeds
+to move the second name from the default area at 006CH to a 33-byte 
+File Control Block called DFCB. The DFCB is then prepared
+for file operations by clearing the current record field. At this
+point, the source and destination FCBs are ready for processing,
+because the SFCB at 005CH is properly set up by the CCP upon
+entry to the COPY program. That is, the first name is placed into
+the default FCB, with the proper fields zeroed, including the
+current record field at 007CH. The program continues by opening
+the source file, deleting any existing destination file, and
+creating the destination file. If all this is successful, the
+program loops at the label COPY until each record is read from
+the source file and placed into the destination file. Upon
+completion of the data transfer, the destination file is closed
+and the program returns to the CCP command level by jumping to
+BOOT.
+<pre>
+               ;    sample file-to-file copy program
+               ;
+               ;
+               ;    at the ccp level, the command
+               ;
+               ;
+               ;         copy a:x.y b:u.v
+               ;
+               ;
+0000 =         boot    equ  0000h     ; system reboot
+0005 =         bdos    equ  0005h     ; bdos entry point
+005C =         fcb1    equ  005ch     ; first file name
+005C =         sfcb    equ  fcb1      ; source fcb
+006C =         fcb2    equ  006ch     ; second file name
+0080 =         dbuff   equ  0080h     ; default buffer
+0100 =         tpa     equ  0100h     ; beginning of tpa
+               ;
+0009 =         printf  equ  9         ; print buffer func#
+000F =         openf   equ  15        ; open file func#
+0010 =         closef  equ  16        ; close file func#
+0013 =         deletef equ  19        ; delete file func#
+0014 =         readf   equ  20        ; sequential read func#
+0015 =         writef  equ  21        ; sequential write
+0016 =         makef   equ  22        ; make file func#
+               ;
+0100                   org  tpa       ; beginning of tpa
+0100 311902            lxi  sp,stack  ; set local stack
+0103 0E10              mvi  c,16      ; half an fcb
+0105 116C00            lxi  d,fcb2    ; source of move
+0108 21D901            lxi  h,dfcb    ; destination fcb
+010B 1A        mfcb:   ldax d         ; source fcb
+010C 13                inx  d         ; ready next
+010D 77                mov  m,a       ; dest fcb
+010E 23                inx  h         ; ready next
+010F 0D                dcr  c         ; count 16...0
+0110 C20B01            jnz  mfcb      ; loop 16 times
+               ;
+               ;    name has been removed, zero cr
+0113 AF                xra  a         ; a = 00h
+0114 32F901            sta  dfcbcr    ; current rec = 0
+               ;
+               ;    source and destination fcb's ready
+0117 115C00            lxi  d,sfcb    ; source file
+011A CD6901            call open      ; error if 255
+011D 118701            lxi  d,nofile  ; ready message
+0120 3C                inr  a         ; 255 becomes 0
+0121 CC6101            cz   finis     ; done if no file
+               ;
+               ;    source file open, prep destination
+0124 11D901            lxi  d,dfcb    ; destination
+0127 CD7301            call delete    ; remove if present
+               ;
+012A 11D901            lxi  d,dfcb    ; destination
+012D CD8201            call make      ; create the file
+0130 119601            lxi  d,nodir   ; ready message
+0133 3C                inr  a         ; 255 becomes 0
+0134 CC6101            cz   finis     ; done if no dir space
+               ;
+               ;    source file open, dest file open
+               ;    copy until end of file on source
+               ;
+0137 115C00    copy:   lxi  d,sfcb    ; source
+013A CD7801            call read      ; read next record
+013D B7                ora  a         ; end of file?
+013E C25101            jnz  eofile    ; skip write if so
+               ;
+               ;    not end of file, write the record
+0141 11D901            lxi  d,dfcb    ; destination
+0144 CD7D01            call write     ; write the record
+0147 11A901            lxi  d,space   ; ready message
+014A B7                ora  a         ; 00 if write ok
+014B C46101            cnz  finis     ; end if so
+014E C33701            jmp  copy      ; loop until eof
+               ;
+               eofile: ; end of file, close destination
+0151 11D901            lxi  d,dfcb    ; destination
+0154 CD6E01            call close     ; 255 if error
+0157 21BA01            lxi  h,wrprot  ; ready message
+015A 3C                inr  a         ; 255 becomes 00
+015B CC6101            cz   finis     ; shouldn't happen
+               ;
+               ;    copy operation complete, end
+015E 11CB01            lxi  d,normal  ; ready message
+               ;
+               finis:  ; write message given in de, reboot
+0161 0E09              mvi  c,printf
+0163 CD0500            call bdos      ; write message
+0166 C30500            jmp  bdos      ; reboot system
+               ;
+               ;    system interface subroutines
+               ;    (all return directly from bdos)
+               ;
+0169 0E0F      open:   mvi  c,openf
+016B C30500            jmp  bdos
+               ;
+016E 0E10      close:  mvi  c,closef
+0170 C30500            jmp  bdos
+               ;
+0173 0E13      delete: mvi  c,deletef
+0175 C30500            jmp  bdos
+               ;
+0178 0E14      read:   mvi  c,readf
+017A C30500            jmp  bdos
+               ;
+017D 0E15      write:  mvi  c,writef
+017F C30500            jmp  bdos
+               ;
+0182 0E16      make:   mvi  c,makef
+0184 C30500            jmp  bdos
+               ;
+               ;    console messages
+0187 6E6F20736Fnofile: db 'no source file$'
+0196 6E6F206469nodir:  db 'no directory space$'
+01A9 6F7574206Fspace:  db 'out of dat space$'
+01BA 7772697465wrprot: db 'write protected?$'
+01CB 636F707920normal: db 'copy complete$'
+               ;
+               ;    data areas
+01D9           dfcb:   ds   32        ; destination fcb
+01F9 =         dfcbcr: equ  dfcb+32   ; current record
+               ;
+01F9                   ds   32        ; 16 level stack
+               stack:
+0219                   end
+</pre>
+<p>Note that there are several simplifications in this particular
+program. First, there are no checks for invalid filenames that
+could contain ambiguous references. This situation could be
+detected by scanning the 32-byte default area starting at
+location 005CH for ASCII question marks. A check should also be
+made to ensure that the filenames have been included (check
+locations 005DH and 006DH for nonblank ASCII characters).
+Finally, a check should be made to ensure that the source and
+destination filenames are different. An improvement in speed
+could be obtained by buffering more data on each read operation.
+One could, for example, determine the size of memory by fetching
+FBASE from location 0006H and using the entire remaining portion
+of memory for a data buffer. In this case, the programmer simply
+resets the DMA address to the next successive 128-byte area
+before each read. Upon writing to the destination file, the DMA
+address is reset to the beginning of the buffer and incremented
+by 128 bytes to the end as each record is transferred to the
+destination file.
+<p><a name="#Section_5.4"><h1>5.4 A Sample File Dump Utility</h1></a>
+<p>The following file dump program is slightly more complex than the
+simple copy program given in the previous section. The dump
+program reads an input file, specified in the CCP command line,
+and displays the content of each record in hexadecimal format at
+the console. Note that the dump program saves the CCP's stack
+upon entry, resets the stack to a local area, and restores the
+CCP's stack before returning directly to the CCP. Thus, the dump
+program does not perform a warm start at the end of processing.
+<pre>
+               ;   FILE DUMP PROGRAM, READS AN INPUT FILE AND
+               PRINTS IN HEX
+               ;
+               ;   COPYRIGHT (C) 1975, 1976, 1977, 1978
+               ;   DIGITAL RESEARCH
+               ;   BOX 579, PACIFIC GROVE
+               ;   CALIFORNIA, 93950
+               ;
+0100                   ORG  100H
+0005 =         BDOS    EQU  0005H     ;DOS ENTRY POINT
+0001 =         CONS    EQU  1         ;READ CONSOLE
+0002 =         TYPEF   EQU  2         ;TYPE FUNCTION
+0009 =         PRINTF  EQU  9         ;BUFFER PRINT ENTRY
+000B =         BRKF    EQU  11        ;BREAK KEY FUNCTION
+                                      ;(TRUE IF CHAR READY)
+000F =         OPENF   EQU  15        ;FILE OPEN
+0014 =         READF   EQU  20        ;READ FUNCTION
+               ;
+005C =         FCB     EQU  5CH       ;FILE CONTROL BLOCK ADDRESS
+0080 =         BUFF    EQU  80H       ;INPUT DISK BUFFER ADDRESS
+               ;
+               ;   NON GRAPHIC CHARACTERS
+000D =         CR      EQU  0DH       ;CARRIAGE RETURN
+000A =         LF      EQU  0AH       ;LINE FEED
+               ;
+               ;   FILE CONTROL BLOCK DEFINITIONS
+005C =         FCBDN   EQU  FCB+0     ;DISK NAME
+005D =         FCBFN   EQU  FCB+1     ;FILE NAME
+0065 =         FCBFT   EQU  FCB+9     ;DISK FILE TYPE (3 CHARACTERS)
+0068 =         FCBRL   EQU  FCB+12    ;FILE'S CURRENT REEL NUMBER
+006B =         FCBRC   EQU  FCB+15    ;FILE'S RECORD COUNT (0 TO 128)
+007C =         FCBCR   EQU  FCB+32    ;CURRENT (NEXT) RECORD
+                                      ;NUMBER (0 TO 127)
+007D =         FCBLN   EQU  FCB+33    ;FCB LENGTH
+               ;
+               ;   SET UP STACK
+0100 210000            LXI  H,0
+0103 39                DAD  SP
+               ;   ENTRY STACK POINTER IN HL FROM THE CCP
+0104 221502            SHLD OLDSP
+               ;   SET SP TO LOCAL STACK AREA (RESTORED AT FINIS)
+0107 315702            LXI  SP,STKTOP
+               ;   READ AND PRINT SUCCESSIVE BUFFERS
+010A CDC101            CALL SETUP     ;SET UP INPUT FILE
+010D FEFF              CPI  255       ;255 IF FILE NOT PRESENT
+010F C21B01            JNZ  OPENOK    ;SKIP IF OPEN IS OK
+               ;
+               ;   FILE NOT THERE, GIVE ERROR MESSAGE AND RETURN
+0112 11F301            LXI  D,OPNMSG
+0115 CD9C01            CALL ERR
+0118 C35101            JMP  FINIS     ;TO RETURN
+               ;
+               OPENOK: ;OPEN OPERATION OK, SET BUFFER INDEX TO END
+011B 3E80              MVI  A,80H
+011D 321302            STA  IBP       ;SET BUFFER POINTER TO 80H
+               ;   HL CONTAINS NEXT ADDRESS TO PRINT
+0120 210000            LXI  H,0       ;START WITH 0000
+               ;
+               GLOOP:
+0123 E5                PUSH H         ;SAVE LINE POSITION
+0124 CDA201            CALL GNB
+0127 E1                POP  H         ;RECALL LINE POSITION
+0128 DA5101            JC   FINIS     ;CARRY SET BY GNB IF END FILE
+012B 47                MOV  B,A
+               ;   PRINT HEX VALUES
+               ;   CHECK FOR LINE FOLD
+012C 7D                MOV  A,L
+012D E60F              ANI  0FH       ;CHECK LOW 4 BITS
+012F C24401            JNZ  NONUM
+               ;   PRINT LINE NUMBER
+0132 CD7201            CALL CRLF
+               ;
+               ;   CHECK FOR BREAK KEY
+0135 CD5901            CALL BREAK
+               ;   ACCUM LSB = 1 IF CHARACTER READY
+0138 0F                RRC            ;INTO CARRY
+0139 DA5101            JC   FINIS     ;DON'T PRINT ANY MORE
+               ;
+013C 7C                 MOV  A,H
+013D CD8F01             CALL PHEX
+0140 7D                 MOV  A,L
+0141 CD8F01             CALL PHEX
+               NONUM:
+0144 23                 INX  H        ;TO NEXT LINE NUMBER
+0145 3E20               MVI  A,' '
+0147 CD6501             CALL PCHAR
+014A 78                 MOV  A,B
+014B CD8F01             CALL PHEX
+014E C32301             JMP  GLOOP
+               ;
+               FINIS:
+               ;   END OF DUMP, RETURN TO CCP
+               ;   (NOTE THAT A JMP TO 0000H REBOOTS)
+0151 CD7201             CALL CRLF
+0154 2A1502             LHLD OLDSP
+0157 F9                 SPHL
+               ;   STACK POINTER CONTAINS CCP'S STACK LOCATION
+0158 C9                 RET       ;TO THE CCP
+               ;
+               ;
+               ;   SUBROUTINES
+               ;
+               BREAK:   ;CHECK BREAK KEY (ACTUALLY ANY KEY WILL DO)
+0159 E5D5C5             PUSH H! PUSH D! PUSH B; ENVIRONMENT SAVED
+015C 0E0B               MVI  C,BRKF
+015E CD0500             CALL BDOS
+0161 C1D1E1             POP B! POP D! POP H; ENVIRONMENT RESTORED
+0164 C9                 RET
+               ;
+               PCHAR:   ;PRINT A CHARACTER
+0165 E5D5C5             PUSH H! PUSH D! PUSH B; SAVED
+0168 0E02               MVI  C,TYPEF
+016A 5F                 MOV  E,A
+016B CD0500             CALL BDOS
+016E C1D1E1             POP B! POP D! POP H; RESTORED
+0171 C9                 RET
+               ;
+               CRLF:
+0172 3E0D               MVI  A,CR
+0174 CD6501             CALL PCHAR
+0177 3E0A               MVI  A,LF
+0179 CD6501             CALL PCHAR
+017C C9                 RET
+               ;
+               ;
+               PNIB:    ;PRINT NIBBLE IN REG A
+017D E60F               ANI  0FH      ;LOW 4 BITS
+017F FE0A               CPI  10
+0181 D28901             JNC  P10
+               ;   LESS THAN OR EQUAL TO 9
+0184 C630               ADI  '0'
+0186 C38B01             JMP  PRN
+               ;
+               ;   GREATER OR EQUAL TO 10
+0189 C637      P10:     ADI  'A' - 10
+018B CD6501    PRN:     CALL PCHAR
+018E C9                 RET
+               ;
+               PHEX:    ;PRINT HEX CHAR IN REG A
+018F F5                 PUSH PSW
+0190 0F                 RRC
+0191 0F                 RRC
+0192 0F                 RRC
+0193 0F                 RRC
+0194 CD7D01             CALL PNIB     ;PRINT NIBBLE
+0197 F1                 POP  PSW
+0198 CD7D01        CALL PNIB
+019B C9                 RET
+               ;
+               ERR:     ;PRINT ERROR MESSAGE
+               ;        D,E ADDRESSES MESSAGE ENDING WITH "$"
+019C 0E09               MVI  C,PRINTF ;PRINT BUFFER FUNCTION
+019E CD0500             CALL BDOS
+01A1 C9                 RET
+               ;
+               ;
+               GNB:     ;GET NEXT BYTE
+01A2 3A1302             LDA  IBP
+01A5 FE80               CPI  80H
+01A7 C2B301             JNZ  G0
+               ;        READ ANOTHER BUFFER
+               ;
+               ;
+01AA CDCE01             CALL DISKR
+01AD B7                 ORA  A         ;ZERO VALUE IF READ OK
+01AE CAB301             JZ   G0        ;FOR ANOTHER BYTE
+               ;        END OF DATA, RETURN WITH CARRY SET FOR EOF
+01B1 37                 STC
+01B2 C9                 RET
+               ;
+               G0:      ;READ THE BYTE AT BUFF+REG A
+01B3 5F                 MOV  E,A       ;LS BYTE OF BUFFER INDEX
+01B4 1600               MVI  D,0       ;DOUBLE PRECISION INDEX TO DE
+01B6 3C                 INR  A         ;INDEX=INDEX+1
+01B7 321302             STA  IBP       ;BACK TO MEMORY
+               ;        POINTER IS INCREMENTED
+               ;        SAVE THE CURRENT FILE ADDRESS
+01BA 218000             LXI  H,BUFF
+01BD 19                 DAD  D
+               ;        ABSOLUTE CHARACTER ADDRESS IS IN HL
+01BE 7E                 MOV  A,M
+               ;        BYTE IS IN THE ACCUMULATOR
+01BF B7                 ORA  A         ;RESET CARRY BIT
+01C0 C9                 RET
+               ;
+               SETUP:   ;SET UP FILE
+               ;        OPEN THE FILE FOR INPUT
+01C1 AF                 XRA  A         ;ZERO TO ACCUM
+01C2 327C00             STA  FCBCR     ;CLEAR CURRENT RECORD
+               ;
+01C5 115C00             LXI  D,FCB
+01C8 0E0F               MVI  C,OPENF
+01CA CD0500             CALL BDOS
+               ;        255 IN ACCUM IF OPEN ERROR
+01CD C9                 RET
+               ;
+               DISKR:   ;READ DISK FILE RECORD
+01CE E5D5C5             PUSH H! PUSH D! PUSH B
+01D1 115C00             LXI  D,FCB
+01D4 0E14               MVI  C,READF
+01D6 CD0500             CALL BDOS
+01D9 C1D1E1             POP B! POP D! POP H
+01DC C9                 RET
+               ;
+               ;        FIXED MESSAGE AREA
+01DD 46494C4520SIGNON:  DB   'FILE DUMP VERSION 1.4$'
+01F3 0D0A4E4F20OPNMSG:  DB   CR,LF,'NO INPUT FILE PRESENT ON DISK$'
+               ;        VARIABLE AREA
+0213           IBP:     DS   2        ;INPUT BUFFER POINTER
+0215           OLDSP:   DS   2        ;ENTRY SP VALUE FROM CCP
+               ;        STACK AREA
+0217                    DS   64       ;RESERVE 32 LEVEL STACK
+               STKTOP:
+               ;
+0257                    END
+</pre>
+<p><a name="Section_5.5"><h1>5.5 A Sample Random Access Program</h1>
+<p>This section concludes with an extensive example of random access
+operation. The program listed below performs the simple function
+of reading or writing random records upon command from the
+terminal. When a program has been created, assembled, and placed
+into a file labeled RANDOM.COM, the CCP level command
+<pre>
+     RANDOM X.DAT
+</pre>
+<p>starts the test program. The program looks for a file by the name
+X.DAT and, if found, proceeds to prompt the console for input. If
+not found, the file is created before the prompt is given. Each
+prompt takes the form
+<pre>
+     next command?
+</pre>
+<p>and is followed by operator input, followed by a carriage return.
+The input commands take the form
+<pre>
+     nWnRQ
+</pre>
+<p>where n is an integer value in the range 0 to 65535, and W, R,
+and Q are simple command characters corresponding to random
+write, random read, and quit processing, respectively. If the W
+command is issued, the RANDOM program issues the prompt
+<pre>
+     type data:
+</pre>
+<p>The operator then responds by typing up to 127 characters,
+followed by a carriage return. RANDOM then writes the character
+string into the X.DAT file at record n. If the R command is
+issued, RANDOM reads record number n and displays the string
+value at the console, If the Q command is issued, the X.DAT file
+is closed, and the program returns to the CCP. In the interest of
+brevity, the only error message is
+<pre>
+     error, try again.
+</pre>
+<p>The program begins with an initialization section where the input
+file is opened or created, followed by a continuous loop at the
+label ready where the individual commands are interpreted. The
+DFBC at 005CH and the default buffer at 0080H are used in all
+disk operations. The utility subroutines then follow, which
+contain the principal input line processor, called readc. This
+particular program shows the elements of random access
+processing, and can be used as the basis for further program
+development.
+<p align="center">Sample Random Access Program for CP/M 2.0
+<pre>
+0100                    org  100h      ; base of tpa
+               ;
+0000 =         reboot   equ  0000h     ; system reboot
+0005 =         bdos     equ  0005h     ; bdos entry point
+               ;
+0001 =         coninp   equ  1         ; console input function
+0002 =         conout   equ  2         ; console output function
+0009 =         pstring  equ  9         ; print string function
+000A =         rstring  equ  10        ; read console buffer
+000C =         version  equ  12        ; return version number
+000F =         openf    equ  15        ; file open function
+0010 =         closef   equ  16        ; close function
+0016 =         makef    equ  22        ; make file function
+0021 =         readr    equ  33        ; read random
+0022 =         writer   equ  34        ; write random
+               ;
+005C =         fcb      equ  005ch     ; default file control block
+007D =         ranrec   equ  fcb+33    ; random record position
+007F =         ranovf   equ  fcb+35    ; high order (overflow)
+                                       ; byte
+0080 =         buff     equ  0080h     ; buffer address
+               ;
+000D =         cr       equ  0dh       ; carriage return
+000A =         lf       equ  0ah       ; line feed
+               ;
+               ;        load sp, set-up file for random access
+               ;
+0100 31B702             lxi  sp,stack
+               ;
+               ;        version 2.0
+0103 0E0C               mvi  c,version
+0105 CD0500             call bdos
+0108 FE20               cpi  20h       ; version 2.0 or better?
+010A D21601             jnc  versok
+               ;        bad version, message and go back
+010D 111502             lxi  d,badver
+0110 CDD501             call print
+0113 C30000             jmp  reboot
+               ;
+               versok:
+               ;        correct version for random access
+0116 0E0F               mvi  c,openf   ; open default fcb
+0118 115C00             lxi  d,fcb
+011B CD0500             call bdos
+011E 3C                 inr  a         ; err 255 becomes zero
+011F C23701             jnz  ready
+               ;
+               ;        cannot open file, so create it
+0122 0E16               mvi  c,makef
+0124 115C00             lxi  d,fcb
+0127 CD0500             call bdos
+012A 3C                 inr  a         ; err 255 becomes zero
+012B C23701             jnz  ready
+               ;
+               ;        cannot create file, directory full
+012E 113402             lxi  d,nospace
+0131 CDD501             call print
+0134 C30000             jmp  reboot    ; back tp CCP
+               ;
+               ;        loop back to ready after each read command
+               ;
+               ready:
+               ;        file is ready for processing
+               ;
+0137 CDE001             call readcom   ; read next command
+013A 227D00             shld ranrec    ; store input record #
+013D 217F00             lxi  h,ranovf
+0140 3600               mvi  m,0       ; clear high byte if set
+0142 FE51               cpi  'Q'       ; Quit?
+0144 C25601             jnz  notq
+               ;        quit processing, close file
+0147 0E10               mvi  c,closef
+0149 115C00             lxi  d,fcb
+014C CD0500             call bdos
+014F 3C                 inr  a         ; err 255 becomes 0
+0150 CAB401             jz   error     ; error message, retry
+0153 C30000             jmp  reboot    ; back to ccp
+               ;
+               ;        end of command, process write
+               ;
+               notq:
+               ;        not the quit command, random write?
+0156 114702             lxi  d,datmsg
+0159 CDD501             call print     ; data prompt
+015C 0E7F               mvi  c,127     ; up to 127 characters
+015E 218000             lxi  h,buff    ; destination
+               rloop:   ;read next character to buff
+0161 C5                 push b         ; save counter
+0162 E5                 push h         ; next destination
+0163 CDBD01             call getchr    ; character to a
+0166 E1                 pop  h         ; restore counter
+0167 C1                 pop  b         ; resore next to fill
+0168 FE0D               cpi  cr        ; end of line?
+016A CA7301             jz   erloop
+               ;       not end, store character
+016D 77                 mov  m,a
+016E 23                 inx  h         ; next to fill
+016F 0D                 dcr  c         ; counter goes down
+0170 C26101             jnz  rloop     ; end of buffer?
+               erloop:
+               ;        end of read loop, store 00
+0173 3600               mvi  m,0
+               ;
+               ;        write the record to selected record number
+0175 0E22               mvi  c,writer
+0177 115C00             lxi  d,fcb
+017A CD0500             call bdos
+017D B7                 ora  a         ; error code zero?
+017E C2B401             jnz  error     ; message if not
+0181 C33701             jmp  ready     ; for another record
+               ;
+               ;        end of write command, process read
+               ;
+               notw:
+               ;        not a write command, read record?
+0184 FE52               cpi  'R'
+0186 C2B401             jnz  error     ; skip if not
+               ;
+               ;        read random record
+0189 0E21               mvi  c,readr
+018B 115C00             lxi  d,fcb
+018E CD0500             call bdos
+0191 B7                 ora  a         ; return code 00?
+0192 C2B401             jnz  error
+               ;
+               ;        read was successful, write to console
+0195 CDCA01             call crlf      ; new line
+0198 0E80               mvi  c,128     ; max 128 characters
+019A 218000             lxi  h,buff    ; next to get
+               wloop:
+019D 7E                 mov  a,m       ; next character
+019E 23                 inx  h         ; next to get
+019F E67F               ani  7fh       ; mask parity
+01A1 CA3701             jz   ready     ; for another command if 00
+01A4 C5                 push b         ; save counter
+01A5 E5                 push h         ; save next to get
+01A6 FE20               cpi  ' '       ; graphic?
+01A8 D4C301             cnc  putchr    ; skip output if not
+01AB E1                 pop  h
+01AC C1                 pop  b
+01AD 0D                 dcr  c         ; count=count-1
+01AE C29D01             jnz  wloop
+01B1 C33701             jmp  ready
+               ;
+               ;        end of read command, all errors end up here
+               ;
+               error:
+01B4 115402             lxi  d,errmsg
+01B7 CDD501             call print
+01BA C33701             jmp  ready
+               ;
+               getchr:
+                        ; read next console character to a
+01BD 0E01               mvi  c,coninp
+01BF CD0500             call bdos
+01C2 C9                 ret
+               ;
+               putchr;
+                        ; write character from a to console
+01C3 0E02               mvi  c,conout
+01C5 5F                 mov  e,a       ; char to send
+01C6 CD0500             call bdos      ; send char
+01C9 C9                 ret
+               ;
+               crlf:
+                        ; send carriage return, line feed
+01CA 3E0D               mvi  a,cr      ; carriage return
+01CC CDC301             call putchr
+01CF 3E0A               mvi  a,lf      ; line feed
+01D1 CDC301             call putchr
+01D4 C9                 ret
+               ;
+               print:
+                        ; print the buffer addressed by de until $
+01D5 D5                 push d
+01D6 CDCA01             call crlf
+01D9 D1                 pop  d         ; new line
+01DA 0E09               mvi  c,pstring
+01DC CD0500             call bdos      ; print the string
+01DF C9                 ret
+               ;
+               readcom:
+                        ; read the next command line to the conbuf
+01E0 116602             lxi  d,prompt
+01E3 CDD501             call print     ; command?
+01E6 0E0A               mvi  c,rstring
+01E8 117502             lxi  d,conbuf
+01EB CD0500             call bdos
+               ;        command line is present, scan it
+01EE 210000             lxi  h,0       ; start with 0000
+01F1 117702             lxi  d,conlin  ; command line
+01F4 1A        readc:   dax  d         ; next command character
+01F5 13                 inx  d         ; to next command position
+01F6 B7                 ora  a         ; cannot be end of command
+01F7 C8                 rz
+               ;        not zero, numeric?
+01F8 D630               sui  '0'
+01FA FE0A               cpi  10        ; carry if numeric
+01FC D20D02             jnc  endrd
+               ;        add-in next digit
+01FF 29                 dad  h         ; *2
+0200 49                 mov  c,1
+0201 44                 mov  b,h       ; bc - value * 2
+0202 29                 dad  h         ; *4
+0203 09                 dad  b         ; *2 + *8 = *10
+0204 85                 add  l
+0205 6F                 mov  l,a
+0206 D2F401             jnc  readc     ; for another char
+0209 24                 inr  h         ; overflow
+020A C3F401             jmp  readc     ; for another char
+               endrd:
+               ;        end of read, restore value in a
+020D C630               adi  '0'       ; command
+020F FE61               cpi  'a'       ; translate case?
+0211 D8                 rc
+               ;        lower case, mask lower case bits
+0212 E65F               ani 101$1111b
+0214 C9                 ret
+               ;
+               ;       string data area
+               ;
+0215 736F727279badver:  db  'sorry, you need cp/m version 2$'
+0234 6E6F206469nospace: db  'no directory space$'
+0247 7479706520datmsg:  db  'type datas: $'
+0254 6572726F72errmsg:  db  'error, try again.$'
+0266 6E65787420prompt:  db  'next command? $'
+               ;
+               ;       fixed and variable data area
+               ;
+0275 21        conbuf:  db  conlen     ; length of console buffer
+0276           consiz:  ds  1          ; resulting size after read
+0277           conlin:  ds  32         ; length 32 buffer
+0021 =         conlen   equ $-consiz
+               ;
+0297                    ds  32
+               stack:
+02B7                    end
+</pre>
+<p>Major improvements could be made to this particular program to
+enhance its operation. In fact, with some work, this program
+could evolve into a simple data base management system. One
+could, for example, assume a standard record size of 128 bytes,
+consisting to arbitrary fields within the record. A program,
+called GETKEY, could be developed that first reads a sequential
+file and extracts a specific field defined by the operator. For
+example, the command
+<pre>
+     GETKEY NAMES.DAT LASTNAME 10 20
+</pre>
+<p>would cause GETKEY to read the data base file NAMES.DAT and
+extract the LASTNAME field from each record, starting in position
+10 and ending at character 20. GETKEY builds a table in memory
+consisting of each particular LASTNAME field, along with its 16-
+bit record number location within the file. The GETKEY program
+then sorts this list and writes a new file, called LASTNAME.KEY,
+which is an alphabetical list of LASTNAME fields with their
+corresponding record numbers. This list is called an inverted
+index in information retrieval parlance.
+<p>If the programmer were to rename the program shown above as QUERY
+and modify it so that it reads a sorted key file into memory, the
+command line might appear as
+<pre>
+     QUERY NAMES.DAT LASTNAME.KEY
+</pre>
+<p>Instead of reading a number, the QUERY program reads an
+alphanumeric string that is a particular key to find in the
+NAMES.DAT data base. Because the LASTNAME.KEY list is sorted, one
+can find a particular entry rapidly by performing a binary
+search, similar to looking up a name in the telephone book.
+Starting at both ends of the list, one examines the entry halfway
+in between and, if not matched, splits either the upper half or
+the lower half for the next search. You will quickly reach the
+item you are looking for and find the corresponding record
+number. You should fetch and display this record at the console,
+just as was done in the program shown above.
+<p>With some more work, you can allow a fixed grouping size that
+differs from the 128-byte record shown above. This is
+accomplished by keeping track of the record number and the byte
+offset within the record. Knowing the group size, you randomly
+access the record containing the proper group, offset to the
+beginning of the group within the record read sequentially until
+the group size has been exhausted.
+<p>Finally, you can improve QUERY considerably by allowing boolean
+expressions, which compute the set of records that satisfy
+several relationships, such as a LASTNAME between HARDY and
+LAUREL and an AGE lower than 45. Display all the records that fit
+this description. Finally, if your lists are getting too big to
+fit into memory, randomly access key files from the disk as well.
+<p><a name="Section_5.6"><h1>5.6 System Function Summary</h1></a>
+<center><table border="1">
+<tr><th colspan="2">Function<br>Number
+<th rowspan="2">Function<br>Name<th rowspan="2">Input
+<th rowspan="2">Output
+<tr><th>Dec<th>Hex
+<tr><td>0<td>0<td>System Reset<td>none<td>none
+<tr><td>1<td>1<td>Console Input<td>none<td>A = ASCII char
+<tr><td>2<td>2<td>Console Output<td>E = char<td>none
+<tr><td>3<td>3<td>Reader Input<td>none<td>A = ASCII char
+<tr><td>4<td>4<td>Punch Output<td>E = char<td>none
+<tr><td>5<td>5<td>List Output<td>E = char<td>none
+<tr><td rowspan="3">6<td rowspan="3">6<td rowspan="3">Direct Console I/O
+<td>E = 0FFH (input)<td>A = char
+<tr><td>E = 0FEH (status)<td>A = status
+<tr><td>E = char<td>none
+<tr><td>7<td>7<td>Get I/O Byte<td>none<td>A = I/O byte value
+<tr><td>8<td>8<td>Set I/O Byte<td>E = I/O byte<td>none
+<tr><td>9<td>9<td>Print String<td>DE = Buffer Address<td>none
+<tr><td>10<td>A<td>Read Console String<td>DE = Buffer<td>Console characters 
+in Buffer
+<tr><td>11<td>B<td>Get Console Status<td>none<td>A = 00/non zero
+<tr><td>12<td>C<td>Return Version #<td>none<td>HL = Version #
+<tr><td>13<td>D<td>Reset Disk System<td>none<td>none
+<tr><td>14<td>E<td>Select Disk<td>E = Disk #<td>none
+<tr><td>15<td>F<td>Open File<td>DE = FCB address<td>A = FF if not found
+<tr><td>16<Td>10<td>Close File<td>DE = FCB address<td>A = FF if not found
+<tr><td>17<Td>11<td>Search For First<td>DE = FCB address<td>A = Directory Code
+<tr><td>18<td>12<td>Search For Next<td>none<td>A = Directory Code
+<tr><td>19<td>13<td>Delete File<td>DE = FCB address<td>A = none
+<tr><td>20<td>14<td>Read Sequential<td>DE = FCB address<td>A = Error Code
+<tr><td>21<td>15<td>Write Sequential<td>DE = FCB Address<td>A = Error Code
+<tr><td>22<td>16<td>Make File<td>DE = FCB address<Td>A = FF if no DIR Space
+<tr><td>23<td>17<td>Rename File<td>DE = FCB address<td>A = FF if not found
+<tr><td>24<td>18<td>Return Login Vector<td>none<td>HL = Login Vector*
+<tr><td>25<td>19<td>Return Current Disk<td>none<td>A = Current Disk Number
+<tr><td>26<td>1A<td>Set DMA Address<td>DE = DMA address<td>none
+<tr><td>27<td>1B<td>Get ADDR (ALLOC)<td>none<td>HL = ALLOC address*
+<tr><td>28<Td>1C<td>Write Protect Disk<td>none<td>none
+<tr><td>29<td>1D<td>Get Read/only Vector<td>none<td>HL = ALLOC address*
+<tr><td>30<td>1E<td>Set File Attributes<td>DE = FCB address<td>A = none
+<tr><td>31<Td>1F<td>Get ADDR (Disk Parms)<td>none<td>HL = DPB address
+<tr><td rowspan="2">32<td rowspan="2">20<td rowspan="2">Set/Get User Code
+<td>E = 0FFH for Get<td>A = User Number
+<tr><td>E = 00 to 0FH for Set<td>none
+<tr><td>33<td>21<td>Read Random<td>DE = FCB address<td>A = Error
+<tr><td>34<td>22<td>Write Random<td>DE = FCB address<td>A = Error Code
+<tr><td>35<td>23<td>Compute File Size<td>DE = FCB address<td>r0, r1, r2
+<tr><td>36<td>24<td>Set Random Record<td>DE = FCB address<td>r0, r1, r2
+<tr><td>37<td>25<td>Reset Drive<td>DE = Drive Vector<td>A = 0
+<tr><td>38<td>26<td>Access Drive<td colspan="2" align="center">not supported
+<tr><td>39<td>27<td>Free Drive<td colspan="2" align="center">not supported
+<tr><td>40<td>28<td>Write Random w/Fill<td>DE = FCB<td>A = error code
+</table></center>
+<p>* Note that A=L, and B=H upon return.
+<p><hr><p><a href="index.htm">Back to title page</a>
+&nbsp;&nbsp&nbsp&nbsp&nbsp<a href="ch6.htm"> Next</a></body></html>

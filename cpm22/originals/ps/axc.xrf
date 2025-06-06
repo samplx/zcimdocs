@@ -1,0 +1,138 @@
+     1                  ;		COMBINED GETSYS AND PUTSYS PROGRAMS FROM
+     2                  ;		SEC 6.4
+     3                  ;
+     4                  ;	START THE PROGRAMS AT THE BASE OF THE TPA
+     5   0100           	ORG 0100H
+     6                  
+     7   0014 =         MSIZE	EQU 20			;SIZE OF CP/M IN KBYTES
+     8                  
+     9                  ;"BIAS" IS THE AMOUNT TO ADD TO ADDRESSES FOR > 20K
+    10                  ;	(REFERRED TO AS"B" THROUGHOUT THE TEXT)
+    11   0000 =         BIAS	EQU	(MSIZE-20)*1024
+    12   3400 =         CCP	EQU	3400H+BIAS
+    13   3C00 =         BDOS	EQU	CCP+0800H
+    14   4A00 =         BIOS	EQU	CCP+1600H
+    15                  
+    16                  ;	GETSYS PROGRAMS TRACKS 0 AND 1 TO MEMORY AT 3880H + BIAS
+    17                  ;	REGISTER	     USAGE
+    18                  ;	A		(SCRATCH REGISTER)
+    19                  ;	B		TRACK COUNT (0...76)
+    20                  ;	C		SECTOR COUNT (1...26)
+    21                  ;	D,E		(SCRATCH REGISTER PAIR)
+    22                  ;	H,L		LOAD ADDRESS
+    23                  ;	SP		SET TO TRACK ADDRESS
+    24                  
+    25                  GSTART:	;START OF GETSYS
+    26   0100 318033    	LXI	SP,CCP-0080H	;CONVENIENT PLACE
+    27   0103 218033    	LXI	H,CCP-0080H	;SET INITIAL LOAD
+    28   0106 0600      	MVI	B,0		;START WITH TRACK
+    29                  RD$TRK:	;READ NEXT TRACK
+    30   0108 0E01      	MVI	C,1		;EACH TRACK START
+    31                  RD$SEC:
+    32   010A CD0003    	CALL	READ$SEC	;GET THE NEXT SECTOR
+    33   010D 118000    	LXI	D,128		;OFFSET BY ONE SECTOR
+    34   0110 19        	DAD	D		; (HL=HL+128)
+    35   0111 0C        	INR	C		;NEXT SECTOR
+    36   0112 79        	MOV	A,C		;FETCH SECTOR NUMBER
+    37   0113 FE1B      	CPI	27		;AND SEE IF LAST
+    38   0115 DA0A01    	JC	RDSEC		;<, DO ONE MORE
+    39                  
+    40                  ;ARRIVE HERE AT END OF TRACK, MOVE TO NEXT TRACK
+    41                  
+    42   0118 04        	INR	B		;TRACK = TRACK+1
+    43   0119 78        	MOV	A,B		;CHECK FOR LAST
+    44   011A FE02      	CPI	2		;TRACK = 2 ?
+    45   011C DA0801    	JC	RD$TRK		;<, DO ANOTHER
+    46                  
+    47                  ;ARRIVE HERE AT END OF LOAD, HALT FOR LACK OF ANYTHING 
+    48                  ;BETTER
+    49                  
+    50   011F FB        	EI
+    51   0120 76        	HLT
+    52                  
+    53                  ;	PUTSYS PROGRAM, PLACES MEMORY IMAGE
+    54                  ;	STARTING AT
+    55                  ;	3880H + BIAS BACK TO TRACKS 0 AND 1
+    56                  ;	START THIS PROGRAM AT THE NEXT PAGE BOUNDARY
+    57   0200           	ORG ($+0100H) AND 0FF00H
+    58                  PUT$SYS:
+    59   0200 318033    	LXI 	SP,CCP-0080H 	;CONVENIENT PLACE
+    60   0203 218033    	LXI 	H,CCP-0080H 	;START OF DUMP
+    61   0206 0600      	MVI 	B,0 		;START WITH TRACK
+    62                  WR$TRK:
+    63   0208 0605      	MVI 	B,L 		;START WITH SECTOR
+    64                  WR$SEC:
+    65   020A CD0004    	CALL	WRITE$SEC	;WRITE ONE SECTOR
+    66   020D 118000    	LXI 	D,128 		;LENGTH OF EACH
+    67   0210 19        	DAD	D		;<HL>=<HL> + 128
+    68   0211 0C        	INR	C		; <C>=<C> + 1
+    69   0212 79        	MOV	A,C		;SEE IF
+    70   0213 FE1B      	CPI 	27 		;PAST END OF TRACK
+    71   0215 DA0A02    	JC  	WR$SEC  	;NO, DO ANOTHER
+    72                  
+    73                  ;ARRIVE HERE AT END OF TRACK, MOVE TO NEXT TRACK
+    74                  
+    75   0218 04        	INR	B		;TRACK = TRACK+1
+    76   0219 78        	MOV	A,B		;SEE IF
+    77   021A FE02      	CPI	2		;LAST TRACK
+    78   021C DA0802    	JC	WR$TRK		;NO, DO ANOTHER
+    79                  
+    80                  
+    81                  ;	DONE WITH PUTSYS, HALT FOR LACK OF ANYTHING
+    82                  ;	BETTER
+    83   021F FB        	EI
+    84   0220 76        	HLT
+    85                  
+    86                  
+    87                  ;USER SUPPLIED SUBROUTINES FOR SECTOR READ AND WRITE
+    88                  
+    89                  ;	MOVE TO NEXT PAGE BOUNDARY
+    90   0300           	ORG ($+0100H) AND 0FF00H
+    91                  
+    92                  READ$SEC:
+    93                  	;READ THE NEXT SECTOR 
+    94                  	;TRACK IN <B>, 
+    95                  	;SECTOR IN <C> 
+    96                  	;DMAADDR IN<HL>
+    97                  
+    98   0300 C5        	PUSH	B
+    99   0301 E5        	PUSH	H
+   100                  
+   101                  ;USER DEFINED READ OPERATION GOES HERE
+   102   0302           	DS	64
+   103   0342 E1        	POP	H
+   104   0343 C1        	POP	B
+   105   0344 C9        	RET
+   106                  
+   107   0400           	ORG ($+100H) AND 0FF00H ;ANOTHER PAGE 
+   108                  				; BOUNDARY
+   109                  WRITE$SEC:
+   110                  
+   111                  	;SAME PARAMETERS AS READ$SEC
+   112                  
+   113   0400 C5        	PUSH 	B
+   114   0401 E5        	PUSH	H
+   115                  
+   116                  ;USER DEFINED WRITE OPERATION GOES HERE
+   117   0402           	DS	64
+   118   0442 E1        	POP	H
+   119   0443 C1        	POP	B
+   120   0444 C9        	RET
+   121                  
+   122                  ;END OF GETSYS/PUTSYS PROGRAM
+   123                  
+   124   0445           	END
+BDOS             3C00    13#
+BIAS             0000    11#   12 
+BIOS             4A00    14#
+CCP              3400    12#   13    14    26    27    59    60 
+GSTART           0100    25#
+MSIZE            0014     7#   11 
+PUTSYS           0200    58#
+RDSEC            010A    31#   38 
+RDTRK            0108    29#   45 
+READSEC          0300    32    92#
+WRITESEC         0400    65   109#
+WRSEC            020A    64#   71 
+WRTRK            0208    62#   78 
+

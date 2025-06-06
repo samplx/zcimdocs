@@ -1,0 +1,40 @@
+;	macro library for "dowhile" construct
+;
+gendtst	macro	tst,x,y,num
+;;	generate a "dowhile" test
+	tst	x,y,,endd&num
+	endm
+;
+gendlab	macro lab,num
+;;	produce the label lab & num
+;;	for dowhile entry or exit
+lab&num:
+	endm
+;
+gendjmp	macro	num
+;;	generate jump to dowhile test
+	jmp	dtest&num
+	endm
+;
+	dowhile	macro xv,rel,yv
+;;	initialize counter
+docnt	set	0	;number of dowhiles
+;;
+dowhile	macro x,r,y
+;;	generate the dowhile entry
+	gendlab dtest,%docnt
+;;	generate the conditional test
+	gendtst r,x,y,%docnt
+dolev	set	docnt	;;next endd to generate
+docnt	set	docnt+l
+	endm
+	dowhile	xv,rel,yv
+	endm
+;
+enddo	macro
+;;	generate the jump to the test
+	gendjmp %dolev
+;;	generate the end of a dowhile
+	gendlab endd,%dolev
+dolev	set	dolev-1
+	endm

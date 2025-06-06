@@ -1,0 +1,34 @@
+;	macro library for "when" construct
+;
+;	label generators
+genwtst	macro	tst,x,y,num
+;;	generate a "when" test (negated form),
+;;	invoke macro "tst" with parameters
+;;	x,y with jump to endw & num
+	tst	x,y,,endw&num
+	endm
+;
+genlab	macro lab,num
+;;	produce the label "lab" & Isnum"
+lab&num:
+	endm
+;
+;	"when" macros for start and end
+;
+when	macro xv,rel,yv
+;;	initialize counters first time
+wcnt	set	0	;;number of whens
+when	macro	x,r,y
+	genwtst r,x,y,%wcnt
+wlev	set	wcnt	;;next endw to generate
+wcnt	set	wcnt+1	;;number of "when"s
+	endm
+	when	xv,rel,yv
+	endm
+;
+endw	macro
+;;	generate the ending code for a "when"
+	genlab	endw,%wlev
+wlev	set	wlev-1 ;;count current level down
+;;	wlev must not go below 0 (not checked)
+	endm

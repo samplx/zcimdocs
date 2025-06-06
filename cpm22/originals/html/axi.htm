@@ -1,0 +1,460 @@
+<html><title>Appendix I: CP/M Error Messages</title>
+<body>
+<center><h1>Appendix I<br>CP/M Error Messages</h1></center>
+<hr>
+<p>Messages come from several  different sources.   CP/M  displays
+error messages when there are errors in calls to the Basic  Disk
+Operating System (BDOS).  CP/M also displays messages when there
+are errors in command lines.   Each utility  supplied with  CP/M
+has its own set of messages.  The following lists CP/M  messages
+and utility messages.  One might see messages  other than  those
+listed here if one is running an application program.  Check the
+application program's  documentation for  explanations of  those
+messages.
+<hr>
+<dt>?<dd>DDT.  This message has four possible meanings:
+<ul>
+<li>DDT does not understand the assembly language
+instruction.
+<li>The file cannot be opened.
+<li>A checksum error occurred in a HEX file.
+<li>The assembler/disassembler was overlayed.
+</ul>
+</dl><hr><dl>
+<dt>ABORTED<dd>
+<p>PIP.  You stopped a PIP operation by pressing a key.
+</dl><hr><dl>
+<dt>ASM Error Messages
+<dt>&nbsp;
+<dt>D<dd>Data error: data statement element cannot be placed in
+specified data area.
+<dt>E<dd>Expression error: expression cannot be evaluated
+during assembly.
+<dt>L<dd>Label error: label cannot appear in this
+context (might be duplicate label).
+<dt>N<dd>Not implemented:                                   
+unimplemented features, such as macros,
+are trapped.
+<dt>O<dd>Overflow: expression is too complex to evaluate.
+<dt>P<dd>Phase error:                                       
+label value changes on two passes through
+assembly.
+<dt>R<dd>Register error: the value specified as a
+register is incompatible with the                                       
+code.
+<dt>S<dd>Syntax error: improperly formed expression.
+<dt>U<dd>Undefined label:                                   
+label used does not exist.
+<dt>V<dd>Value error: improperly formed operand
+encountered in an
+expression.
+</dl><hr><dl><dt>BAD DELIMITER<dd>STAT.  Check command line for typing errors.
+</dl><hr><dl><dt>Bad Load<dd>CCP error message, or SAVE error message.
+</dl><hr><dl><dt>Bdos Err On d:<dd>Basic Disk Operating  System error  on the  designated
+drive: CP/M replaces d: with  the drive  specification
+of the drive where the error occurred.   This  message
+is  followed  by  one  of  the  four  phrases  in  the
+situations described below.
+</dl><hr><dl><dt>Bdos Err On d: Bad Sector<dd>This 
+message appears when CP/M  finds no  disk in  the
+drive, when the disk is improperly formatted, when the
+drive latch is open,  or when  power to  the drive  is
+off.  Check for one of these situations and try again.
+This could also indicate a hardware problem or a worn
+or improperly formatted disk.  Press  ^C to  terminate
+the program and  return to  CP/M, or  press RETURN  to
+ignore the error.
+</dl><hr><dl><dt>Bdos Err On d: File R/O
+<dd>You tried to erase, rename, or set file attributes  on
+a Read-Only file.   The file  should first  be set  to
+Read-Write (R/W) with the command: STAT filespec $R/W.
+</dl><hr><dl><dt>Bdos Err On d: R/O
+<dd>Drive has been assigned Read-Only status  with a  STAT
+command, or the  disk in  the drive  has been  changed
+without being initialized with a ^C.  CP/M  terminates
+the current program as soon as you press any key.
+</dl><hr><dl><dt>Bdos Err on d: Select
+<dd>CP/M received a command line specifying a  nonexistent
+drive.  CP/M terminates the current program as soon as
+you press any key.  Press RETURN or CTRL-C to recover.
+</dl><hr><dl><dt>Break "x" at c
+<dd>ED. "x" is one of the symbols described below and c is
+the  command  letter  being  executed  when the  error
+occurred.
+<p>&nbsp;
+<center><table border="1">
+<tr><td>#<td>Search failure.  ED cannot find the string
+specified in an F, S, or N
+command.
+<tr><td>?<td>Unrecognized command letter c. ED does not
+recognize the indicated command letter, or an E, H,
+Q, or O command is not alone on its command line.
+<tr><td>O<td>The file specified in an R command cannot be found.
+<tr><td>&gt;<td>Buffer full.  ED cannot put any more characters in
+the memory buffer, or the
+string specified in an F, N, or S command is too
+long.
+<tr><td>E<td>Command aborted.  A keystroke at the console
+aborted command execution.
+<tr><td>F<td>Disk or directory full.  This error is followed by
+either the disk or directory
+full message.  Refer to the recovery procedures
+listed under these messages.
+</table></center>
+</dl><hr><dl><dt>CANNOT CLOSE DESTINATION FILE--{filespec}
+<dd>PIP.    An output file cannot be closed. 
+You should take appropriate
+action after checking to see if the correct disk is in
+the drive and that the disk is not write-protected.
+</dl><hr><dl><dt>Cannot close, R/O<br>
+CANNOT CLOSE FILES
+<dd>CP/M cannot write to the  file.   This usually  occurs
+because the disk is write-protected.
+<p>ASM.  An  output file  cannot be  closed.   This is  a
+fatal error that terminates ASM execution.   Check  to
+see that the disk is in the drive, and  that the  disk
+is not write-protected.
+<p>DDT.  The disk file written by a W  command cannot  be
+closed.  This  is a  fatal error  that terminates  DDT
+execution.  Check if the correct disk is in the  drive
+and that the disk is not write-protected.
+<p>SUBMIT.    This  error  can occur  during SUBMIT  file
+processing.  Check if the  correct system  disk is  in
+the A drive and that the disk is not write-protected. 
+The SUBMIT job can be restarted after rebooting CP/M.
+</dl><hr><dl><dt>CANNOT READ
+<dd>PIP.  PIP cannot read the specified source.  Reader
+cannot be implemented.
+</dl><hr><dl><dt>CANNOT WRITE
+<dd>PIP.  The destination specified in the PIP command is
+illegal.  You probably specified an input device as a
+destination.
+</dl><hr><dl><dt>Checksum error
+<dd>PIP.  A HEX record checksum error was encountered. 
+The HEX record that produced the error must be
+corrected, probably by recreating the HEX file.
+</dl><hr><dl><dt>CHECKSUM ERROR<br>
+ LOAD ADDRESS hhhh<br>
+ ERROR ADDRESS hhhh<br>
+ BYTES READ:<br>
+ hhhh:
+<dd>LOAD.  File contains incorrect data.  Regenerate HEX
+file from the source.
+</dl><hr><dl><dt>Command Buffer Overflow
+<dd>SUBMIT.  The SUBMIT buffer allows up to 2048
+characters in the input file.
+</dl><hr><dl><dt>Command too long
+<dd>SUBMIT.  A command in the SUBMIT file cannot exceed
+125 characters.
+</dl><hr><dl><dt>CORRECT ERROR, TYPE RETURN OR CTRL-Z
+<dd>PIP.  A HEX record checksum was encountered during the
+transfer of a HEX file.  The HEX file with the
+checksum error should be corrected, probably by
+recreating the HEX file.
+</dl><hr><dl><dt>DESTINATION IS R/O, DELETE (Y/N)?
+<dd>PIP.  The destination file specified in a PIP  command
+already exists and it is Read-Only.   If  you type  Y,
+the destination file is deleted before  the file  copy
+is done.
+</dl><hr><dl><dt>Directory full
+<dd>ED. There is not enough directory space  for the  file
+being written to the destination  disk.   You can  use
+the OXfilespec command to erase any unnecessary  files
+on the disk without leaving the editor.
+<p>SUBMIT.  There is not enough directory space to  write
+the $$$.SUB file used for processing  SUBMITs.   Erase
+some files or select a new disk and retry.
+</dl><hr><dl><dt>Disk full
+<dd>ED.  There is  not enough  disk space  for the  output
+file.   This error  can occur  on the  W, E,  H, or  X
+commands.  If it occurs with X command, you can repeat
+the command prefixing  the filename  with a  different
+drive.
+</dl><hr><dl><dt>DISK READ ERROR--{filespec}
+<dd>PIP.  The input disk file specified in  a PIP  command
+cannot be read properly.  This is  usually the  result
+of an unexpected end-of-file.  Correct the problem  in
+your file.
+</dl><hr><dl><dt>DISK WRITE ERROR--{filespec}
+<dd>DDT.  A disk  write operation  cannot be  successfully
+performed during a W command, probably due  to a  full
+disk.  You should either erase some unnecessary  files
+or get another disk with more space.
+<p>PIP.  A disk  write operation  cannot be  successfully
+performed during a PIP command, probably due to a full
+disk.  You should either erase some unnecessary  files
+or get another disk with  more space  and execute  PIP
+again.
+<p>SUBMIT.  The SUBMIT program cannot  write the  $$$.SUB
+file to the disk.  Erase some files, or  select a  new
+disk and try again.
+</dl><hr><dl><dt>ERROR: BAD PARAMETER
+<dd>PIP.    You  entered  an  illegal parameter  in a  PIP
+command.  Retype the entry correctly.
+</dl><hr><dl><dt>ERROR:  CANNOT OPEN SOURCE, LOAD ADDRESS hhhh
+<dd>LOAD.   Displayed if  LOAD cannot  find the  specified
+file or if no filename is specified.
+</dl><hr><dl><dt>ERROR:  CANNOT CLOSE FILE, LOAD ADDRESS hhhh
+<dd>LOAD.   Caused by  an error  code returned  by a  BDOS
+function call.  Disk might be write-protected.
+</dl><hr><dl><dt>ERROR:  CANNOT OPEN SOURCE, LOAD ADDRESS hhhh
+<dd>LOAD.  Cannot find source file.  Check disk directory.
+</dl><hr><dl><dt>ERROR: DISK READ, LOAD ADDRESS hhhh
+<dd>LOAD.  Caused by an error code returned by a BDOS
+function call.
+</dl><hr><dl><dt>ERROR:  DISK WRITE, LOAD ADDRESS hhhh
+<dd>LOAD.  Destination disk is full.
+</dl><hr><dl><dt>ERROR:  INVERTED LOAD ADDRESS, LOAD ADDRESS hhhh
+<dd>LOAD.  The address of a record  was too  far from  the
+address of the previously-processed record.   This  is
+an  internal  limitation  of  LOAD,  but  it  can   be
+circumvented.    Use  DDT to  read the  HEX file  into
+memory, then use a SAVE  command to  store the  memory
+image file on disk.
+</dl><hr><dl><dt>ERROR:  NO MORE DIRECTORY SPACE, LOAD ADDRESS hhhh
+<dd>LOAD.  Disk directory is full.
+</dl><hr><dl><dt>Error on line nnn message
+<dd>SUBMIT.  The SUBMIT program displays  its messages  in
+the format shown above, where nnn represents the  line
+number  of  the  SUBMIT file.   Refer  to the  message
+following the line number.
+</dl><hr><dl><dt>FILE ERROR
+<dd>ED. Disk or  directory is  full, and  ED cannot  write
+anything more on the disk.  This is a fatal error,  so
+make sure there is enough space on the disk to hold  a
+second copy of the file before invoking ED.
+</dl><hr><dl><dt>FILE EXISTS
+<dd>You have asked CP/M to create or rename a file using a
+file specification that is already assigned to another
+file.  Either delete the existing file or use  another
+file specification.
+<p>REN.  The new name  specified is  the name  of a  file
+that already exists.  You  cannot rename  a file  with
+the name of an existing file.  If you want to  replace
+an  existing file  with a  newer version  of the  same
+file, either rename or erase the existing file, or use
+the PIP utility.
+</dl><hr><dl><dt>File exists, erase it
+<dd>ED. The destination filename already exists when you
+are placing the destination file on a different disk
+than the source.  It should be erased or another disk
+selected to receive the output file.
+</dl><hr><dl><dt>** FILE IS READ/ONLY **
+<dd>ED. The file specified in the command to invoke ED has
+the ReadOnly attribute.  Ed can read the file so that
+the user can examine it, but ED cannot change a
+Read-Only file.
+</dl><hr><dl><dt>File Not Found
+<dd>CP/M cannot find the specified file.  Check that you
+have entered the correct drive specification or that
+you have the correct disk in the drive.
+<p>ED. ED cannot find the specified file.  Check that you
+have entered the correct drive specification or that
+you have the correct disk in the drive.
+<p>STAT.  STAT cannot find the specified file.  The
+message might appear if you omit the drive
+specification.  Check to see if the correct disk is in
+the drive.
+</dl><hr><dl><dt>FILE NOT FOUND--{filespec}
+<dd>PIP.  An input file that you have specified does not exist.
+</dl><hr><dl><dt>Filename required
+<dd>ED. You typed the ED command without a filename. 
+Reenter the ED command followed by the name of the
+file you want to edit or create.
+</dl><hr><dl><dt>hhhh??=dd
+<dd>DDT.  The ?? indicates DDT does not know how to
+represent the hexadecimal value dd encountered at
+address hhhh in 8080 assembly language. dd is not an
+8080 machine instruction opcode.
+</dl><hr><dl><dt>Insufficient memory
+<dd>DDT.  There is not enough  memory to  load the  file
+specified in an R or E command.
+</dl><hr><dl><dt>Invalid Assignment
+<dd>STAT.    You  specified  an  invalid  drive  or   file
+assignment, or misspelled a device name.   This  error
+message might be followed by a list of the valid  file
+assignments that can follow a filename.  If an invalid
+drive assignment was attempted the message  Use:&nbsp;d:=RO 
+is displayed, showing the proper  syntax for  drive
+assignments.
+</dl><hr><dl><dt>Invalid control character
+<dd>SUBMIT.    The only  valid control  characters in  the
+SUBMIT files of the type SUB are ^A through ^Z. Note
+that  in  a  SUBMIT  file  the  control  character  is
+represented  by  typing  the  circumflex,  ^,  not  by
+pressing the control key.
+</dl><hr><dl><dt>INVALID DIGIT--{filespec}
+<dd>PIP.  An invalid HEX digit has been encountered  while
+reading a HEX file.  The HEX file with the invalid HEX
+digit should be corrected, probably by recreating  the
+HEX file.
+</dl><hr><dl><dt>Invalid Disk Assignment
+<dd>STAT.    Might  appear   if  you   follow  the   drive
+specification with anything except = R/O.
+</dl><hr><dl><dt>INVALID DISK SELECT
+<dd>CP/M received a command line specifying a  nonexistent
+drive,  or  the  disk  in  the  drive  is   improperly
+formatted.   CP/M  terminates the  current program  as
+soon as you press any key.
+</dl><hr><dl><dt>INVALID  DRIVE NAME (Use A, B, C, or D)
+<dd>SYSGEN.  SYSGEN recognizes only drives A, B, C, and  D
+as valid destinations for system generation.
+</dl><hr><dl><dt>Invalid File Indicator
+<dd>STAT.  Appears if you do not specify RO,  RW, DIR,  or
+SYS.
+</dl><hr><dl><dt>INVALID  FORMAT
+<dd>PIP.  The format of your PIP command is illegal.   See
+the description of the PIP command.
+</dl><hr><dl><dt>INVALID  HEX DIGIT<br>
+LOAD ADDRESS hhhh<br>
+ERROR ADDRESS hhhh<br>
+BYTES READ:<br>
+hhhh
+<dd>LOAD.  File contains incorrect HEX digit.
+</dl><hr><dl><dt>INVALID MEMORY SIZE
+<dd>MOVCPM.  Specify a value less than 64K or your
+computer's actual memory size.
+</dl><hr><dl><dt>INVALID SEPARATOR
+<dd>PIP.  You have placed an invalid character for a
+separator between two input filenames.
+</dl><hr><dl><dt>INVALID USER NUMBER
+<dd>PIP.  You have specified a user number greater than
+15.  User numbers are in the range 0 to 15.
+</dl><hr><dl><dt>n?<dd>USER.  You specified a number greater than fifteen for
+a user area number.  For example, if you type USER
+18&lt;cr&gt;, the screen displays 18?.
+</dl><hr><dl><dt>NO DIRECTORY SPACE
+<dd>ASM.  The disk directory is full.  Erase some files to
+make room for PRN and HEX files.  The directory can
+usually hold only 64 filenames.
+</dl><hr><dl><dt>NO DIRECTORY SPACE--{filespec}
+<dd>PIP.  There is not enough directory space for the
+output file.  You should either erase some unnecessary
+files or get another disk with more directory space
+and execute PIP again.
+</dl><hr><dl><dt>NO FILE--{filespec}
+<dd>DIR, ERA, REN, PIP.  CP/M cannot find the specified
+file, or no files exist.
+<p>ASM.  The indicated source or include file cannot be
+found on the indicated drive.
+<p>DDT.  The file specified in an R or E command cannot
+be found on the disk.
+</dl><hr><dl><dt>NO INPUT FILE PRESENT ON DISK
+<dd>DUMP.  The file you requested does not exist.
+</dl><hr><dl><dt>No memory
+<dd>There is not enough (buffer?) memory available for
+loading the program specified.
+</dl><hr><dl><dt>NO SOURCE FILE ON DISK
+<dd>SYSGEN.  SYSGEN cannot find CP/M either in CP/Mxx.COM 
+form or on the system tracks of the  source
+disk.
+</dl><hr><dl><dt>NO SOURCE FILE PRESENT
+<dd>ASM.    The  assembler  cannot  find  the  file   you
+specified.      Either   you   mistyped   the    file
+specification in your command line,  or the  filetype
+is not ASM.
+</dl><hr><dl><dt>NO SPACE
+<dd>SAVE.  Too many files are already on the disk, or  no
+room is left on the disk to save the information.
+</dl><hr><dl><dt>No SUB file Present
+<dd>SUBMIT.  For SUBMIT to operate properly, you must
+create a file with filetype of SUB.  The SUB file
+contains usual CP/M commands.  Use one command per
+line.
+</dl><hr><dl><dt>NOT A CHARACTER SOURCE
+<dd>PIP.  The source specified in your PIP command is
+illegal.  You have probably specified an output device
+as a source.
+</dl><hr><dl><dt>** NOT DELETED **
+<dd>PIP.  PIP did not delete the file, which might have
+had the R/O attribute.
+</dl><hr><dl><dt>NOT FOUND
+<dd>PIP.  PIP cannot find the specified file.
+</dl><hr><dl><dt>OUTPUT FILE WRITE ERROR
+<dd>ASM.  You specified a write-protected disk as the
+destination for the PRN and HEX files, or the disk has
+no space left.  Correct the problem before assembling
+your program.
+</dl><hr><dl><dt>Parameter error
+<dd>SUBMIT.  Within the SUBMIT file of type sub, valid
+parameters are $0 through $9.
+</dl><hr><dl><dt>PARAMETER ERROR, TYPE RETURN TO IGNORE
+<dd>SYSGEN.  If you press RETURN, SYSGEN proceeds without
+processing the invalid parameter.
+</dl><hr><dl><dt>QUIT NOT FOUND
+<dd>PIP.  The string argument to a Q parameter was not
+found in your input file.
+</dl><hr><dl><dt>Read error
+<dd>TYPE.  An error occurred when reading the file
+specified in the type command.  Check the disk and try
+again.  The STAT filespec command can diagnose
+trouble.
+</dl><hr><dl><dt>READER STOPPING
+<dd>PIP.  Reader operation interrupted.
+</dl><hr><dl><dt>Record Too Long
+<dd>PIP.  PIP cannot process a record longer than 128 bytes.
+</dl><hr><dl><dt>Requires CP/M 2.0 or later
+<dd>XSUB.  XSUB requires the facilities of CP/M 2.0 or
+newer version.
+</dl><hr><dl><dt>Requires CP/M 2.0 or new for operation
+<dd>PIP.  This version of PIP requires  the facilities  of
+CP/M 2.0 or newer version.
+</dl><hr><dl><dt>START NOT FOUND
+<dd>PIP.  The string argument to an S parameter cannot  be
+found in the source file.
+</dl><hr><dl><dt>SOURCE FILE INCOMPLETE
+<dd>SYSGEN.  SYSGEN cannot use your CP/M source file.
+</dl><hr><dl><dt>SOURCE FILE NAME ERROR
+<dd>ASM.  When you  assemble a  file, you  cannot use  the
+wildcard characters " and ? in the filename.  Only one
+file can be assembled at a time.
+</dl><hr><dl><dt>SOURCE FILE READ ERROR
+<dd>ASM.  The assembler cannot understand the  information
+in the file containing the assembly-language program. 
+Portions of another file might have been written  over
+your assembly-language  file, or  information was  not
+properly saved on the disk.  Use the  TYPE command  to
+locate the error.  Assembly-language files contain the
+letters,  symbols,  and  numbers that  appear on  your
+keyboard.    If  your  screen displays  unrecognizable
+output  or  behaves  strangely, you  have found  where
+computer instructions have crept into your file.
+</dl><hr><dl><dt>SYNCHRONIZATION ERROR
+<dd>MOVCPM.  The  MOVCPM utility  is being  used with  the
+wrong CP/M system.
+</dl><hr><dl><dt>"SYSTEM" FILE NOT ACCESSIBLE
+<dd>You tried to access a file set  to SYS  with the  STAT
+command.
+</dl><hr><dl><dt>** TOO MANY FILES **
+<dd>STAT.  There is not enough memory for STAT to sort the
+files  specified,  or   more  than   512  files   were
+specified.
+</dl><hr><dl><dt>UNEXPECTED END OF HEX FILE--{filespec}
+<dd>PIP.    An  end-of-file  was  encountered  prior to  a
+termination  HEX  record.    The  HEX  file without  a
+termination record  should be  corrected, probably  by
+recreating the HEX file.
+</dl><hr><dl><dt>Unrecognized Destination
+<dd>PIP.  Check command line for valid destination.
+</dl><hr><dl><dt>Use: STAT d:=RO
+<dd>STAT. An invalid STAT drive command was  given.   The
+only valid drive assignment in STAT is STAT&nbsp;d:=RO.
+</dl><hr><dl><dt>VERIFY ERROR:--{filespec}
+<dd>PIP.   When copying  with the  V option,  PIP found  a
+difference when rereading  the data  just written  and
+comparing  it  to  the  data  in its  memory buffer.  
+Usually  this  indicates  a  failure  of  either   the
+destination disk or drive.
+</dl><hr><dl><dt>WRONG CP/M VERSION (REQUIRES 2.0)
+</dl><hr><dl><dt>XSUB ACTIVE
+<dd>SUBMIT.  XSUB has been invoked.
+</dl><hr><dl><dt>XSUB ALREADY PRESENT
+<dd>SUBMIT.  XSUB is already active in memory.
+</dl><hr><dl><dt>Your Input?
+<dd>If  CP/M  cannot find  the command  you specified,  it
+returns the  command name  you entered  followed by  a
+question mark.  Check that you have typed the  command
+line  correctly,  or  that the  command you  requested
+exists as a COM file on the default or specified disk.
+</dl><p><hr><p><a href="index.htm">Back to title page</a>
+</body></html>

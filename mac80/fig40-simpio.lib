@@ -1,0 +1,25 @@
+;	macro library for simple i/o
+bdos	equ	0005h	;bdos entry
+conin	equ	1	;console input function
+msgout	equ	9	;print message til $
+cr	equ	0dh	;carriaqe return
+lf	equ	0ah	;line feed
+;
+read	macro	var
+;;	read a single character into var
+	mvi	c,conin ;console input function
+	call	bdos	;character is in a
+	sta	var
+	endm
+;
+write	macro msq
+;;	write messaqe to console
+	local msg1,pmsg
+	jmp	pmsg
+msg1:	db	cr,lf	;;leading crlf
+	db	'&MSG'	;;inline message
+	db	'$'	;;message terminator
+pmsg:	mvi	c,msgout	;;print message til $
+	lxi	d,msg1
+	call	bdos
+	endm

@@ -1,0 +1,943 @@
+<html><title>Section 3: CP/M Assembler</title>
+<body>
+<center><p><h1>Section 3<br>CP/M Assembler</h1></center>
+<p align="center"><b>Table of Contents</b>
+<p><a href="#Section_3.1">3.1 Introduction</a>
+<br><a href="#Section_3.2">3.2 Program Format</a>
+<br><a href="#Section_3.3">3.3 Forming the Operand</a>
+<blockquote><a href="#Section_3.3.1">3.3.1 Labels</a>
+<br><a href="#Section_3.3.2">3.3.2 Numeric Constants</a>
+<br><a href="#Section_3.3.3">3.3.3 Reserved Words</a>
+<br><a href="#Section_3.3.4">3.3.4 String Constants</a>
+<br><a href="#Section_3.3.5">3.3.5 Arithmetic and Logical Operators</a>
+<br><a href="#Section_3.3.6">3.3.6 Precedence of Operators</a>
+</blockquote>
+<br><a href="#Section_3.4">3.4 Assembler Directives</a>
+<blockquote><a href="#Section_3.4.1">3.4.1 The ORG Directive</a>
+<br><a href="#Section_3.4.2">3.4.2 The END Directive</a>
+<br><a href="#Section_3.4.3">3.4.3 The EQU Directive</a>
+<br><a href="#Section_3.4.4">3.4.4 The SET Directive</a>
+<br><a href="#Section_3.4.5">3.4.5 The IF and ENDIF Directive</a>
+<br><a href="#Section_3.4.6">3.4.6 The DB Directive</a>
+<br><a href="#Section_3.4.7">3.4.7 The DW Directive</a>
+<br><a href="#Section_3.4.8">3.4.8 The DS Directive</a>
+</blockquote>
+<br><a href="#Section_3.5">3.5 Operation Codes</a>
+<blockquote><a href="#Section_3.5.1">3.5.1 Jumps, Calls, and Returns</a>
+<br><a href="#Section_3.5.2">3.5.2 Immediate Operand Instructions</a>
+<br><a href="#Section_3.5.3">3.5.3 Increment and Decrement Instructions</a>
+<br><a href="#Section_3.5.4">3.5.4 Data Movement Instructions</a>
+<br><a href="#Section_3.5.5">3.5.5 Arithmetic Logic Unit Operations</a>
+<br><a href="#Section_3.5.6">3.5.6 Control Instructions</a>
+</blockquote>
+<br><a href="#Section_3.6">3.6 Error Messages</a>
+<br><a href="#Section_3.7">3.7 A Sample Session</a>
+<p align="center"><b>Tables</b>
+<p><a href="#Table_3-1">3-1 Reserved Characters</a>
+<br><a href="#Table_3-2">3-2 Arithmetic and Logical Operations</a>
+<br><a href="#Table_3-3">3-3 Assembler Directives</a>
+<br><a href="#Table_3-4">3-4 Jumps, Calls, and Returns</a>
+<br><a href="#Table_3-5">3-5 Immediate Operand Instructions</a>
+<br><a href="#Table_3-6">3-6 Increment and Decrement Instructions</a>
+<br><a href="#Table_3-7">3-7 Data Movement Instructions</a>
+<br><a href="#Table_3-8">3-8 Arithmetic Logic Unit Operations</a>
+<br><a href="#Table_3-9">3-9 Error Codes</a>
+<br><a href="#Table_3-10">3-10 Error Messages</a>
+<p><hr>
+<p><a name="Section_3.1"><h1>3.1 Introduction</h1></a>
+<p>The CP/M assembler reads assembly-language source files from the
+disk and produces 8080 machine language in Intel hex format. To
+start the CP/M assembler, type a command in one of the following
+forms:
+<pre>
+     ASM filename
+     ASM filename.parms
+</pre>
+<p>In both cases, the assembler assumes there is a file on the disk
+with the name:
+<pre>
+     filename.ASM
+</pre>
+<P>which contains an 8080 assembly-language source file. The first
+and second forms shown above differ only in that the second form
+allows parameters to be passed to the assembler to control source
+file access and hex and print file destinations.
+<p>In either case, the CP/M assembler loads and prints the message:
+<pre>
+     CP/M ASSEMBLER VER n.n
+</pre>
+<p>where n.n is the current version number. In the case of the first
+command, the assembler reads the source file with assumed
+filetype ASM and creates two output files
+<pre>
+     filename.HEX
+     filename.PRN
+</pre>
+<p>The HEX file contains the machine code corresponding to the
+original program in Intel hex format, and the PRN file contains
+an annotated listing showing generated machine code, error flags,
+and source lines. If errors occur during translation, they are
+listed in the PRN file and at the console.
+<p>The form ASM filename parms is used to redirect input and output
+files from their defaults. In this case, the parms portion of the
+command is a three-letter group that 'fies the origin of the
+source file, the destination of the hex file, and the destination
+of the print file. The form is
+<pre>
+     filename.p1p2p3
+</pre>
+<p>where p1, p2, and p3 are single letters.  P1 can be
+<pre>
+     A,B,...,P
+</pre>
+<p>which designates the disk name that contains the source file. P2
+can be
+<pre>
+     A,B,...,P
+</pre>
+<p>which designates the disk name that will receive the hex file;
+or, P2 can be
+<pre>
+     Z
+</pre>
+<p>which skips the generation of the hex file.
+<P>P3 can be
+<pre>
+     A,B,...,P
+</pre>
+<p>which designates the disk name that will receive the print file.
+P3 can also be specified as
+<pre>
+     X
+</pre>
+<p>which places the listing at the console; or
+<pre>
+     Z
+</pre>
+<p>which skips generation of the print file. Thus, the command
+<pre>
+     ASM X.AAA
+</pre>
+<p>indicates that the source, X.HEX and print, X.PRN files are also
+to be created on disk A. This form of the  command is  implied
+if the assembler is run from disk A. Given that you are currently
+addressing disk A, the above command is the same as
+<pre>
+     ASM X
+</pre>
+<p>The command
+<pre>
+     ASM X.ABX
+</pre>
+<p>indicates that the source file is to be taken from disk A, the
+hex file is to be placed on disk B, and the listing file is to be
+sent to the console. The command
+<pre>
+     ASM X.BZZ
+</pre>
+<p>takes the source file from disk B and skips the generation of the
+hex and print files. This command is useful for fast execution of
+the assembler to check program syntax.
+<P>The source program format is compatible with the Intel 8080
+assembler. Macros are not implemented in ASM; see the optional
+MAC macro assembler. There are certain extensions in the CP/M
+assembler that make it somewhat easier to use. These extensions
+are described below.
+<p><a name="Section_3.2"><h1>3.2 Program Format</h1></a>
+<p>An assembly-language program acceptable as input to the assembler
+consists of a sequence of statements of the form
+<pre>
+     line# label operation operand ;comment
+</pre>
+<p>where any or all of the fields may be present in a particular
+instance. Each assemblylanguage statement is terminated with a
+carriage return and line-feed (the line-feed is inserted
+automatically by the ED program), or with the character !, which
+is treated as an end-of-line by the assembler. Thus, multiple
+assembly-language statements can be written on the same physical
+line if separated by exclamation point symbols.
+<p>The line# is an optional decimal integer value representing the
+source program line number, and ASM ignores this field if
+present.
+<p>The label field takes either of the following forms:
+<pre>
+     identifier
+     identifier:
+</pre>
+<p>The label field is optional, except where noted in particular
+statement types. The identifier is a sequence of alphanumeric
+characters where the first character is alphabetic. Identifiers
+can be freely used by the programmer to label elements such as
+program steps and assembler directives, but cannot exceed 16
+characters in length. All characters are significant in an
+identifier, except for the embedded dollar symbol $, which can be
+used to improve readability of the name. Further, all lower-case
+alphabetics are treated as upper-case. The following are all
+valid instances of labels:
+<p><center><table>
+<tr><td>x<td>xy<td>long$name
+<tr><td>x:<td>yxl:<td>longer$naned$data:
+<tr><td>X1Y2<td>X1x2<td>x234$5678$9012$3456:
+</table></center>
+<p>The operation field contains either an assembler directive or
+pseudo operation, or an 8080 machine operation code. The pseudo
+operations and machine operation codes are described in 
+<a href="#Section_3.3">Section 3.3</a>.
+<p>Generally, the operand field of the statement contains an
+expression formed out of constants and labels, along with
+arithmetic and logical operations on these elements. Again, the
+complete details of properly formed expressions are given in
+<a href="#Section_3.3">Section 3.3</a>.
+<p>The comment field contains arbitrary characters following the
+semicolon symbol untill the next real or logical end-of-line.
+These characters are read, listed, and otherwise ignored by the
+assembler. The CP/M assembler also treats statements that begin
+with an * in column one as comment statements that are listed and
+ignored in the assembly process.
+<p>The assembly-language program is formulated as a sequence of
+statements of the above form, terminated by an optional END
+statement. All statements following the END are ignored by the
+assembler.
+<p><a name="Section_3.3"><h1>3.3 Forming the Operand</h1></a>
+<p>To describe the operation codes and pseudo operations completely,
+it is necessary first to present the form of the operand field,
+since it is used in nearly all statements. Expressions in the
+operand field consist of simple operands, labels, constants, and
+reserved words, combined in properly formed subexpressions by
+arithmetic and logical operators. The expression computation is
+carried out by the assembler as the assembly proceeds. Each
+expression must  produce a 16-bit value during the assembly.
+Further, the number of significant digits in the result must not
+exceed the intended use. If an expression is to be used in a byte
+move immediate instruction, the most significant 8 bits of the
+expression must be zero. The restriction on the expression
+significance is given with the individual instructions.
+<p><a name="Section_3.3.1"><h1>3.3.1 Labels</h1></a>
+<p>A label is an identifier that occurs on a particular statement.
+In general, the label is given a value determined by the type of
+statement that it precedes. If the label occurs on a statement
+that generates machine code or reserves memory space (for
+example, a MOV instruction or a DS pseudo operation), the label
+is given the value of the program address that it labels.  If the
+label precedes an EQU or SET, the label is given the value that
+results from evaluating the operand field. Except for the SET
+statement, an identifier can label only one statement.
+<P>When a label appears in the operand field, its value is
+substituted by the assembler. This value can then be combined
+with other operands and operators to form the operand field for a
+particular instruction.
+<p><a name="Section_3.3.2"><h1>3.3.2 Numeric Constants</h1></a>
+<p>A numeric constant is a 16-bit value in one of several bases.
+The base, called the radix of the constant, is denoted by a
+trailing radix indicator. The following are radix indicators:
+<p><center><table>
+<tr><td>B<td>is a binary constant (base 2).
+<tr><td>O<td>is a octal constant (base 8).
+<tr><td>Q<td>is a octal constant (base 8).
+<tr><td>D<td>is a decimal constant (base 10).
+<tr><td>H<td>is a hexadecimal constant (base 16).
+</table></center>
+<p>Q is an alternate radix indicator for octal numbers because the
+letter O is easily confused with the digit 0. Any numeric
+constant that does not terminate with a radix indicator is a
+decimal constant.
+<p>A constant is composed as a sequence of digits, followed by an
+optional radix indicator, where the digits are in the appropriate
+range for the radix. Binary constants must be composed of 0 and 1
+digits, octal constants can contain digits in the range 0-7,
+while decimal constants contain decimal digits. Hexadecimal
+constants contain decimal digits as well as hexadecimal digits
+A(10D), B(11D), C(12D), D(13D), E(14D), and F(15D). Note that the
+leading digit of a hexadecimal constant must be a decimal digit
+to avoid confusing a hexadecimal constant with an identifier. A
+leading 0 will always suffice.  A constant composed in this
+manner must evaluate to a binary number that can be contained
+within a 16-bit counter, otherwise it is truncated on the right
+by the assembler.
+<p>Similar to identifiers, embedded $ signs are allowed within
+constants to improve their readability. Finally, the radix
+indicator is translated to upper-case if a lower-case letter is
+encountered. The following are all valid instances of numeric
+constants:
+<p><center><table>
+<tr><td>1234<td>1234D<Td>1100B<td>1111$0000$1111$0000B
+<tr><td>1234H<td>0FFEH<td>3377O<td>33$77$22Q
+<tr><td>3377o<td>0fe3h<td>1234d<td>0ffffh
+</table></center>
+<p><a name="Section_3.3.3"><h1>3.3.3 Reserved Words</h1></a>
+<p>There are several reserved character sequences that have
+predefined meanings in the operand field of a statement. The
+names of 8080 registers are given below. When they are
+encountered, they produce the values shown to the right.
+<a name="Table_3-1">
+<p><center><table border="1">
+<caption align="bottom">Table 3-1. Reserved Characters</caption>
+<tr><Th>Character<th>Value
+<tr><td>A<td>7
+<tr><td>B<td>0
+<tr><td>C<td>1
+<tr><td>D<td>2
+<tr><td>E<td>3
+<tr><td>H<td>4
+<tr><td>L<td>5
+<tr><td>M<td>6
+<tr><td>SP<td>6
+<tr><td>PSW<td>6
+</table></center></a>
+<p>Again, lower-case names have the same values as their upper-case
+equivalents. Machine instructions can also be used in the operand
+field; they evaluate to their internal codes. In the case of
+instructions that require operands, where the specific operand
+becomes a part of the binary bit pattern of the instruction, for
+example, MOV A,B, the value of the instruction, in this case MOV,
+is the bit pattern of the instruction with zeros in the optional
+fields, for example, MOV produces 40H.
+<p>When the symbol $ occurs in the operand field, not embedded
+within identifiers and numeric constants, its value becomes the
+address of the next instruction to generate, not including the
+instruction contained within the current logical line.
+<p><a name="Section_3.3.4"><h1>3.3.4 String Constants</h1></a>
+<p>String constants represent sequences of ASCII characters and are
+represented by enclosing the characters within apostrophe
+symbols. All strings must be fully contained within the current
+physical line (thus allowing exclamation point symbols within
+strings) and must not exceed 64 characters in length. The
+apostrophe character itself can be included within a string by
+representing it as a double apostrophe (the two keystrokes"),
+which becomes a single apostrophe when read by the assembler.  In
+most cases, the string length is restricted to either one or two
+characters (the DB pseudo operation is an exception), in which
+case the string becomes an 8- or 16-bit value, respectively. 
+Two-character strings become a 16-bit constant, with the second
+character as the low-order byte, and the first character as the
+high-order byte.
+<p>The value of a character is its corresponding ASCII code.  There
+is no case translation within strings; both upper- and lower-case
+characters can be represented. You should note that only graphic
+printing ASCII characters are allowed within strings.
+<p><center><table>
+<tr><th>Valid strings:<th>How assembler reads strings:
+<tr><td>'A' 'AB' 'ab' 'c'<td>A AB ab c
+<tr><td>'' 'a''' '''' ''''<td>a '''
+<tr><td>'Walla Walla Wash.'<td>Walla Walla Wash
+<tr><td>'She said "Hello" to me.'<td>She said "Hello" to me.
+<tr><td>'I said "Hello" to her.'<td>I said "Hello" to her.
+</table></center>
+<p><a name="Section_3.3.5"><h1>3.3.5 Arithmetic and Logical Operators</h1></a>
+<p>The operands described in 
+<a href="#Section_3.3">Section 3.3</a> can be combined in normal
+algebraic notation using any combination of properly formed
+operands, operators, and parenthesized expressions. The operators
+recognized in the operand field are described in 
+<a href="#Table_3-2">Table 3-2</a>.
+<a name="Table_3-2">
+<p><center><table border=1>
+<caption align="bottom">Table 3-2. Arithmetic and Logical
+Operators</caption>
+<tr><th>Operators<th>Meaning
+<tr><td>a + b<td>unsigned arithmetic sum of a and b
+<tr><td>a - b<td>unsigned arithmetic difference between a and b
+<tr><td>+ b<td>unary plus (produces b)
+<tr><td>- b<td>unary minus (identical to 0 - b)
+<tr><td>a * b<td>unsigned magnitude multiplication of a and b
+<tr><td>a / b<td>unsigned magnitude division of a by b
+<tr><td>a MOD b<td>remainder after a / b.
+<tr><td>NOT b<td>logical inverse of b (all 0s become 1s, 1s
+become 0s), where b is considered a 16-bit
+value
+<tr><td>a AND b<td>bit-by-bit logical and of a and b
+<tr><td>a OR b<td>bit-by-bit logical or of a and b
+<tr><td>a XOR b<td>bit-by-bit logical exclusive or of a and b
+<tr><td>a SHL b<td>the value that results from shifting a to the
+lef by an amount b, with zero fill
+<tr><td>a SHR b<td>the value that results from shifting a to the
+right by an amount b, with zero fill
+</table></center></a>
+<p>In each case, a and b represent simple operands (labels, numeric
+constants, reserved words, and one- or two-character strings) or
+fully enclosed parenthesized subexpressions, like those shown in
+the following examples:
+<pre>
+     10+20 10h+37Q L1/3 (L2+4) SHR3
+     ('a' and 5fh)+'O'('B'+B)OR(PSW+M)
+     (1+(2+c))shr(A-(B+1))
+</pre>
+<p>Note that all computations are performed at assembly time as 16-bit 
+unsigned operations. Thus, -1 is computed as 0 - 1, which
+results in the value 0ffffh (that is, all 1s). The resulting
+expression must fit the operation code in which it is used. For
+example, if the expression is used in an ADI (add immediate)
+instruction, the high-order 8 bits of the expression must be
+zero. As a result, the operation ADI -1 produces an error message
+(-1 becomes 0ffffh, which cannot be represented as an 8-bit
+value), while ADI (-1) AND 0FFH is accepted by the assembler
+because the AND operation zeros the high-order bits of the
+expression.
+<p><a name="Section_3.3.6"><h1>3.3.6 Precedence of Operators</h1></a>
+<p>As a convenience to the programmer, ASM assumes that operators
+have a relative precedence of application that allows the
+programmer to write expressions without nested levels of
+parentheses. The resulting expression has assumed parentheses
+that are defined by the relative precedence. The order of
+application of operators in unparenthesized expressions is listed
+below. Operators listed first have highest precedence (they are
+applied first in an unparenthesized expression), while operators
+listed last have lowest precedence. Operators listed on the same
+line have equal precedence, and are applied from left to right as
+they are encountered in an expression.
+<pre>
+     * / MOD SHL SHR
+     - +
+     NOT
+     AND
+     OR XOR
+</pre>
+<P>Thus, the expressions shown to the left below are interpreted by
+the assembler as the fully parenthesized expressions shown to the
+right.
+<p><center><table border="1">
+<tr><td>a*b+c<td>(a*b) + c
+<tr><td>a+b*c<td>a + (b*c)
+<tr><td>a MOD b*c SHL d<td>((a MOD b) * c) SHL d
+<tr><td>a OR b  AND NOT c+d SHL e<td>a OR (b AND (NOT (c + (d SHL e))))
+</table></center>
+<p>Balanced, parenthesized subexpressions can always be used to
+override the assumed parentheses; thus, the last expression above
+could be rewritten to force application of operators in a
+different order, as shown:
+<pre>
+     ( a OR b ) AND ( NOT c ) + d SHL e
+</pre>
+<p>This results in these assumed parentheses:
+<pre>
+     (a OR b ) AND ( (NOT c ) + ( d SHL e ) )
+</pre>
+<p>An unparenthesized expression is well-formed only if the
+expression that results from inserting the assumed parentheses is
+well-formed.
+<P><a name="Section_3.4"><h1>3.4 Assembler Directives</h1></a>
+<p>Assembler directives are used to set labels to specific values
+during the assembly, perform conditional assembly, define storage
+areas, and specify starting addresses in the program.  Each
+assembler directive is denoted by a pseudo operation that appears
+in the operation field of the line. The acceptable pseudo
+operations are shown in 
+<a href="#Table_3-3">Table 3-3</a>.
+<a name="Table_3-3">
+<p><center><table border="1">
+<caption align="bottom">Table 3-3. Assembler Directives</caption>
+<tr><th>Directive<th>Meaning
+<tr><td>ORG<td>set the program or data origin
+<tr><td>END<td>end program, optional start address
+<tr><td>EQU<td>numeric equate
+<tr><td>SET<td>numeric set
+<tr><td>IF<td>begin conditional assembly
+<tr><td>ENDIF<td>end of conditional assembly
+<tr><td>DB<td>define data bytes
+<tr><td>DW<td>define data words
+<tr><td>DS<td>define data storage area
+</table></center></a>
+<p><a name="Section_3.4.1"><h1>3.4.1 The ORG Directive</h1>
+<p>The ORG statement takes the form:
+<pre>
+     label ORG expression
+</pre>
+<p>where label is an optional program identifier and expression is a
+16-bit expression, consisting of operands that are defined before
+the ORG statement. The assembler begins machine code generation
+at the location specified in the expression. There can be any
+number of ORG statements within a particular program, and there
+are no checks to ensure that the programmer is not defining
+overlapping memory areas. Note that most programs written for the
+CP/M system begin with an ORG statement of the form:
+<Pre>
+     ORG 100H
+</pre>
+<P>which causes machine code generation to begin at the base of the
+CP/M transient program area. If a label is specified in the ORG
+statement, the label is given the value of the expression. This
+label can then be used in the operand field of other statements
+to represent this expression.
+<p><a name="Section_3.4.2"><h1>3.4.2 The END Directive</h1></a>
+<p>The END statement is optional in an assembly-language program,
+but if it is present it must be the last statement. All
+subsequent statements are ignored in the assembly. The END
+statement takes the following two forms:
+<pre>
+     label END
+     label END expression
+</pre>
+<p>where the label is again optional. If the first form is used, the
+assembly process stops, and the default starting address of the
+program is taken as 0000. Otherwise, the expression is evaluated,
+and becomes the program starting address. This starting address
+is included in the last record of the Intel-formatted machine
+code hex file that results from the assembly. Thus, most CP/M
+assembly-language programs end with the statement:
+<pre>
+     END 100H
+</pre>
+<p>resulting in the default starting address of 100H (beginning of
+the transient program area).
+<p><a name="Section_3.4.3"><h1>3.4.3 The EQU Directive</h1></a>
+<p>The EQU (equate) statement is used to set up synonyms for
+particular numeric values. The EQU statement takes the form:
+<pre>
+     label EQU expression
+</pre>
+<p>where the label must be present and must not label any other
+statement. The assembler evaluates the expression and assigns
+this value to the identifier given in the label field. The
+identifier is usually a name that describes the value in a more
+human-oriented manner. Further, this name is used throughout the
+program to place parameters on certain functions. Suppose data
+received from a teletype appears on a particular input port, and
+data is sent to the teletype through the next output port in
+sequence. For example, you can use this series of equate
+statements to define these ports for a particular hardware
+environment:
+<pre>
+     TTYBASE   EQU 10H        ;BASE PORT NUMBER FOR TTY
+     TTYIN     EQU TTYBASE    ;TTY DATA IN
+     TTYOUT    EQU TTYBASE+1  ;TTY DATA OUT
+</pre>
+<p>At a later point in the program, the statements that access the
+teletype can appear as follows:
+<pre>
+     IN  TTYIN      ;READ TTY DATA TO REG-A
+        ....
+
+     OUT TTYOUT     ;WRITE DATA TO TTY FROM REG-A
+</pre>
+<p>making the program more readable than if the absolute I/O ports
+are used. Further, if the hardware environment is redefined to
+start the teletype communications ports at 7FH instead of 10H,
+the first statement need only be changed to
+<pre>
+     TTYBASE EQU 7FH   ;BASE PORT NUMBER FOR TTY
+</pre>
+<p>and the program can be reassembled without changing any other
+statements.
+<p><a name="Section_3.4.4"><h1>3.4.4 The SET Directive</h1></a>
+<p>The SET statement is similar to the EQU, taking the form:
+<pre>
+     label SET expression
+</pre>
+<p>except that the label can occur on other SET statements within
+the program. The expression is evaluated and becomes the current
+value associated with the label. Thus, the EQU statement defines
+a label with a single value, while the SET statement defines a
+value that is valid from the current SET statement to the point
+where the label occurs on the next SET statement. The use of the
+SET is similar to the EQU statement, but is used most often in
+controlling conditional assembly.
+<p><a name="Section_3.4.5"><h1>3.4.5 The IF and ENDIF Directives</h1></a>
+<p>The IF and ENDIF statements define a range of assembly-language
+statements that are to be included or excluded during the
+assembly process. These statements take on the form:
+<pre>
+     IF expression
+     statement# 1
+     statement#2
+         ...
+     statement#n
+     ENDIF
+</pre>
+<p>When encountering the IF statement, the assembler evaluates the
+expression following the IF. All operands in the expression must
+be defined ahead of the IF statement. If the expression evaluates
+to a nonzero value, then statement#l through statement#n are
+assembled. If the expression evaluates to zero, the statements
+are listed but not assembled.  Conditional assembly is often used
+ write a single generic program that includes a number of
+possible run-time environments, with only a few specific portions
+of the program selected for any particular assembly. The
+following program segments, for example, might be part of a
+program that communicates with either a teletype or a CRT console
+(but not both) by selecting a particular value for TTY before the
+assembly begins.
+<pre>
+     TRUE    EQU  0FFFFH      ;DEFINE VALUE OF TRUE
+     FALSE   EQU  NOT TRUE    ;DEFINE VALUE OF FALSE
+     ;
+     TTY     EQU  TRUE        ;TRUE IF TTY, FALSE IF CRT
+     ;
+     TTYBASE EQU  10H         ;BASE OF TTY I/O PORTS
+     CRTBASE EQU  20H         ;BASE OF CRT I/O PORTS
+             IF   TTY         ;ASSEMBLE RELATIVE TO
+                              ;TTYBASE
+     CONIN   EQU  TTYBASE     ;CONSOLE INPUT
+     CONOUT  EQU  TTYBASE+1   ;CONSOLE OUTPUT
+             ENDIF
+     ;
+             IF   NOT TTY     ;ASSEMBLE RELATIVE TO
+                              ;CRTBASE
+     CONIN   EQU  CRTBASE     ;CONSOLE INPUT
+     CONOUT  EQU  CRTBASE+1   ;CONSOLE OUTPUT
+             ENDIF
+             ...
+             IN   CONIN       ;READ CONSOLE DATA
+             OUT  CONTOUT     ;WRITE CONSOLE DATA
+</pre>
+<p>In this case, the program assembles for an environment where a
+teletype is connected, based at port 10H. The statement defining
+TTY can be changed to
+<pre>
+     TTY EQU FALSE
+</pre>
+<p>and, in this case, the program assembles for a CRT based at port
+20H.
+<p><a name="Section_3.4.6"><h1>3.4.6 The DB Directive</h1></a>
+<p>The DB directive allows the programmer to define initialized
+storage areas in singleprecision byte format. The DB statement
+takes the form:
+<Pre>
+     label DB e#1, e#2, ... , e#n
+</pre>
+<p>where e#1 through e#n are either expressions that evaluate to 8-bit 
+values (the highorder bit must be zero) or are ASCII strings
+of length no greater than 64 characters. There is no practical
+restriction on the number of expressions included on a single
+source line. The expressions are evaluated and placed
+sequentially into the machine code file following the last
+program address generated by the assembler. String characters are
+similarly placed into memory starting with the first character
+and ending with the last character. Strings of length greater
+than two characters cannot be used as operands in more
+complicated expressions.
+<p><table>
+<tr><th valign="top">Note:<td>ASCII characters are always placed in memory        Note:        Note:
+with the parity bit reset (0). Also, there is
+no translation from lower- to upper-case
+within strings. 
+</table>
+<p>The optional label can be
+used to reference the data area throughout
+the remainder of the program. The following
+are examples of valid DB statements:
+<pre>
+     data:     DB  0,1,2,3,4,5
+               DB  data and 0ffh,5,377Q,1+2+3+4
+     sign-on:  DB  'please type your name',CR,LF,0
+               DB  'AB' SHR 8,'C','DE',AND 7FH
+</pre>
+<p><a name="Section_3.4.7"><h1>3.4.7 The DW Directive</h1></a>
+<p>The DW statement is similar to the DB statement except double-
+precision two-byte words of storage are initialized. The DW
+statement takes the form:
+<pre>
+     label DW e#1, e#2, ..., e#n
+</pre>
+<p>where e#1 through e#n are expressions that evaluate to 16-bit
+results. Note that ASCII strings of one or two characters are
+allowed, but strings longer than two characters are disallowed.
+In all cases, the data storage is consistent with the 8080
+processor; the least significant byte of the expression is stored
+first in memory, followed by the most significant byte.  The
+following are examples of DW statements:
+<pre>
+     doub: DW 0ffefh,doub+4,signon-$,255+255
+           DW 'a',5,'ab','CD',6 shl 8 or llb.
+</pre>
+<p><a name="Section_3.4.8"><h1>3.4.8 The DS Directive</h1></a>
+<p>The DS statement is used to reserve an area of uninitialized
+memory, and takes the form:
+<pre>
+     label DS expression
+</pre>
+<p>where the label is optional. The assembler begins subsequent code
+generation after the area reserved by the DS. Thus, the DS
+statement given above has exactly the same effect as the
+following statement:
+<pre>
+     label: EQU $            ;LABEL VALUE IS CURRENT CODE LOCATION
+            ORG $+expression ;MOVE PAST RESERVED AREA
+</pre>
+<p><a name="Section_3.5"><h1>3.5 Operation Codes</h1></a>
+<p>Assembly-language operation codes form the principal part of
+assembly-language programs and form the operation field of the
+instruction. In general, ASM accepts all the standard mnemonics
+for the Intel 8080 microcomputer, which are given in detail in
+the Intel 8080 Assembly Language Programming Manual. Labels are
+optional on each input line. The individual operators are listed
+briefly in the following sections for completeness, although the
+Intel manuals should be referenced for exact operator details. In
+<a href="#Table_3-4">Tables 3-4</a> through 
+<a href="#Table_3-8">3-8</a>, bit values have the following meaning:
+<ul>
+<li>e3 represents a 3-bit value in the range 0-7 that can be one
+of the predefined registers A, B, C, D, E, H, L, M, SP, or
+PSW.
+<li>e8 represents an 8-bit value in the range 0-255.
+<li>e16 represents a 16-bit value in the range 0-65535.
+</ul>
+<p>These expressions can be formed from an arbitrary combination of
+operands and operators. In some cases, the operands are
+restricted to particular values within the allowable range, such
+as the PUSH instruction. These cases are noted as they are
+encountered.
+<p>In the sections that follow, each operation code is listed in its
+most general form, along with a specific example, a short
+explanation, and special restrictions.
+<p><a name="Section_3.5.1"><h1>3.5.1 Jumps, Calls, and Returns</h1></a>
+<p>The Jump, Call, and Return instructions allow several different
+forms that test the condition flags set in the 8080 microcomputer
+CPU. The forms are shown in 
+<a href="#Table_3-4">Table 3-4</a>.
+<p><a name="Table_3-4"><center><table border="1">
+<caption align="bottom">Table 3-4. Jumps, Calls, and Returns</caption>
+<tr><th>Form<th>Bit<br>Value<th>Example<th>Meaning
+<tr><td>JMP<td>e16<td>JMP L1<td>jump unconditionally to label
+<tr><td>JNZ<td>e16<td>JNZ L2<td>jump on nonzero condition to label
+<tr><td>JZ<td>e16<td>JZ 100H<td>Jump on zero condition to label
+<tr><td>JNC<td>e16<td>JNC L1+4<td>jump no carry to label
+<tr><td>JC<td>e16<td>JC L3<td>Jump on carry to label
+<tr><td>JPO<td>e16<td>JPO $+8<td>Jump on parity odd to label
+<tr><td>JPE<Td>e16<td>JPE L4<td>Jump on even parity to label
+<Tr><td>JP<td>e16<td>JP GAMMA<td>Jump on positive result to label
+<tr><td>JM<td>e16<td>JM A1<td>Jump on minus to label
+<tr><td>CALL<td>e16<td>CALL S1<td>Call subroutine unconditionally
+<tr><td>CNZ<td>e16<td>CNZ S2<td>Call subroutine on nonzero condition
+<tr><td>CZ<td>e16<td>CZ 100H<td>Call subroutine on zero condition
+<tr><td>CNC<Td>e16<td>CNC SI+4<td>Call subroutine if no carry set
+<tr><td>CC<td>e16<td>CC S3<Td>Call subroutine if carry set
+<tr><td>CPO<td>e16<td>CPO $+8<td>Call subroutine if parity odd
+<tr><td>CPE<td>e16<td>CPE $4<td>Call subroutine if parity even
+<tr><td>CP<td>e16<td>CP GAMMA<td>Call subroutine if positive result
+<tr><td>CM<td>e16<td>CM b1$c2<td>Call subroutine if minus flag
+<tr><td>RST<td>e3<td>RST 0<td>Programmed restart, equivalent to CALL
+8*e3, except one byte call
+<tr><td>RET<td>&nbsp;<td>&nbsp;<td>Return from subroutine
+<tr><td>RNZ<td>&nbsp;<td>&nbsp;<td>Return if nonzero flag set
+<tr><td>RZ<td>&nbsp;<td>&nbsp;<td>Return if zero flag set
+<tr><td>RNC<td>&nbsp;<td>&nbsp;<td>Return if no carry
+<tr><td>RC<td>&nbsp;<td>&nbsp;<td>Return if carry flag set
+<tr><td>RPO<td>&nbsp;<td>&nbsp;<td>Return if parity is odd
+<tr><td>RPE<td>&nbsp;<td>&nbsp;<td>Return if parity is even
+<tr><td>RP<td>&nbsp;<td>&nbsp;<td>Return if positive result
+<tr><td>RM<td>&nbsp;<td>&nbsp;<td>Return if minus flag is set
+</table></center></a>
+<p><a name="Section_3.5.2"><h1>3.5.2 Immediate Operand Instructions</h1></a>
+<p>Several instructions are available that load single- or double-precision 
+registers or single-precision memory cells with
+constant values, along with instructions that perform immediate
+arithmetic or logical operations on the accumulator (register A).
+<a href="#Table_3-5">Table 3-5</a> 
+describes the immediate operand instructions.
+<p><a name="Table_3-5"><center><table border="1">
+<caption align="bottom">Table 3-5. Immediate Operand Instructions</caption>
+<tr><th>Form with<br>Bit Values<th>Example<th>Meaning
+<tr><td>MVI e3,e8<td>MVI B,255<td>Move immediate data to
+register A, B, C, D, E, H, L,
+or M (memory)
+<tr><td>ADI e8<td>ADI 1<td>Add immediate operand to A
+without carry
+<tr><td>ACI e8<td>ACI 0FFH<td>Add immediate operand to A
+with carry
+<tr><td>SUI e8<td>SUI L + 3<td>Subtract from A without borrow
+(carry)
+<tr><td>SBI e8<td>SBI L AND 11B<td>Subtract from A with borrow
+(carry)
+<tr><td>ANI e8<td>ANI $ AND 7FH<td>Logical and A with immediate
+data
+<tr><td>XRI e8<td>XRI 1111$0000B<td>Exclusive or A with immediate
+data
+<tr><td>ORI e8<td>ORI L AND 1+1<td>Logical or A with immediate
+data
+<tr><td>CPI e8<td>CPI 'a'<td>Compare A with immediate data,
+same as SUI except register A
+not changed.
+<tr><td>LXI e3,e16<td>LXI B, 100H<td>Load extended immediate to
+register pair. e3 must be
+equivalent to B, D, H,or SP.
+</table></center></a>
+<p><a name="Section_3.5.3"><h1>3.5.3 Increment and Decrement
+Instructions</h1></a>
+<p>The 8080 provides instructions for incrementing or decrementing
+single- and double precision registers. The instructions are
+described in 
+<a href="#Table_3-6">Table 3-6</a>.
+<p><a name="Table_3-6"><center><table border="1">
+<caption align="bottom">Table 3-6. Increment and Decrement
+Instructions</caption>
+<tr><th>Form with<br>Bit Value<th>Example<th>Meaning
+<tr><td>INR e3<td>INR E<td>Single-precision increment
+register. e3 produces one of A, B,
+C, D, E, H, L, M.
+<tr><td>DCR e3<td>DCR A<td>Single-precision decrement
+register. e3 produces one of A, B,
+C, D, E, H, L, M.
+<tr><td>INX e3<td>INX SP<td>Double-precision increment register
+pair. e3 must be equivalent to B,
+D, H, or SP.
+<tr><td>DCX e3<td>DCX B<td>Double-precision decrement register
+pair. e3 must be equivalent to B,
+D, H, or SP.
+</table></center></a>
+<p><a name="Section_3.5.4"><h1>3.5.4 Data Movement Instructions</h1></a>
+<p>Instructions that move data from memory to the CPU and from CPU
+to memory are given in the following table.
+<p><a name="Table_3-7"><center><table border="1">
+<caption align="bottom">Table 3-7. Data Movement Instructions</caption>
+<tr><th>Form with<br>Bit Value<th>Example<th>Meaning
+<tr><td>MOV e3,e3<td>MOV A,B<td>Move data to leftmost element from
+rightmost element. e3 produces one
+of A, B, C, D, E, H, L, or M.
+MOV M,M is disallowed.
+<tr><td>LDAX e3<td>LDAX B<td>Load register A from computed
+address. e3 must produce either B
+or D.
+<tr><td>STAX e3<td>STAX D<td>Store register A to computed
+address. e3 must produce either B
+or D.
+<tr><td>LHLD e16<td>LHLD L1<td>Load HL direct from location e16.
+Double-precision load to H and L.
+<tr><td>SHLD e16<td>SHLD L5+x<td>Store HL direct to location e16.
+Double-precision store from H and
+L to memory.
+<tr><td>LDA e16<td>LDA Gamma<td>Load register A from address e16.
+<tr><td>STA e16<td>STA X3-5<td>Store register A into memory at
+e16.
+<tr><td>POP e3<td>POP PSW<td>Load register pair from stack, set
+SP. e3 must produce one of B, D, H,
+or PSW.
+<tr><td>PUSH e3<td>PUSH B<td>Store register pair into stack, set
+SP. e3 must produce on of B, D, H,
+or PSW.
+<tr><td>IN e8<td>IN 0<td>Load register A with data from port
+e8.
+<tr><td>OUT e8<td>OUT 255<td>Send data from register A to port
+e8.
+<tr><td>XTHL<td>&nbsp;<td>Exchange data from top of stack
+with HL.
+<tr><td>PCHL<td>&nbsp;<td>Fill program counter with data from
+HL.
+<tr><td>SPHL<td>&nbsp;<td>Fill stack pointer with data from
+HL.
+<tr><td>XCHG<td>&nbsp;<td>Exchange DE pair with HL pair.
+</table></center></a>
+<p><a name="Section_3.5.5"><h1>3.5.5 Arithmetic Logic Unit
+Operations</h1></a>
+<p>Instructions that act upon the single-precision accumulator to
+perform arithmetic and logic operations are given in the
+following table.
+<p><a name="Table_3-8"><center><table border="1">
+<caption align="bottom">Table 3-8. Arithmetic Logic Unit
+Operations</caption>
+<tr><th>Form with<br>Bit Value<th>Example<th>Meaning
+<tr><td>ADD e3<td>ADD B<td>Add register given by e3 to
+accumulator without carry. e3 must
+produce one of A, B, C, D, E, H, or
+L.
+<tr><td>ADC e3<td>ADC L<td>Add register to A with carry, e3 as
+above.
+<tr><td>SUB e3<td>SUB H<td>Subtract reg e3 from A without
+carry, e3 is defined as above.
+<tr><td>SBB e3<td>SBB 2<td>Subtract register e3 from A with
+carry, e3 defined as above.
+<tr><td>ANA e3<td>ANA 1+1<td>Logical and reg with A, e3 as
+above.
+<Tr><td>XRA e3<Td>XRA A<Td>Exclusive or with A, e3 as above.
+<tr><td>ORA e3<Td>ORA B<Td>Logical or with A, e3 defined as
+above.
+<tr><td>CMP e3<td>CMP H<td>Compare register with A, e3 as
+above.
+<tr><td>DAA<td>&nbsp;<td>Decimal adjust register A based
+upon last arithmetic logic unit
+operation.
+<tr><td>CMA<td>&nbsp;<td>Complement the bits in register A.
+<tr><td>STC<td>&nbsp;<td>Set the carry flag to 1.
+<tr><td>CMC<td>&nbsp;<td>Complement the carry flag.
+<tr><td>RLC<td>&nbsp;<td>Rotate bits left, (re)set carry as
+a side effect. High-order A bit
+becomes carry.
+<tr><td>RRC<td>&nbsp;<td>Rotate bits right, (re)set carry as
+side effect. Low-order A bit
+becomes carry.
+<tr><Td>RAL<td>&nbsp;<td>Rotate carry/A register to left.
+Carry is involved in the rotate.
+<tr><td>RAR<td>&nbsp;<td>Rotate carry/A register to right.
+Carry is involved in the rotate.
+<tr><td>DAD e3<td>DAD B<td>Double-precision add register pair
+e3 to HL. e3 must produce B, D, H,
+or SP.
+</table></center></a>
+<p><a name="Section_3.5.6"><h1>3.5.6 Control Instructions</h1></a>
+<p>The four remaining instructions, categorized as control
+instructions, are the following:
+<ul>
+<li>HLT halts the 8080 processor.
+<li>DI disables the interrupt system.
+<li>EI enables the interrupt system.
+<li>NOP means no operation.
+</ul>
+<p><a name="Section_3.6"><h1>3.6 Error Messages</h1></a>
+<p>When errors occur within the assembly-language program, they are
+listed as singlecharacter flags in the leftmost position of the
+source listing. The line in error is also echoed at the console
+so that the source listing need not be examined to determine if
+errors are present. The error codes are listed in the following
+table.
+<p><a name="Table_3-9"><center><table border="1">
+<caption align="bottom">Table 3-9. Error Codes</caption>
+<tr><th>Error Code<th>Meaning
+<tr><td>D<td>Data error: element in data statement cannot be placed
+in the specified data area.
+<tr><td>E<td>Expression error: expression is ill-formed and cannot
+be computed at assembly time.
+<tr><td>L<td>Label error: label cannot appear in this context; might
+be duplicate label.
+<tr><td>N<td>Not implemented: features that will appear in future
+ASM versions. For example, macros are recognized, but
+flagged in this version.
+<tr><td>O<td>Overflow: expression is too complicated (too many
+pending operators) to be computed and should be
+simplified.
+<tr><td>P<td>Phase error: label does not have the same value on two
+subsequent passes through the program.
+<tr><td>R<td>Register error: the value specified as a register is
+not compatible with the operation code.
+<tr><td>S<td>Syntax error: statement is not properly formed.
+<tr><td>Y<td>Value error: operand encountered in expression is
+improperly formed.
+</table></center></a>
+<p><a href="#Table_3-10">Table 3-10</a> lists the error messages that are 
+due to terminal
+error conditions.
+<a name="Table_3-10">
+<dl>
+<dt>NO SOURCE FILE PRESENT
+<dd>The file specified in the ASM command does not exist on
+disk.
+<dt>NO DIRECTORY SPACE
+<dd>The disk directory is full; erase files that are not
+needed and retry.
+<dt>SOURCE FILE NAME ERROR
+<dd>Improperly formed ASM filename, for example, It is
+specified with ? fields.
+<dt>SOURCE FILE READ ERROR
+<dd>Source file cannot be read properly by the assembler;
+execute a TYPE to determine the point of error.
+<dt>OUTPUT FILE WRITE ERROR
+<dd>Output files cannot be written properly; most likely
+cause is a full disk, erase and retry.
+<dt>CANNOT CLOSE FILE
+<dd>Output file cannot be closed; check to see if disk is
+write protected.
+</dl>
+<p align="center">Table 3-10. Error Messages
+</a>
+<p><a name="Section_3.7"><h1>3.7 A Sample Session</h1>
+<p>The following sample session shows interaction with the assembler
+and debugger in the development of a simple assembly-language
+program. The arrow represents a carriage return keystroke.
+<p><img src="ex3-1.gif">
+<br><img src="ex3-2.gif">
+<br><img src="ex3-3.gif">
+<br><img src="ex3-4.gif">
+<br><img src="ex3-5.gif">
+<br><img src="ex3-6.gif">
+<br><img src="ex3-7.gif">
+<br><img src="ex3-8.gif">
+<p><hr><p><a href="index.htm">Back to title page</a>
+&nbsp;&nbsp&nbsp&nbsp&nbsp<a href="ch4.htm"> Next</a></body></html>

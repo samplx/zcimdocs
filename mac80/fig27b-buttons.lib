@@ -1,0 +1,15 @@
+;	macro library for pedestrian pushbuttons
+;
+cwinp	equ	00h	;input port for crosswalk
+;
+push?	macro	iftrue
+;;	"push?" jumps to label "iftrue" when any one
+;;	of the crosswalk switches is depressed. The
+;;	value has been latched, and reading the port
+;;	clears the latched values
+	in	cwinp	;;read the crosswalk switches
+	ani	(1 shl cwcnt) - 1	;;build mask
+	jnz	iftrue	;;any switches set?
+;;continue on false condition
+	endm
+

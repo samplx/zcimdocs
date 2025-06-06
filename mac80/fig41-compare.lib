@@ -1,0 +1,57 @@
+test?	macro x,y
+;;	utiltity macro to generate condition codes
+	if	not nul x	;;then load x
+	lda	x		;;x assumed to be in memory
+	endif
+	irpc	?y,y		;;y may be constant operand
+tdig?	set	'&?Y'-'O'	;;first char digit?
+	exitm			;;stop irpc after first char
+	endm
+	if	tdig? <= 9	;;y numeric?
+	sui	y		;;yes, so sub immediate
+	else
+	lxi	h,y		;;y not numeric
+	sub	m		;;so sub from memory
+	endm
+;
+lss	macro 	x,y,tl
+;;	x lss than y test,
+;;	transfer to tl (true label) if true,
+;;	continue if test is false
+	test?	x,y		;;set condition codes
+	jc	tl
+	endm
+;
+leq	macro 	x,y,tl
+;;	x less than or equal to y test
+	lss	x,y,tl
+	jz	tl
+	endm
+;
+eql	macro 	x,y,tl
+;;	x equal to y test
+	test?	x,y
+	jz	tl
+	endm
+;
+neq	macro 	x,y,tl
+;;	x not equal to y test
+	test?	x,y
+	jnz	tl
+	endm
+;
+geq	macro 	x,y,tl
+;;	x qreater than or equal to v test
+	test?	x,y
+	jnc	tl
+	endm
+;
+gtr	macro 	x,y,tl
+;;	x greater than y test
+	local	fl	;;false label
+	test?	x,y
+	jc	fl
+	dcr	a
+	jnc	tl
+fl:	endm
+

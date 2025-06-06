@@ -1,0 +1,463 @@
+;	macro library for a zero address machine
+;	*****************************************
+;	*       begin trace/dump utilities      *
+;	*****************************************
+bdos	equ	0005h	;system entry
+rchar	equ	1	;read a character
+wchar	equ	2	;write character
+wbuff	equ	9	;write buffer
+tran	equ	100h	;transient program area
+data	equ	1100h	;data area
+cr	equ	0dh	;carriage return
+lf	equ	0ah	;line feed
+;
+debugt	set	0	;;trace debug set false
+debugp	set	0	;;print debug set false
+;
+prn	macro	pr
+;;	print message 'pr' at console
+	if	debugp	;;print debug on?
+	local	pmsg,msg ;;local message
+	jmp	pmsg	;;around message
+msg:	db	cr,lf	;;return carriage
+	db	'&PR$'	;;literal message
+pmsg:	push	h	;;save top element of stack
+	lxi	d,msg	;;local message address
+	mvi	c,wbuff ;;write buffer 'til $
+	call	bdos	;;print it
+	pop	h	;;restore top of stack
+	endif		;;end test debugp
+	endm
+;
+ugen	macro
+;;	generate utilities for trace or dump
+	local psub
+	jmp	psub	;;jump past subroutines
+@ch:			;;write	character in reg-a
+	mov	e,a
+	mvi	c,wchar
+	jmp	bdos	;;return thru bdos
+;;
+@nb:			;;write	nibble in reg-a
+	adi	90h
+	daa
+	aci	40h
+	daa
+	jmp	@ch	;;return thru @ch
+;;
+@hx:	;;write hex value in reg-a
+	push	psw
+	rrc
+	rrc
+	rrc
+	rrc
+	ani	0fh	;;mask high nibble
+	call	@nb	;;print high nibble
+	pop	psw
+	ani	0fh
+	jmp	@nb	;;print low nibble
+;;
+@ad	;;write address value in hl
+	push	h	;;save value
+	mvi	a,' '	;;leading blank
+	call	@ch	;;ahead of address
+	pop	h	;;high byte to a
+	mov	a,h
+	push	h	;;copy back to stack
+	call	@hx	;;write high byte
+	pop	h
+	mov	a,l	;;low byte
+	jmp	@hx	;;write low byte
+;
+@in:	;;read hex value to hl from console
+	mvi	a,' '	;;leading space
+	call	@ch	;;to console
+	lxi	h,0	;;starting value
+@in0:	push	h	;;save it for char read
+	mvi	c,rchar	;;read character function
+	call	bdos	;;read to accumulator
+	pop	h	;;value being build in hl
+	sui	'0'	;;normalize to binary
+	cpi	10	;;decimal?
+	jc	@in1	;;carry if 0,1,	,9
+;;	may be hexadecimal a,...,f
+	sui	'A'-'@'-10
+	cpi	16	;;a through f?
+	rnc	;;return with assumed cr
+@in1:	;;in range, multiply by 4 and add
+	rept	4
+	dad	d	;;shift 4
+	endm
+	ora	l	;;add digit
+	mov	l,a	;;and replace value
+	jmp	@in0	;;for another digit
+;;
+psub:
+ugen	macro
+;;	redef to include once
+	endm
+	ugen	;;generate first time
+	endm
+;	*****************************************
+;       *       end of trace/dump utilities     *
+;       *       begin trace(only) utilities     *
+;	*****************************************
+trace	macro	code,mname
+;;	trace macro given by mname
+;;	at location given by code
+	local	psub
+	ugen		;;generate utilities
+	jmp	psub
+@t1:	ds	2	;;temp for reg-1
+@t2:	ds	2	;;temp for reg-2
+;;
+@tr:	;;trace macro call
+;;	bc=code address, de=message
+	
+	shld	@t1	;;store top req
+	pop	h	;;return address
+	xthl		;req-2 to too
+	shld	@t2	;;store to temp	
+	push	psw	;;save flags
+	push	b	;;save ret address
+	mvi	c,wbuff ;;print buffer func
+	call	bdos	;;print macro name
+	pop	h	;;code address
+	call	@ad	;;printed
+	lhld	@t1	;;top of stack
+	call	@ad	;;printed
+	lhld	@t2	;;top-l
+	call	@ad	;;printed
+	pop	psw	;;flags restored
+	pop	d	;;return address
+	lhld	@t2	;;top-l	jmp
+	push	h	;;restored
+	push	d	;;return address
+	lhld	@t1	;;top of stack
+	ret
+;;
+psub:	;;past subroutines
+;;
+trace	macro	c,m
+;;	redefined trace, uses @tr
+	local	pmsg,msg
+	jmp	pmsg
+msg:	db	cr,lf	;;cr,lf
+	db	'&M$'	;;mac name
+pmsg:
+	lxi	b,c	;;code address
+	lxi	d,msg	;;macro name
+	call	@tr	;;to trace it
+	endm
+;;	back to original macro level
+	trace	code,mname
+	endm
+;
+trt	macro	f
+;;	turn on flag "f"
+debug&F	set	1	;;print/trace on
+	endm
+;
+trf	macro	f
+debug&F	set	0	;;trace/print off
+	endm
+;
+?tr	macro m
+;;	check debugt toggle before trace
+	if debugt
+	trace	%$,m
+	endm
+;	*****************************************
+;       *       end of trace(only)  utilities   *
+;       *       begin dump(only) utilities      *
+;	*****************************************
+dmp	macro	vname,n
+;;	dump variable vname for
+;;	n elements (double bytes)
+	local	psub	;;past subroutines
+	ugen		;;gen inline routines
+	jmp	psub	;;past local subroutines
+@dm:	;;dump utility program
+;;	de=msg address, c=element count
+;;	hl=base address to print
+	push	h	;;base address
+	push	b	;;element count
+	mvi	c,wbuff	;;write buffer func
+	call	bdos	;;message written
+@dm0:	pop	b	;;recall count
+	pop	h	;;recall base address
+	mov	a,c	;;end of list?
+	ora	a
+	rz		;;return if so
+	dcr	c	;;decrement count
+	mov	e,m	;;next item (low)
+	inx	h
+	mov	d,m	;;next item (high)
+	inx	h	;;ready for next round
+	push	h	;;save print address
+	push	b	;;save count
+	xchg		;;data ready
+	call	@ad	;;print item value
+	jmp	@dm0	;;for another value
+;;
+@dt:	;;dump top of stack only
+	prn	<(top)=>	;;"(TOP)="
+	push	h
+	call	@ad		;;value of hl
+	pop	h		;;top restored
+	ret
+;;
+psub:
+;;
+dmp	macro	?v,?n
+;;	redefine dump to use @dm utility
+	local	pmsg,msg
+;;	special case if null parameters
+	if	nul vname
+;;	dump the top of the stack only
+	call	@dt
+	exitm
+	endif
+;;	otherwise dump variable name
+	jmp	pmsg
+msg:	db	cr,lf	;;crlf
+	db	'?V=$'	;;message
+pmsg:	adr	?v	;;hl=address
+active	set	0	;;clear active flag
+	lxi	d,msg	;;message to print
+	if	nul ?n	;;use length 1
+	mvi	c,1
+	else
+	mvi	c,?n
+	endif
+	call	@dm	;;to perform the dump
+	endm		;;end of redefinition
+	dmp	vname,n
+	endm
+;	*****************************************
+;       *       end of dump(only) utilities     *
+;       *       begin stack machine opcodes     *
+;	*****************************************
+active	set	0	;active register flag
+;
+siz	macro	size
+	org	tran	;;set to transient area
+;;	create a stack when "xit" encountered
+@stk	set	size	;;save for data area
+	lxi	sp,stack
+	endm
+;
+save	macro
+;;	check to ensure "enter" properly set up
+	if	stack	;;is it present?
+	endif
+save	macro	;;redefine after initial reference
+	if	active	;;element in hl
+	push	h	;;save it
+	endif
+active	set	1	;;set active
+	endm
+	save
+	endm
+;
+rest	macro
+;;	retore the top element
+	if	not active
+	pop	h	;;recall to hl
+	endif
+active	set	1	;;mark as active
+	endm
+;
+clear	macro
+;;	clear the top active element
+	rest		;;ensure active
+active	set	0	;;cleared
+	endm
+;
+dcl	macro	vname,size
+;;	label the declaration
+vname:
+	if	nul size
+	ds	2	;;one word required
+	else
+	ds	size*2	;;double words
+	endm
+;
+lit	macro	val
+;;	load literal value to top of stack
+	save		;;save if active
+	lxi	h,val	;;load literal
+	?tr	lit
+	endm
+;
+adr	macro	base,inx,con
+;;	load address of base, index by inx
+;;	with constant offset given by con
+	save		;;push if active
+	if	nul inx&con
+	lxi	h,base	;;address of base
+	exitm		;;simple address
+;;	must be inx and/or con
+	if	nul inx
+	lxi	h, con*2	;;constant
+	else
+	lhld	inx		;;index to hl
+	dad	h		;;double precision inx
+	if	not nul con
+	lxi	d,con*2		;;double const
+	dad	d		;;added to inx
+	endif			;;not nul con
+	endif			;;null inx
+	lxi	d,base		;;read to add
+	dad	d		;;base+inx*2+con*2
+	endm
+;
+val	macro	b,i,c
+;;	get value of b+i+c to hl
+;;	check simple case of b only
+	if	nul i&c
+	save		;;push if active
+	lhld	b	;;load directly
+	else
+;;	"adr" pushes active registers
+	adr	b,i,c	;;address in hl
+	mov	e,m	;;low order byte
+	inx	h
+	mov	d,m	;;high order byte
+	xchg		;;back to hl
+	endif
+	?tr	val	;;trace set?
+	endm
+;
+sto	macro	b,i,c
+;;	store the value to the top of stack
+;;	leaving the top element active
+	if	nul i&c
+	rest		;;activate stack
+	shld	b	;;stored directly to b
+	else
+	adr	b,i,c
+	pop	d	;;value is in de
+	mov	m,e	;;low byte
+	inx	h
+	mov	m,d	;;high byte
+	endif
+	clear		;;mark empty
+	?tr	sto	;;trace?
+	endm
+;
+sum	macro
+	rest		;;restore if saved
+;;	add the top two stack elements
+	pop	d	;;top-1 to de
+	dad	d	;;back to hl
+	?tr	sum
+	endm
+;
+dif	macro
+;;	compute difference between top elements
+	rest		;;restore if saved
+	pop	d	;;top-1 to de
+	mov	a,e	;;top-1 low byte to a
+	sub	l	;;low order difference
+	mov	l,a	;;back to l
+	mov	a,d	;;top-1 high byte
+	sbb	h	;;high order difference
+	mov	h,a	;;back to h
+;;	carry flag may be set upon return
+	?tr	dif
+	endm
+;
+lsr	macro	len
+;;	logical shift right by len
+	rest		;;activate stack
+	rept	len	;;generate inline
+	xra	a	;;clear carry
+	mov	a,h
+	rar		;;rotate with high 0
+	mov	h,a
+	mov	a,l
+	rar
+	mov	l,a	;;back with high bit
+	endm
+	endm
+;
+geq	macro	lab
+;;	jump to lab if (top-1) is greate or
+;;	equal to (top) element.
+	dif		;;compute difference
+	clear		;;clear active
+	?tr	geq
+	jnc	lab	;;no carry if greater
+	jz	lab	;;zero if equal
+;;	drop through if neither
+	endm
+;
+dup	macro
+;;	duplicate the top element in the stack
+	rest		;;ensure active
+	push	h
+	?tr	dup
+	endm
+;
+brn	macro	addr
+;;	branch to address
+	jmp	addr
+	endm
+;
+xit	macro
+	?tr	xit	;;trace on?
+	jmp	0	;;restart at 0000
+	org	data	;;start data area
+	ds	@stk*2	;;obtained from "siz"
+stack:	endm
+;
+;	*****************************************
+;       *       memory mapped i/o section       *
+;	*****************************************
+;	input values which are read as if in memory
+adc0	equ	1080h	;a-d converter 0
+adc1	equ	1082h	;a-d converter 1
+adc2	equ	1084h	;a-d converter 2
+adc3	equ	1086h	;a-d converter 3
+;
+dac0	equ	1090h	;d-a converter 0
+dac1	equ	1092h	;d-a converter 1
+dac2	equ	1094h	;d-a converter 2
+dac3	equ	1096h	;d-a converter 3
+;
+rwtrace	macro	msg,adr
+;;	read or write trace with message
+;;	given by "msg" to/from "adr"
+	prn	<msg at adr>
+	endm
+;
+rdm	macro	?c
+;;	read a-d converter number "?c"
+	save		;;clear the stack
+	if	debugp	;;stop execution in ddt
+	rwtrace	<a-d input >,% adc&?c
+	ugen		;;ensure @in is present
+	call	@in	;;value in hl
+	shld	adc&?c	;;simulate memory input
+	else
+	lhld	adc&?c
+	endif
+	?tr	rdm
+	endm
+;
+wrm	macro	?c
+;;	write d-a converter number "?c"
+	rest		;;restore stack
+	if	debugp	;;trace the output
+	rwtrace	<d-a output>,% dac&?c
+	ugen		;;include subroutines
+	call	@ad	;;write the value
+	endif
+	shld	dac&?c
+	?tr	wrm	;;tracing output?
+	clear		;;remove the value
+	endm
+;	*****************************************
+;       *       end of macro library            *
+;	*****************************************

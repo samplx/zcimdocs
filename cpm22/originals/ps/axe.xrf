@@ -1,0 +1,107 @@
+     1                  ;THIS IS A SAMPLE COLD START LOADER, WHICH, WHEN 
+     2                  ;MODIFIED
+     3                  ;RESIDES ON TRACK 00, SECTOR 01 (THE FIRST SECTOR ON THE 
+     4                  ;DISKETTE), WE ASSUME THAT THE CONTROLLER HAS LOADED 
+     5                  ;THIS SECTOR INTO MEMORY UPON SYSTEM START-UP (THIS 
+     6                  ;PROGRAM CAN BE KEYED-IN, OR CAN EXIST IN READ-ONLY 
+     7                  ;MEMORY
+     8                  ;BEYOND THE ADDRESS SPACE OF THE CP/M VERSION YOU ARE 
+     9                  ;RUNNING). THE COLD START LOADER BRINGS THE CP/M SYSTEM 
+    10                  ;INTO MEMORY AT"LOADP" (3400H +"BIAS"). IN A 20K 
+    11                  ;MEMORY SYSTEM, THE VALUE OF"BIAS" IS 000H, WITH 
+    12                  ;LARGE
+    13                  ;VALUES FOR INCREASED MEMORY SIZES (SEE SECTION 2). 
+    14                  ;AFTER
+    15                  ;LOADING THE CP/M SYSTEM, THE COLD START LOADER 
+    16                  ;BRANCHES
+    17                  ;TO THE "BOOT" ENTRY POINT OF THE BIOS, WHICH BEGINS AT
+    18                  ; "BIOS" +"BIAS". THE COLD START LOADER IS NOT USED UN-
+    19                  ;TIL THE SYSTEM IS POWERED UP AGAIN, AS LONG AS THE BIOS 
+    20                  ;IS NOT OVERWRITTEN. THE ORIGIN IS ASSUMED AT 0000H, AND 
+    21                  ;MUST BE CHANGED IF THE CONTROLLER BRINGS THE COLD START 
+    22                  ;LOADER INTO ANOTHER AREA, OR IF A READ-ONLY MEMORY 
+    23                  ;AREA
+    24                  ;IS USED.
+    25   0000           	ORG	0		;BASE OF RAM IN
+    26                  				;CP/M
+    27   0014 =         MSIZE	EQU	20		;MIN MEM SIZE IN
+    28                  				;KBYTES
+    29   0000 =         BIAS	EQU	(MSIZE-20)*1024	;OFFSET FROM 20K
+    30                  				;SYSTEM
+    31   3400 =         CCP	EQU	3400H+BIAS	;BASE OF THE CCP
+    32   4A00 =         BIOS	EQU	CCP+1600H	;BASE OF THE BIOS
+    33   0300 =         BIOSL	EQU	0300H		;LENGTH OF THE BIOS
+    34   4A00 =         BOOT	EQU	BIOS
+    35   1900 =         SIZE	EQU	BIOS+BIOSL-CCP	;SIZE OF CP/M
+    36                  				;SYSTEM
+    37   0032 =         SECTS	EQU	SIZE/128	;# OF SECTORS TO LOAD
+    38                  ;
+    39                  ;	BEGIN THE LOAD OPERATION 
+    40                  
+    41                  COLD:
+    42   0000 010200    	LXI	B,2		;B=0, C=SECTOR 2
+    43   0003 1632      	MVI	D,SECTS		;D=# SECTORS TO
+    44                  				;LOAD
+    45   0005 210034    	LXI	H,CCP		;BASE TRANSFER
+    46                  				;ADDRESS
+    47                  LSECT:	;LOAD THE NEXT SECTOR
+    48                  
+    49                  ;	INSERT INLINE CODE AT THIS POINT TO
+    50                  ;	READ ONE 128 BYTE SECTOR FROM THE
+    51                  ;	TRACK GIVEN IN REGISTER B, SECTOR
+    52                  ;	GIVEN IN REGISTER C,
+    53                  ;	INTO THE ADDRESS GIVEN BY <HL>
+    54                  ;BRANCH	TO LOCATION "COLD" IF A READ ERROR OCCURS
+    55                  ;
+    56                  ;
+    57                  ;
+    58                  ;
+    59                  ;	USER SUPPLIED READ OPERATION GOES
+    60                  ;	HERE...
+    61                  ;
+    62                  ;
+    63                  ;
+    64                  ;
+    65   0008 C36B00    	JMP	PAST$PATCH	;REMOVE THIS
+    66                  				;WHEN PATCHED
+    67   000B           	DS	60H
+    68                  
+    69                  PAST$PATCH:
+    70                  ;GO TO NEXT SECTOR IF LOAD IS INCOMPLETE
+    71   006B 15        	DCR	D		;SECTS=SECTS-1
+    72   006C CA004A    	JZ	BOOT		;HEAD. FOR THE BIOS
+    73                  
+    74                  ;	MORE SECTORS TO LOAD
+    75                  ;
+    76                  
+    77                  ;WE AREN'T USING A STACK, SO USE <SP> AS SCRATCH
+    78                  ;REGISTER
+    79                  ;	TO HOLD THE LOAD ADDRESS INCREMENT
+    80   006F 318000    	LXI	SP,128		;128 BYTES PER
+    81                  				;SECTOR
+    82   0072 39        	DAD	SP		;<HL> = <HL> + 128
+    83   0073 0C        	INR	C		;SECTOR=SECTOR + 1
+    84   0074 79        	MOV	A,C
+    85   0075 FE1B      	CPI	27		;LAST SECTOR OF
+    86                  				;TRACK?
+    87   0077 DA0800    	JC	LSECT		;NO, GO READ
+    88                  				;ANOTHER
+    89                  
+    90                  ;END OF TRACK, INCREMENT TO NEXT TRACK
+    91                  
+    92   007A 0E01      	MVI	C,1		;SECTOR = 1
+    93   007C 04        	INR	B		;TRACK = TRACK + 1
+    94   007D C30800    	JMP	LSECT		;FOR ANOTHER GROUP
+    95   0080           	END			;OF BOOT LOADER
+BIAS             0000    29#   31 
+BIOS             4A00    32#   34    35 
+BIOSL            0300    33#   35 
+BOOT             4A00    34#   72 
+CCP              3400    31#   32    35    45 
+COLD             0000    41#
+LSECT            0008    47#   87    94 
+MSIZE            0014    27#   29 
+PASTPATCH        006B    65    69#
+SECTS            0032    37#   43 
+SIZE             1900    35#   37 
+

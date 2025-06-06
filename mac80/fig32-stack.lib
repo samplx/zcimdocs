@@ -1,0 +1,54 @@
+siz	macro	size
+;;	set "org" and create stack
+	local	stack	;;label on the stack
+	org	100h	;;at base of TPA
+	lxi	sp,stack
+	jmp	stack	;;past stack
+	ds	size*2	;;double precision
+stack:	endm
+;
+dup	macro
+;;duplicate top of stack
+	push	h
+	endm
+;
+sum	macro
+;;	add the top two	stack elements
+	pop	d	;;top-1 to de
+	dad	d	;;back to hl
+	endm
+;
+	lsr	macro	len
+;;	logical shift right by len
+	rept	len	;;generate inline
+	xra	a	;;clear carry
+	mov	a,h
+	rar		;;rotate with high 0
+	mov	h,a
+	mov	a,l
+	rar
+	mov	l,a	;;back with high bit
+	endm
+	endm
+;
+adc0	equ	1080h	;a-d converter 0
+adc1	equ	1082h	;a-d converter 1
+adc2	equ	1084h	;a-d converter 2
+adc3	equ	1086h	;a-d converter 3
+dac0	equ	1090h	;d-a converter 0
+dac1	equ	1092h	;d-a converter 1
+dac2	equ	1094h	;d-a converter 2
+dac3	equ	1096h	;d-a converter 3
+;
+rdm	macro	?c
+;;	read a-d converter number "?c"
+	push	h	;;clear the stack
+;;	read from memory mapped input address			
+	lhld	adc&?c
+	endm
+;
+	wrm	macro	?c
+;;	write d-a converter number 119c"
+	shld	dac&?c ;;value written
+	pop	h	;;restore stack
+	endm

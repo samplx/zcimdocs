@@ -1,0 +1,74 @@
+;	macro library for "select" construct
+;
+;	label generators
+genslxi	macro	num
+;;	load hlwith address of case list
+	lxi	h,selv&num
+	endm
+;
+gencase	macro	num,elt
+;;	generate jmp to end of cases
+	if	elt gt 0
+	jmp	ends&num	;;past addr list
+	endif
+;;	generate label for this case
+case&num&@&elt:
+	endm
+;
+genelt	macro	num,elt
+;;	generate one element of case list
+	dw	case&num&@&elt
+	endm
+;
+genslab	macro num,elts
+;;	generate case list
+selv&num:
+ecnt	set	0	;;count elements
+	rept	elts	;;qenerate dw's
+	genelt	num,%ecnt
+ecnt	set	ecnt+1
+	endm		;;end of dw's
+;;	generate end of case list label
+ends&num:
+	endm
+
+selnext	macro
+;;	generate the next case
+	gencase %ccnt,%ecnt
+;;	increment the case element count
+ecnt	set	ecnt+1
+	endm
+;
+select	macro	var
+;;	generate case selection code
+ccnt	set	0	;;count "selects"
+select	macro	v	;;redefinition of select
+;;	select on v or accumulator contents
+	if	not nul	v
+	lda	v	;;load select variable
+	endif
+	genslxi	%ccnt	;;generate the lxi h,selv#
+	mov	e,a	;;create double precision
+	mvi	d,0	;;v in d,e pair
+	dad	d	;;single prec index
+	dad	d	;;double vrec index
+	mov	e,m	;;low order branch addr
+	inx	h	;;to hiqh order byte
+	mov	d,m	;;hiqh order branch index
+	xchg		;;ready branch address in hl
+	pchl		;;gone to the proper case
+ecnt	set	0	;;element counter reset
+	endm
+;;	invoke redefined select the first time
+	select var
+	selnext		;;automaticallv select case 0
+	endm
+;
+endsel	macro
+;;	end of select, generate case list
+	gencase %ccnt,%ecnt		;;last case
+	genslab %ccnt,%ecnt		;;case list
+;;	increment "select" count
+ccnt	set	ccnt+1
+	endm
+

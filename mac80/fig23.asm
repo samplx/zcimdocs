@@ -1,0 +1,29 @@
+;	MACRO PARAMETER EVALUATION
+;
+MAC1	MACRO 	A,B,C,D,S
+;
+;	ENTERING MACRO 1:
+	DB	'&A &B &C &D'
+	DB	S
+A:	NOP
+	MVI	B,1
+C&1:	NOP
+L&A&D:			NOP
+;	LEAVING MACRO 1
+;
+	ENDM
+;
+MAC2	MACRO 	E,F,G,H,S
+;
+;	ENTERING MACRO 2:
+	DB	'&E &F &G &H'
+	DB	S
+	MVI	M,H
+	MAC1	E,F&M,A,H,S
+;	LEAVING MACRO 2
+;
+	ENDM
+;
+X	EQU 	15
+	MAC2	I ,, X+l, % X + 1, 'kwote'
+	END

@@ -1,0 +1,1836 @@
+<html>
+<title>Section 1: CP/M Features and Facilities</title>
+<body>
+<center><p><h1>Section 1<br>CP/M Features and Facilities</h1></center>
+<p align="center"><b>Table of Contents</b>
+<p><a href="#Section_1.1">1.1 Introduction</a>
+<br><a href="#Section_1.2">1.2 Functional Description</a>
+<blockquote>
+<a href="#Section_1.2.1">1.2.1 General Command Structure</a><br>
+<a href="#Section_1.2.2">1.2.2 File References</a>
+</blockquote>
+<br><a href="#Section_1.3">1.3 Switching Disks</a>
+<br><a href="#Section_1.4">1.4 Built-in Commands</a>
+<blockquote>
+<a href="#Section_1.4.1">1.4.1 ERA</a><br>
+<a href="#Section_1.4.2">1.4.2 DIR</a><br>
+<a href="#Section_1.4.3">1.4.3 REN</a><br>
+<a href="#Section_1.4.4">1.4.4 SAVE</a><br>
+<a href="#Section_1.4.5">1.4.5 TYPE</a><br>
+<a href="#Section_1.4.6">1.4.6 USER</a>
+</blockquote>
+<br><a href="#Section_1.5">1.5 Line Editing and Output Control</a>
+<br><a href="#Section_1.6">1.6 Transient Commands</a>
+<blockquote>
+<a href="#Section_1.6.1">1.6.1 STAT</a><br>
+<a href="#Section_1.6.2">1.6.2 ASM</a><br>
+<a href="#Section_1.6.3">1.6.3 LOAD</a><br>
+<a href="#Section_1.6.4">1.6.4 PIP</a><br>
+<a href="#Section_1.6.5">1.6.5 ED</a><br>
+<a href="#Section_1.6.6">1.6.6 SYSGEN</a><br>
+<a href="#Section_1.6.7">1.6.7 SUBMIT</a><br>
+<a href="#Section_1.6.8">1.6.8 DUMP</a><br>
+<a href="#Section_1.6.9">1.6.9 MOVCPM</a>
+</blockquote>
+<br><a href="#Section_1.7">1.7 BDOS Error Messages</a>
+<br><a href="#Section_1.8">1.8 Operation of CP/M on the MDS</a>
+<p align="center"><b>Figures</b>
+<p><a href="#Table_1-1">1-1 Line-editing Control Characters</a><br>
+<a href="#Table_1-2">1-2 CP/M Transient Commands</a><br>
+<a href="#Table_1-3">1-3 Physical Devices</a><br>
+<a href="#Table_1-4">1-4 PIP Parameters</a><br>
+<hr>
+<p><a name="Section_1.1"><h1>1.1 Introduction</h1></a>
+<p>CP/M is a monitor control program for microcomputer system
+development that uses floppy disks or Winchester hard disks for
+backup storage. Using a computer system based on the Intel 8080
+microcomputer, CP/M provides an environment for program
+construction, storage, and editing, along with assembly and
+program checkout facilities. CP/M can be easily altered to
+execute with any computer configuration that uses a Zilog Z80 or
+an Intel 8080 Central Processing Unit (CPU) and has at least 20K
+bytes of main memory with up to 16 disk drives. A detailed
+discussion of the modifications required for any particular
+hardware environment is given in 
+<a href="ch6.htm">Section 6</a>. Although the standard
+Digital Research version operates on a single-density Intel MDS
+800, several different hardware manufacturers support their own
+input-output (I/O) drivers for CP/M.
+<p>The CP/M monitor provides rapid access to programs through a
+comprehensive file management package. The file subsystem
+supports a named file structure, allowing dynamic allocation of
+file space as well as sequential and random file access. Using
+this file system, a large number of programs can be stored in
+both source and machine executable form.
+<p>CP/M 2 is a high-performance, single console operating system
+that uses table-driven techniques to allow field reconfiguration
+to match a wide variety of disk capacities. All fundamental file
+restrictions are removed, maintaining upward compatibility from
+previous versions of release 1.
+<p>Features of CP/M 2 include field specification of one to sixteen
+logical drives, each containing up to eight megabytes. Any
+particular file can reach the full drive size with the capability
+of expanding to thirty-two megabytes in future releases. The
+directory size can be field-configured to contain any reasonable
+number of entries, and each file is optionally tagged with Read-Only 
+and system attributes. Users of CP/M 2 are physically
+separated by user numbers, with facilities for file copy
+operations from one user area to another. Powerful relative-record 
+random access functions are present in CP/M 2 that provide
+direct access to any of the 65536 records of an eight-megabyte
+file.
+<p>CP/M also supports ED, a powerful context editor, ASM, an Intel-compatible
+assembler, and DDT, debugger subsystems. Optional
+software includes a powerful Intel-compatible macro assembler,
+symbolic debugger, along with various high-level languages. When
+coupled with CP/M's Console Command Processor (CCP), the
+resulting facilities equal or exceed similar large computer
+facilities.
+<p>CP/M is logically divided into several distinct parts:
+<ul>
+<li>BIOS (Basic I/O System), hardware-dependent
+<li>BDOS (Basic Disk Operating System)
+<li>CCP (Console Command Processor)
+<li>TPA (Transient Program Area)
+</ul>
+<p>The BIOS provides the primitive operations necessary to access
+the disk drives and to interface standard peripherals: teletype,
+CRT, paper tape reader/punch, and user-defined peripherals. You
+can tailor peripherals for any particular hardware environment by
+patching this portion of CP/M. The BDOS provides disk management
+by controlling one or more disk drives containing independent
+file directories. The BDOS implements disk allocation strategies
+that provide fully dynamic file construction while minimizing
+head movement across the disk during access. The BDOS has entry
+points that include the following primitive operations, which the
+program accesses:
+<ul>
+<li>SEARCH looks for a particular disk file by name.
+<li>OPEN opens a file for further operations.
+<li>CLOSE closes a file after processing.
+<li>RENAME changes the name of a particular file.
+<li>READ reads a record from a particular file.
+<li>WRITE writes a record to a particular file.
+<li>SELECT selects a particular disk drive for further
+operations.
+</ul>
+<p>The CCP provides a symbolic interface between your console and
+the remainder of the CP/M system. The CCP reads the console
+device and processes commands, which include listing the file
+directory, printing the contents of files, and controlling the
+operation of transient programs, such as assemblers, editors, and
+debuggers. The standard commands that are available in the CCP
+are listed in <a href="#Section_1.2.1">Section 1.2.1</a>.
+<p>The last segment of CP/M is the area called the Transient Program
+Area (TPA). The TPA holds programs that are loaded from the disk
+under command of the CCP. During program editing, for example,
+the TPA holds the CP/M text editor machine code and data areas.
+Similarly, programs created under CP/M can be checked out by
+loading and executing these programs in the TPA.
+<p>Any or all of the CP/M component subsystems can be overlaid by an
+executing program. That is, once a user's program is loaded into
+the TPA, the CCP, BDOS, and BIOS areas can be used as the
+program's data area. A bootstrap loader is programmatically
+accessible whenever the BIOS portion is not overlaid; thus, the
+user program need only branch to the bootstrap loader at the end
+of execution and the complete CP/M monitor is reloaded from disk.
+<p>The CP/M operating system is partitioned into distinct modules,
+including the BIOS portion that defines the hardware environment
+in which CP/M is executing. Thus, the standard system is easily
+modified to any nonstandard environment by changing the
+peripheral drivers to handle the custom system.
+<p><a name="Section_1.2"><h1>1.2 Functional Description</h1></a>
+<p>You interact with CP/M primarily through the CCP, which reads and
+interprets commands entered through the console. In general, the
+CCP addresses one of several disks that are on-line. The standard
+system addresses up to sixteen different disk drives.  These disk
+drives are labeled A through P. A disk is logged-in if the CCP is
+currently addressing the disk. To clearly indicate which disk is
+the currently logged disk, the CCP always prompts the operator
+with the disk name followed by the symbol &gt;, indicating that the
+CCP is ready for another command. Upon initial start-up, the CP/M
+system is loaded from disk A, and the CCP displays the following
+message:
+<pre>
+     CP/M VER x.x
+</pre>
+<p>where x.x is the CP/M version number. All CP/M systems are
+initially set to operate in a 20K memory space, but can be easily
+reconfigured to fit any memory size on the host system (see
+<a href="#Section_1.6.9">Section 1.6.9</a>). 
+Following system sign-on, CP/M automatically logs
+in disk A, prompts you with the symbol A&gt;, indicating that CP/M
+is currently addressing disk A, and waits for a command. The
+commands are implemented at two levels: built-in commands and
+transient commands.
+<p><a name="Section_1.2.1"><h1>1.2.1 General Command Structure</h1>
+<p>Built-in commands are a part of the CCP program, while transient
+commands are loaded into the TPA from disk and executed. The
+following are built-in commands:
+<ul>
+<li>ERA erases specified files.
+<li>DIR lists filenames in the directory.
+<li>REN renames the specified file.
+<li>SAVE saves memory contents in a file.
+<li>TYPE types the contents of a file on the logged disk.
+</ul>
+<p>Most of the commands reference a particular file or group of
+files. The form of a file reference is specified in 
+<a href="#Section_1.2.2">Section 1.2.2</a>.
+<p><a name="Section_1.2.2"><h1>1.2.2 File References</h1>
+<p>A file reference identifies a particular file or group of files
+on a particular disk attached to CP/M. These file references are
+either unambiguous (ufn) or ambiguous (afn). An unambiguous file
+reference uniquely identifies a single file, while an ambiguous
+file reference is satisfied by a number of different files.
+<p>File references consist of two parts: the primary filename and
+the filetype. Although the filetype is optional, it usually is
+generic. For example, the filetype ASM is used to denote that the
+file is an assembly language source file, while the primary
+filename distinguishes each particular source file. The two names
+are separated by a period, as shown in the following example:
+<pre>
+     filename.typ
+</pre>
+<p>In this example, filename is the primary filename of eight
+characters or less, and typ is the filetype of no more than three
+characters. As mentioned above, the name
+<pre>
+     filename
+</pre>
+<p>is also allowed and is equivalent to a filetype consisting of
+three blanks. The characters used in specifying an unambiguous
+file reference cannot contain any of the following special
+characters:
+<pre>
+     &lt; &gt; . , ; : = ? * [ ] % | ( ) / \
+</pre>
+<p>while all alphanumerics and remaining special characters are
+allowed.
+<p>An ambiguous file reference is used for directory search and
+pattern matching. The form of an ambiguous file reference is
+similar to an unambiguous reference, except the symbol ? can be
+interspersed throughout the primary and secondary names. In
+various commands throughout CP/M, the ? symbol matches any
+character of a filename in the ? position. Thus, the ambiguous
+reference
+<pre>
+     X?Z.C?M
+</pre>
+<p>matches the following unambiguous filenames
+<pre>
+     XYZ.COM
+</pre>
+<p>and
+<pre>
+     X3Z.CAM
+</pre>
+<p>The wildcard character can also be used in an ambiguous file
+reference. The * character replaces all or part of a filename or
+filetype. Note that
+<pre>
+     *.*
+</pre>
+<p>equals the ambiguous file reference
+<pre>
+     ????????.???
+</pre>
+<p>while
+<pre>
+     filename.*
+</pre>
+<p>and
+<pre>
+     *.typ
+</pre>
+<p>are abbreviations for
+<pre>
+     filename.???
+</pre>
+<p>and
+<pre>
+     ????????.typ
+</pre>
+<p>respectively. As an example,
+<pre>
+     A&gt;DIR *.*
+</pre>
+<p>is interpreted by the CCP as a command to list the names of all
+disk files in the directory. The following example searches only
+for a file by the name X.Y:
+<pre>
+     A&gt;DIR X.Y
+</pre>
+<p>Similarly, the command
+<pre>
+     A&gt;DIR X?Y.C?M
+</pre>
+<p>causes a search for all unambiguous filenames on the disk that
+satisfy this ambiguous reference.
+<p>The following file references are valid unambiguous file
+references:
+<pre>
+     X
+     X.Y
+     XYZ
+     XYZ.COM
+     GAMMA
+     GAMMA.1
+</pre>
+<p>As an added convenience, the programmer can generally specify the
+disk drive name along with the filename. In this case, the drive
+name is given as a letter A through P followed by a colon (:).
+The specified drive is then logged-in before the file operation
+occurs. Thus, the following are valid file references with disk
+name prefixes:
+<pre>
+     A:X.Y
+     P:XYZ.COM
+     B:XYZ
+     B:X.A?M
+     C:GAMMA
+     C:*.ASM
+</pre>
+<p>All alphabetic lower-case letters in file and drive names are
+translated to upper-case when they are processed by the CCP.
+<p><a name="Section_1.3"><h1>1.3 Switching Disks</h1>
+<p>The operator can switch the currently logged disk by typing the
+disk drive name, A through P, followed by a colon when the CCP is
+waiting for console input. The following sequence of prompts and
+commands can occur after the CP/M system is loaded from disk
+A:
+<p>&nbsp;
+<center>
+<table border="1">
+<tr><td>CP/M VER 2.2<br>
+A&gt;DIR<br>
+A:SAMPLE ASM SAMPLE PRN<td>List all files on disk A.
+<tr><td>A&gt;B:<td>Switch to disk B.
+<tr><td>B&gt;DIR *.ASM<br>
+B:DUMP ASM FILES ASM<td>List all ASM files on B.
+<tr><td>B&gt;A:<td>Switch back to A.
+</table></center>
+<p><a name="Section_1.4"><h1>1.4 Built-in Commands</h1>
+<p>The file and device reference forms described can now be used to
+fully specify the structure of the built-in commands. Assume the
+following abbreviations in the description below:
+<center><table>
+<tr><td>ufn<td>unambiguous file reference
+<tr><Td>afn<td>ambiguous file reference
+</table></center>
+<p>Recall that the CCP always translates lower-case characters to
+upper-case characters internally. Thus, lower-case alphabetics
+are treated as if they are upper-case in command names and file
+references.
+<p><a name="Section_1.4.1"><h1>1.4.1 ERA Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>ERA afn
+</table>
+<p>The ERA (erase) command removes files from the currently logged-
+in disk, for example, the disk name currently prompted by CP/M
+preceding the >. The files that are erased are those that satisfy
+the ambiguous file reference afn. The following examples
+illustrate the use of ERA:
+<p>&nbsp;
+<table border="1">
+<tr><td>ERA X.Y<td>The file named X.Y on the currently logged disk is
+removed from the disk directory and the space is
+returned.
+<tr><td>ERA X.*<td>All files with primary name X are removed from the
+current disk.
+<tr><td>ERA *.ASM<td>All files with secondary name ASM are removed from
+the current disk.
+<tr><td>ERA X?Y.C?M<td>All files on the current disk that satisfy the
+ambiguous reference X?Y.C?M are deleted.
+<tr><td>ERA *.*<td>Erase all files on the current disk. In this case,
+the CCP prompts the console with the message
+<pre>
+     ALL FILES (Y/N)?
+</pre>
+<p>which requires a Y response before files are
+actually removed.
+<tr><td>ERA B:*.PRN<td>All files on drive B that satisfy the ambiguous
+reference ????????.PRN are deleted, independently
+of the currently logged disk.
+</table>
+<p><a name="Section_1.4.2"><h1>1.4.2 DIR Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>DIR afn
+</table>
+<p>The DIR (directory) command causes the names of all files that
+satisfy the ambiguous filename afn to be listed at the console
+device. As a special case, the command
+<pre>
+     DIR
+</pre>
+<p>lists the files on the currently logged disk (the command DIR is
+equivalent to the command DIR *.*). The following are valid DIR
+commands:
+<pre>
+     DIR X.Y
+     DIR X?Y.C?M
+     DIR ??.Y
+</pre>
+<p>Similar to other CCP commands, the afn can be preceded by a drive
+name. The following DIR commands cause the selected drive to be
+addressed before the directory search takes place:
+<pre>
+     DIR B:
+     DIR B:X.Y
+     DIR B:*.A?M
+</pre>
+<p>If no files on the selected disk satisfy the directory request,
+the message NO FILE appears at the console.
+<p><a name="Section_1.4.3"><h1>1.4.3 REN Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>REN ufn1=ufn2
+</table>
+<p>The REN (rename) command allows you to change the names of files
+on disk. The file satisfying ufn2 is changed to ufn1.  The
+currently logged disk is assumed to contain the file to rename
+(ufn2). You can also type a left-directed arrow instead of the
+equal sign if the console supports this graphic character. The
+following are examples of the REN command:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>REN X.Y=Q.R<td>The file Q.R is changed to X.Y.
+<tr><td>REN XYZ.COM=XYZ.XXX<td>The file XYZ.COM is changed 
+to XYZ.XXX.
+</table></center>
+<p>The operator precedes either ufn1 or ufn2 (or both) by an
+optional drive address. If ufn1 is preceded by a drive name, then
+ufn2 is assumed to exist on the same drive. Similarly, if ufn2 is
+preceded by a drive name, then ufn1 is assumed to exist on the
+drive as well. The same drive must be specified in both cases if
+both ufn1 and ufn2 are preceded by drive names. The following REN
+commands illustrate this format:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>REN A:X.ASM=Y.ASM<td>The file Y.ASM is changed to X.ASM on
+drive A.
+<tr><td>REN B:ZAP.BAS=ZOT.BAS<td>The file ZOT.BAS is 
+changed to ZAP.BAS on drive B.
+<tr><Td>REN B:A.ASM=B:A.BAK<td>The file A.BAK is renamed to 
+A.ASM on drive B.
+</table></center>
+<p>If ufn1 is already present, the REN command responds with the
+error FILE EXISTS and not perform the change. If ufn2 does not
+exist on the specified disk, the message NO FILE is printed at
+the console.
+<p><a name="Section_1.4.4"><h1>1.4.4 SAVE Command</h1>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>SAVE n ufn
+</table>
+<p>The SAVE command places n pages (256-byte blocks) onto disk from
+the TPA and names this file ufn. In the CP/M distribution system,
+the TPA starts at 100H (hexadecimal) which is the second page of
+memory. The SAVE command must specify 2 pages of memory if the
+user's program occupies the area from 100H through 2FFH. The
+machine code file can be subsequently loaded and executed. The
+following are examples of the SAVE command:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>SAVE 3 X.COM<td>Copies 100H through 3FFH to X.COM.
+<tr><td>SAVE 40 Q<td>Copies 100H through 28FFH to Q. Note that 28
+is the page count in 28FFH, and that 28H = 2
+* 16 + 8 = 40 decimal.
+<tr><td>SAVE 4 X.Y<td>Copies 100H through 4FFH to X.Y.
+</table></center>
+<p>The SAVE command can also specify a disk drive in the ufn portion
+of the command, as shown in the following example:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>SAVE 10 B:ZOT.COM<td>Copies 10 pages, 100H through 0AFFH, to the
+file  ZOT.COM on drive B.
+</table></center>
+<p><a name="Section_1.4.5"><h1>1.4.5 TYPE Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>TYPE ufn
+</table>
+<p>The TYPE command displays the content of the ASCII source file
+ufn on the currently logged disk at the console device. The
+following are valid TYPE commands:
+<pre>
+     TYPE X.Y
+     TYPE X.PLM
+     TYPE XXX
+</pre>
+<p>The TYPE command expands tabs, CTRL-I characters, assuming tab
+positions are set at every eighth column. The ufn can also
+reference a drive name.
+<p>&nbsp;
+<center><table border="1">
+<tr><td>TYPE B:X.PRN<td>The file X.PRN from drive B is displayed.
+</table></center>
+<p><a name="Section_1.4.6"><h1>1.4.6 USER Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>USER n
+</table>
+<p>The USER command allows maintenance of separate files in the same
+directory. In the syntax line, n is an Integer value in the range
+0 to 15. On cold start, the operator is automatically logged into
+user area number 0, which is compatible with standard CP/M 1
+directories. You can issue the USER command at any time to move
+to another logical area within the same directory. Drives that
+are logged-in while addressing one user number are automatically
+active when the operator moves to another. A user number is
+simply a prefix that accesses particular directory entries on the
+active disks.
+<p>The active user number is maintained until changed by a
+subsequent USER command, or until a cold start when user 0 is
+again assumed.
+<p><a name="Section_1.5"><h1>1.5 Line Editing and Output Control</h1></a>
+<P>The CCP allows certain line-editing functions while typing
+command lines. The CTRL-key sequences are obtained by pressing
+the control and letter keys simultaneously. Further, CCP command
+lines are generally up to 255 characters in length; they are not
+acted upon until the carriage return key is pressed.
+<p>&nbsp;
+<a name="Table_1-1">
+<center>
+<table border="1">
+<caption align="bottom">Table 1-1. Line-editing Control Characters</caption>
+<tr><th>Character<th>Meaning
+<tr><td>CTRL-C<td>Reboots CP/M system when pressed at start of line.
+<tr><td>CTRL-E<td>Physical end of line; carriage is returned, but
+line is not sent until the carriage return key is
+pressed.
+<tr><td>CTRL-H<td>Backspaces one character position.
+<tr><td>CTRL-I<td>Terminates current input (line-feed).
+<tr><td>CTRL-M<td>Terminates current input (carriage return).
+<tr><td>CTRL-P<td>Copies all subsequent console output to the
+currently assigned list device (see 
+<a href="#Section_1.6.1">Section 1.6.1</a>). 
+Output is sent to the list device and the
+console device until the next CTRL-P is pressed.
+<tr><td>CTRL-R<td>Retypes current command line; types a clean line
+following character deletion with rubouts.
+<tr><td>CTRL-S<td>Stops the console output temporarily. Program
+execution and output continue when you press any
+character at the console, for example another
+CTRL-S. This feature stops output on high speed
+consoles, such as CRTs, in order to view a segment
+of output before continuing.
+<tr><td>CTRL-U<td>Deletes the entire line typed at the console.
+<tr><td>CTRL-X<td>Same as CTRL-U.
+<tr><td>CTRL-Z<td>Ends input from the console (used in PIP and ED).
+<tr><td>rub/del<td>Deletes and echoes the last character typed at the
+console.
+</table></center></a>
+<p><a name="Section_1.6"><h1>1.6 Transient Commands</h1></a>
+<p>Transient commands are loaded from the currently logged disk and
+executed in the TPA. The transient commands for execution under
+the CCP are below. Additional functions are easily defined by the
+user (see 
+<a href="#Section_1.6.3">Section 1.6.3</a>).
+<p>&nbsp;
+<a name="Table_1-2">
+<center><table border="1">
+<caption align="bottom">Table 1-2. CP/M Transient Commands</caption>
+<tr><th>Command<th>Function
+<tr><td>STAT<td>Lists the number of bytes of storage remaining on
+the currently logged disk, provides statistical
+information about particular files, and displays
+or alters device assignment.
+<tr><td>ASM<td>Loads the CP/M assembler and assembles the
+specified program from disk.
+<tr><td>LOAD<td>Loads the file in Intel HEX machine code format
+and produces a file in machine executable form
+which can be loaded into the TPA. This loaded
+program becomes a new command under the CCP.
+<tr><td>DDT<td>Loads the CP/M debugger into TPA and starts
+execution.
+<tr><td>PIP<td>Loads the Peripheral Interchange Program for
+subsequent disk file and peripheral transfer
+operations.
+<tr><td>ED<td>Loads and executes the CP/M text editor program.
+<tr><td>SYSGEN<td>Creates a new CP/M system disk.
+<tr><td>SUBMIT<td>Submits a file of commands for batch processing.
+<tr><td>DUMP<td>Dumps the contents of a file in hex.
+<tr><td>MOVCPM<td>Regenerates the CP/M system for a particular
+memory size.
+</table></center></a>
+<p>Transient commands are specified in the same manner as built-in
+commands, and additional commands are easily defined by the user.
+For convenience, the transient command can be preceded by a drive
+name which causes the transient to be loaded from the specified
+drive into the TPA for execution. Thus, the command
+<pre>
+     B:STAT
+</pre>
+<p>causes CP/M to temporarily log in drive B for the source of the
+STAT transient, and then return to the original logged disk for
+subsequent processing.
+<p><a name="Section_1.6.1"><h1>1.6.1 STAT Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>STAT
+<tr><Td>STAT "command line"
+</table>
+<p>The STAT command provides general statistical information about
+file storage and device assignment. Special forms of the command
+line allow the current device assignment to be examined and
+altered. The various command lines that can be specified are
+shown with an explanation of each form to the right.
+<p>&nbsp;
+<center><table border="1">
+<tr><td>STAT<td>If you type an empty command line, the STAT
+transient calculates the storage remaining on
+all active drives, and prints one of the
+following messages:
+<p>d: R/W, SPACE: nnnK<br>
+d: R/O, SPACE: nnnK
+<p>for each active drive d:, where R/W indicates
+the drive can be read or written, and R/O
+indicates the drive is Read-Only (a drive
+becomes R/O by explicitly setting it to Read-
+Only, as shown below, or by inadvertently
+changing disks without performing a warm
+start). The space remaining on the disk in
+drive d: is given in kilobytes by nnn.
+<tr><td>STAT&nbsp;d:<td>If a drive name is given, then the drive is
+selected before the storage is computed.
+Thus, the command STAT B: could be issued
+while logged into drive A, resulting in the
+message
+<p>BYTES REMAINING ON B: nnnK
+<tr><td>STAT&nbsp;afn<td>The command line can also specify a set of
+files to be scanned by STAT. The files that
+satisfy afn are listed in alphabetical order,
+with storage requirements for each file under
+the heading:
+<pre>
+RECS BYTES EXT D:FILENAME.TYP
+rrrr bbbk   ee d:filename.typ
+</pre>
+<p>where rrrr is the number of 128-byte records
+allocated to the file, bbb is the number of
+kilobytes allocated to the file
+(bbb=rrrr*128/1024), ee is the number of 16K
+extensions (ee=bbb/16), d is the drive name
+containing the file (A ... P), filename is
+the eight-character primary filename, and typ
+is the three-character filetype. After
+listing the individual files, the storage
+usage is summarized.
+<tr><td>STAT&nbsp;d:afn<td>The drive name can be given ahead of the afn.
+The specified drive is first selected, and
+the form STAT afn is executed.
+<tr><td>STAT&nbsp;d:=R/O<td>This form sets the drive given by d to Read-
+Only, remaining in effect until the next warm
+or cold start takes place. When a disk is
+Read-Only, the message
+<p>BDOS ERR ON d: Read-Only
+<p>appears if there is an attempt to write to
+the Read-Only disk. CP/M waits until a key is
+pressed before performing an automatic warm
+start, at which time the disk becomes R/W.
+</table></center>
+<p>The STAT command allows you to control the physical-to-logical
+device assignment. See the IOBYTE function described in 
+<a href="ch5.htm">Sections 5</a> and 
+<a href="ch6.htm">6</a>. 
+There are four logical peripheral devices that are, at
+any particular instant, each assigned one of several physical
+peripheral devices. The following is a list of the four logical
+devices:
+<ul>
+<li>CON: is the system console device, used by CCP for
+communication with the operator.
+<li>RDR: is the paper tape reader device.
+<li>PUN: is the paper tape punch device.
+<li>LST: is the output list device.
+</ul>
+<p>The actual devices attached to any particular computer system are
+driven by subroutines in the BIOS portion of CP/M. Thus, the
+logical RDR: device, for example, could actually be a high speed
+reader, teletype reader, or cassette tape. To allow some
+flexibility in device naming and assignment, several physical
+devices are defined in <a href="#Table_1-3">Table 1-3</a>.
+<p>&nbsp;
+<a name="Table_1-3"><center><table border="1">
+<caption align="bottom">Table 1-3. Physical Devices</caption>
+<tr><th>Device<th>Meaning
+<tr><td>TTY:<td>Teletype device (slow speed console)
+<tr><td>CRT:<td>Cathode ray tube device (high speed console)
+<tr><td>BAT:<td>Batch processing (console is current RDR:, output
+goes to current LST: device)
+<tr><td>UC1:<td>User-defined console
+<tr><td>PTR:<td>Paper tape reader (high speed reader)
+<tr><td>UR1:<td>User-defined reader #1
+<tr><td>UR2:<td>User-defined reader #2
+<tr><td>PTP:<td>Paper tape punch (high speed punch)
+<tr><td>UP1:<td>User-defined punch #1
+<tr><td>UP2:<td>User-defined punch #2
+<tr><td>LPT:<td>Line printer
+<tr><td>UL1:<td>User-defined list device #1
+</table></center></a>
+<p>It is emphasized that the physical device names might not
+actually correspond to devices that the names imply. That is, you
+can implement the PTP: device as a cassette write operation. The
+exact correspondence and driving subroutine is defined in the
+BIOS portion of CP/M. In the standard distribution version of
+CP/M, these devices correspond to their names on the MDS 800
+development system.
+<p>The command,
+<pre>
+     STAT VAL:
+</pre>
+<p>produces a summary of the available status commands, resulting in
+the output:
+<pre>
+     Temp R/O Disk d:$R/O
+     Set Indicator: filename.typ $R/O $R/W $SYS $DIR
+     Disk Status: DSK: d:DSK
+     Iobyte Assign:
+</pre>
+<p>which gives an instant summary of the possible STAT commands and
+shows the permissible logical-to-physical device assignments:
+<pre>
+      CON:=TTY:CRT:BAT:UCI:
+      RDR:=TTY:PTR:URI:UR2:
+      PUN:=TTY:PTP:UP1:UP2:
+      LST:=TTY:CRT:LPT:ULI:
+</pre>
+<p>The logical device to the left takes any of the four physical
+assignments shown to the right. The current logical-to-physical
+mapping is displayed by typing the command:
+<pre>
+     STAT DEV:
+</pre>
+<p>This command produces a list of each logical device to the left
+and the current corresponding physical device to the right. For
+example, the list might appear as follows:
+<pre>
+     CON:=CRT:
+     RDR:=URl:
+     PUN:=PTP:
+     LST:=TTY:
+</pre>
+<p>The current logical-to-physical device assignment is changed by
+typing a STAT command of the form:
+<pre>
+     STAT ld1=pd1,ld2=pd2,...,ldn=pdn
+</pre>
+<p>where ld1 through ldn are logical device names and pd1 through
+pdn are compatible physical device names. For example, ld1 and
+pd1 appear on the same line in the VAL: command shown above.  The
+following example shows valid STAT commands that change the
+current logical-to-physical device assignments:
+<pre>
+     STAT CON:=CRT:
+     STAT PUN:=TTY:,LST:=LPT:,RDR:=TTY
+</pre>
+<p>The command form,
+<pre>
+     STAT d:filename.typ $S
+</pre>
+<p>where d: is an optional drive name and filename.typ is an
+unambiguous or ambiguous filename, produces the following output
+display format:
+<pre>
+         Size      Recs      Bytes         Ext Acc
+
+           48        48         6K     1 R/O A:ED.COM
+           55        55        12K     1 R/O (A:PIP.COM)
+        65536       128        16K     2 R/W A:X.DAT
+</pre>
+<p>where the $S parameter causes the Size field to be displayed.
+Without the $S, the Size field is skipped, but the remaining
+fields are displayed. The Size field lists the virtual file size
+in records, while the Recs field sums the number of virtual
+records in each extent. For files constructed sequentially, the
+Size and Recs fields are identical. The Bytes field lists the
+actual number of bytes allocated to the corresponding file. The
+minimum allocation unit is determined at configuration time;
+thus, the number of bytes corresponds to the record count plus
+the remaining unused space in the last allocated block for
+sequential files. Random access files are given data areas only
+when written, so the Bytes field contains the only accurate
+allocation figure. In the case of random access, the Size field
+gives the logical end-of-file record position and the Recs field
+counts the logical records of each extent. Each of these extents,
+however, can contain unallocated holes even though they are added
+into the record count.
+<p>The Ext field counts the number of physical extents allocated to
+the file. The Ext count corresponds to the number of directory
+entries given to the file. Depending on allocation size, there
+can be up to 128K bytes (8 logical extents) directly addressed by
+a single directory entry. In a special case, there are actually
+256K bytes that can be directly addressed by a physical extent.
+<p>The Acc field gives the R/O or R/W file indicator, which you can
+change using the commands shown. The four command forms,
+<pre>
+     STAT d:filename.typ $R/O
+     STAT d:filename.typ $R/W
+     STAT d:filename.typ $SYS
+     STAT d:filename.typ $DIR
+</pre>
+<p>set or reset various permanent file indicators. The R/O indicator
+places the file, or set of files, in a Read-Only status until
+changed by a subsequent STAT command. The R/O status is recorded
+in the directory with the file so that it remains R/O through
+intervening cold start operations. The R/W indicator places the
+file in a permanent Read-Write status. The SYS indicator attaches
+the system indicator to the file, while the DIR command removes
+the system indicator. The filename.typ may be ambiguous or
+unambiguous, but files whose attributes are changed are listed at
+the console when the change occurs. The drive name denoted by d:
+is optional.
+<p>When a file is marked R/O, subsequent attempts to erase or
+write into the file produce the following BDOS message at your
+screen:
+<pre>
+     BDOS Err on d: File R/O
+</pre>
+<p>lists the drive characteristics of the disk named by d: that is
+in the range A:, B:,...,P:. The drive characteristics are listed
+in the following format:
+<pre>
+         d: Drive Characteristics
+     65536: 128 Byte Record Capacity
+      8192: Kilobyte Drive Capacity
+       128: 32 Byte Directory Eritries
+         0: Checked Directory Eritries
+      1024: Records/Extent
+       128: Records/BlocK
+        58: Sectors/TracK
+         2: Reserved TracKs
+</pre>
+<p>where d: is the selected drive, followed by the total record
+capacity (65536 is an eight-megabyte drive), followed by the
+total capacity listed in kilobytes. The directory size is listed
+next, followed by the checked entries. The number of checked
+entries is usualiv identical to the directory size for removable
+media, because this mechanism is used to detect changed media
+during CP/M operation without an intervening warm start. For
+fixed media, the number is usually zero, because the media are
+not changed without at least a cold or warm start.
+<p>The number of records per extent determines the addressing
+capacity of each directory entry (1024 times 128 bytes, or 128K
+in the previous example). The number of records per block shows
+the basic allocation size (in the example, 128 records/block
+times 128 bytes per record, or 16K bytes per block). The listing
+is then followed by the number of physical sectors per track and
+the number of reserved tracks.
+<p>For logical drives that share the same physical disk, the number
+of reserved tracks can be quite large because this mechanism is
+used to skip lower-numbered disk areas allocated to other logical
+disks. The command form
+<pre>
+     STAT DSK:
+</pre>
+<p>produces a drive characteristics table for all currently active
+drives. The final STAT command form is
+<pre>
+     STAT USR:
+</pre>
+<p>which produces a list of the user numbers that have files on the
+currently addressed disk. The display format is
+<pre>
+     Active User: 0
+     Active Fi1es: 0 1 3
+</pre>
+<p>where the first line lists the currently addressed user number,
+as set by the last CCP USER command, followed by a list of user
+numbers scanned from the current directory. In this case, the
+active user number is 0 (default at cold start) with three user
+numbers that have active files on the current disk. The operator
+can subsequently examine the directories of the other user
+numbers by logging in with USER 1 or USER 3 commands, followed by
+a DIR command at the CCP level.
+<p><a name="Section_1.6.2"><h1>1.6.2 ASM Command</h1>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>ASM ufn
+</table>
+<p>The ASM command loads and executes the CP/M 8080 assembler. The
+ufn specifies a source file containing assembly language
+statements, where the filetype is assumed to be ASM and is not
+specified. The following ASM commands are valid:
+<pre>
+     ASM
+     ASM GAMMA
+</pre>
+<p>The two-pass assembler is automatically executed. Assembly errors
+that occur during the second pass are printed at the console.
+<p>The assembler produces a file:
+<pre>
+     X.PRN
+</pre>
+<p>where X is the primary name specified in the ASM command. The PRN
+file contains a listing of the source program with embedded tab
+characters if present in the source program, along with the
+machine code generated for each statement and diagnostic error
+messages, if any. The PRN file is listed at the console using the
+TYPE command, or sent to a peripheral device using PIP (see
+<a href="#Section_1.6.4">Section 1.6.4</a>). 
+Note that the PRN file contains the original
+source program, augmented by miscellaneous assembly information
+in the leftmost 16 columns; for example, program addresses and
+hexadecimal machine code. The PRN file serves as a backup for the
+original source file. If the source file is accidentally removed
+or destroyed, the PRN file can be edited by removing the leftmost
+16 characters of each line (see 
+<a href="ch2.htm">Section 2</a>). This is done by
+issuing a single editor macro command. The resulting file is
+identical to the original source file and can be renamed from PRN
+to ASM for subsequent editing and assembly. The file
+<pre>
+     A.HEX
+</pre>
+<p>is also produced, which contains 8080 machine language in Intel
+HEX format suitable for subsequent loading and execution (see
+Section 1.6.3). For complete details of CP/M's assembly language
+program, see <a href="ch3.htm">Section 3</a>.
+<p>The source file for assembly is taken from an alternate disk by
+prefixing the assembly language filename by a disk drive name.
+The command
+<pre>
+     ASM B:ALPHA
+</pre>
+<p>loads the assembler from the currently logged drive and processes
+the source program ALPHA.ASM on drive B. The HEX and PRN files
+are also placed on drive B in this case.
+<p><a name="Section_1.6.3"><h1>1.6.3 LOAD Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>LOAD ufn
+</table>
+<p>The LOAD command reads the file ufn, which is assumed to contain
+HEX format machine code, and produces a memory image file that
+can subsequently be executed. The filename ufn is assumed to be
+of the form:
+<pre>
+     X.HEX
+</pre>
+<p>and only the filename X need be specified in the command. The
+LOAD command creates a file named
+<pre>
+     X.COM
+</pre>
+<p>that marks it as containing machine executable code. The file is
+actually loaded into memory and executed when the user types the
+filename X immediately after the prompting character &gt; printed by
+the CCP.
+<p>Generally, the CCP reads the filename X following the prompting
+character and looks for a built-in function name. If no function
+name is found, the CCP searches the system disk directory for a
+file by the name
+<pre>
+     X.COM
+</pre>
+<p>If found, the machine code is loaded into the TPA, and the
+program executes. Thus, the user need only LOAD a hex file once;
+it can be subsequently executed any number of times by typing the
+primary name. This way, you can invent new commands in the CCP.
+Initialized disks contain the transient commands as COM files,
+which are optionally deleted. The operation takes place on an
+alternate drive if the filename is prefixed by a drive name.
+Thus,
+<pre>
+     LOAD B:BETA
+</pre>
+<p>brings the LOAD program into the TPA from the currently logged
+disk and operates on drive B after execution begins.
+<table>
+<tr><th valign="top">Note:<td>the 
+BETA.HEX file must contain valid Intel format
+hexadecimal machine code records (as produced by the
+ASM program, for example) that begin at 100H of the
+TPA. The addresses in the hex records must be in
+ascending order; gaps in unfilled memory regions are
+filled with zeroes by the LOAD command as the hex
+records are read. Thus, LOAD must be used only for
+creating CP/M standard COM files that operate in the
+TPA. Programs that occupy regions of memory other than
+the TPA are loaded under DDT.
+</table>
+<p><a name="Section_1.6.4"><h1>1.6.4 PIP</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>PIP
+<tr><td>PlP&nbsp;destination=source#1,source#2,...,source#n
+</table>
+<p>PIP is the CP/M Peripheral Interchange Program that implements
+the basic media conversion operations necessary to load, print,
+punch, copy, and combine disk files. The PIP program is initiated
+by typing one of the following forms:
+<pre>
+     PIP
+     PIP command line
+</pre>
+<p>In both cases PIP is loaded into the TPA and executed. In the
+first form, PIP reads command lines directly from the console,
+prompted with the * character, until an empty command line is
+typed (for example, a single carriage return is issued by the
+operator). Each successive command line causes some media
+conversion to take place according to the rules shown below.
+<p>In the second form, the PIP command is equivalent to the first,
+except that the single command line given with the PIP command is
+automatically executed, and PIP terminates immediately with no
+further prompting of the console for input command lines. The
+form of each command line is
+<pre>
+     destination=source#1,source#2,...,source#n
+</pre>
+<p>where destination is the file or peripheral device to receive the
+data, and source#1,...,source#n is a series of one or more files
+or devices that are copied from left to right to the destination.
+<p>When multiple files are given in the command line (for example,
+n&gt;1), the individual files are assumed to contain ASCII
+characters, with an assumed CP/M end-of-file character (CTRL-Z)
+at the end of each file (see the O parameter to override this
+assumption). Lower-case ASCII alphabetics are internally
+translated to upper-case to be consistent with CP/M file and
+device name conventions. Finally, the total command line length
+cannot exceed 255 characters. CTRL-E can be used to force a
+physical carriage return for lines that exceed the console width.
+<p>The destination and source elements are unambiguous references to
+CP/M source files with or without a preceding disk drive name.
+That is, any file can be referenced with a preceding drive name
+(A: through P:) that defines the particular drive where the file
+can be obtained or stored. When the drive name is not included,
+the currently logged disk is assumed. The destination file can
+also appear as one or more of the source files; in which case the
+source file is not altered until the entire concatenation is
+complete. If it already exists, the destination file is removed
+if the command line is properly formed. It is not removed if an
+error condition arises. The following command lines, with
+explanations to the right, are valid as input to PIP:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>X=Y<td>Copies to file X from file Y, where X
+and Y are unambiguous filenames; Y
+remains unchanged.
+<tr><td>X=Y,Z<td>Concatenates files Y and Z and copies to
+file X, with Y and Z unchanged.
+<tr><td>X.ASM=Y.ASM,Z.ASM<td>Creates the file X.ASM from the
+concatenation of the Y and Z.ASM files.
+<tr><td>NEW.ZOT=B:OLD.ZAP<td>Moves a copy of OLD.ZAP from drive B to
+the currently logged disk; names the
+file NEW.ZOT.
+<tr><td>B:A.U=B:B.V,A:C.W,D.X<td>Concatenates file B.Y from drive B with
+C.W from drive A and D.X from the logged
+disk; creates the file A.U on drive B.
+</table></center>
+<p>For convenience, PIP allows abbreviated commands for transferring
+files between disk drives. The abbreviated PIP forms are
+<pre>
+     PIP d:=afn
+     PIP d1:=d2:afn
+     PIP ufn=d2:
+     PlP d1:ufn=d2:
+</pre>
+<p>The first form copies all files from the currently logged disk
+that satisfy the afn to the same files on drive d, where d =
+A...P. The second form is equivalent to the first, where the
+source for the copy is drive d2 where d2 = A ... P. The third
+form is equivalent to the command PIP d1:ufn=d2:ufn which copies
+the file given by ufn from drive d2 to the file ufn on drive d1.
+The fourth form is equivalent to the third, where the source disk
+is explicitly given by d2.
+<p>The source and destination disks must be different in all of
+these cases. If an afn is specfied, PIP lists each ufn that
+satisfies the afn as it is being copied. If a file exists by the
+same name as the destination file, it is removed after successful
+completion of the copy and replaced by the copied file.
+<p>The following PIP commands give examples of valid disk-to-disk
+copy operations:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>B=*.COM<td>Copies all files that have the secondary name
+COM to drive B from the current drive.
+<tr><td>A:=B:ZAP.*<td>Copies all files that have the primary name
+ZAP to drive A from drive B.
+<tr><td>ZAP.ASM=B:<td>Same as ZAP.ASM=B:ZAP.ASM
+<tr><Td>B:ZOT.COM=A:<td>Same as B:ZOT.COM=A:ZOT.COM
+<tr><td>B:=GAMMA.BAS<td>Same as B:GAMMA.BAS=GAMMA.BAS
+<tr><td>B:=A:GAMMA.BAS<td>Same as B:GAMMA.BAS=A:GAMMA.BAS
+</table></center>
+<p>PIP allows reference to physical and logical devices that are
+attached to the CP/M svstem. The device names are the same as
+given under the STAT command, along with a number of specially
+named devices. The following is a list of logical devices given
+in the STAT command
+<pre>
+     CON: (console)
+     RDR: (reader)
+     PUN: (punch)
+     LST: (list)
+</pre>
+<p>while the physical devices are
+<pre>
+     TTY: (console , reader, punch, or list)
+     CRT: (console, or list), UC1: (console)
+     PTR: (reader), URI: (reader), UR2: (reader)
+     PTP: (punch), UPI: (punch), UP2: (punch)
+     LPT: (list), ULI: (list)
+</pre>
+<p>The BAT: physical device is not included, because this assignment
+is used only to indicate that the RDR: and LST: devices are used
+for console input/output.
+<p>The RDR, LST, PUN, and CON devices are all defined within the
+BIOS portion of CP/M, and are easily altered for any particular
+I/O system. The current physical device mapping is defined by
+IOBYTE; see 
+<a href="ch6.htm">Section 6</a> for a discussion of this function. The
+destination device must be capable of receiving data, for
+example, data cannot be sent to the punch, and the source devices
+must be capable of generating data, for example, the LST: device
+cannot be read.
+<p>The following list describes additional device names that can be
+used in PIP commands.
+<ul>
+<li>NUL: sends 40 nulls (ASCII 0s) to the device. This can be
+issued at the end of punched output.
+<li>EOF: sends a CP/M end-of-file (ASCII CTRL-Z) to the
+destination device (sent automatically at the end of all
+ASCII data transfers through PIP).
+<li>INP: is a special PIP input source that can be patched into
+the PIP program. PIP gets the input data 
+character-by-character, by CALLing location 103H, with data returned in
+location 109H (parity bit must be zero).
+<li>OUT: is a special PIP output destination that can be patched
+into the PIP program. PIP CALLs location 106H with data in
+register C for each character to transmit. Note that
+locations 109H through 1FFH of the PIP memory image are not
+used and can be replaced by special purpose drivers using
+DDT (see 
+<a href="ch4.htm">Section 4</a>).
+<li>PRN: is the same as LST:, except that tabs are expanded at
+every eighth character position, lines are numbered, and
+page ejects are inserted every 60 lines with an initial
+eject (same as using PIP options [t8np]).
+</ul>
+<p>File and device names can be interspersed in the PIP commands.
+In each case, the specific device is read until end-of-file
+(CTRL-Z for ASCII files, and end-of-data for non-ASCII disk
+files). Data from each device or file are concatenated from left
+to right until the last data source has been read.
+<p>The destination device or file is written using the data from the
+source files, and an end-of-file character, CTRL-Z, is appended
+to the result for ASCII files. If the destination is a disk file,
+a temporary file is created ($$$ secondary name) that is changed
+to the actual filename only on successful completion of the copy.
+Files with the extension COM are always assumed to be non-ASCII.
+<p>The copy operation can be aborted at any time by pressing any key
+on the keyboard. PIP responds with the message ABORTED to
+indicate that the operation has not been completed. If any
+operation is aborted, or if an error occurs during processing,
+PIP removes any pending commands that were set up while using the
+SUBMIT command.
+<p>PIP performs a special function if the destination is a disk file
+with type HEX (an Intel hex-formatted machine code file), and the
+source is an external peripheral device, such as a paper tape
+reader. In this case, the PIP program checks to ensure that the
+source file contains a properly formed hex file, with legal
+hexadecimal values and checksum records.
+<p>When an invalid input record is found, PIP reports an error
+message at the console and waits for corrective action.  Usually,
+you can open the reader and rerun a section of the tape (pull the
+tape back about 20 inches). When the tape is ready for the
+reread, a single carriage return is typed at the console, and PIP
+attempts another read. If the tape position cannot be properly
+read, continue the read by typing a return following the error
+message, and enter the record manually with the ED program after
+the disk file is constructed.
+<p>PIP allows the end-of-file to be entered from the console if the
+source file is an RDR: device. In this case, the PIP program
+reads the device and monitors the keyboard. If CTRL-Z is typed at
+the keyboard, the read operation is terminated normally.
+<p>The following are valid PIP commands:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>PIP&nbsp;LST:=X.PRN<td>Copies X.PRN to the LST device 
+and terminates the PIP program.
+<tr><td>PIP<td>Starts PIP for a sequence of commands. PIP prompts with *.
+<tr><td>*CON:=X.ASM,Y.ASM,Z.ASM<td>Concatenates three 
+ASM files and copies to the CON device.
+<tr><td>*X.HEX=CON:,Y.HEX,PTR:<td>Creates a HEX file by reading the 
+CON until a CTRL-Z is
+typed, followed by data from Y.HEX and PTR until a CTRL-Z is
+encountered.
+<tr><td>PIP&nbsp;PUN:=NUL:,X.ASM,EOF:,NUL:<td>Sends 40 nulls to 
+the punch device; copies the X.ASM file to
+the punch, followed by an end-of-file, CTRL-Z, and 40 more
+null characters.
+<tr><td>(carriage&nbsp;return)<td>A single carriage return stops PIP.
+</table></center>
+<p>You can also specify one or more PIP parameters, enclosed in left
+and right square brackets, separated by zero or more blanks. Each
+parameter affects the copy operation, and the enclosed list of
+parameters must immediately follow the affected file or device.
+Generally, each parameter can be followed by an optional decimal
+integer value (the S and Q parameters are exceptions). 
+<a href="#Table_1-4">Table 1-4</a>
+describes valid PIP parameters.
+<p>&nbsp;
+<a name="Table_1-4"><center><table border="1">
+<caption align="bottom">Table 1-4. PIP Parameters</caption>
+<tr><th>Parameter<th>Meaning
+<tr><td>B<td>Blocks mode transfer. Data are buffered by PIP until an
+ASCII x-off character, CTRL-S, is received from the
+source device. This allows transfer of data to a disk
+file from a continuous reading device, such as a
+cassette reader. Upon receipt of the x-off, PIP clears
+the disk buffers and returns for more input data. The
+amount of data that can be buffered depends on the
+memory size of the host system. PIP issues an error
+message if the buffers overflow.
+<tr><td>Dn<td>Deletes characters that extend past column n in the
+transfer of data to the destination from the character
+source. This parameter is generally used to truncate
+long lines that are sent to a narrow printer or console
+device.
+<tr><td>E<td>Echoes all transfer operations to the console as they
+are being performed.
+<tr><td>F<td>Filters form-feeds from the file. All embedded form-feeds 
+are removed. The P parameter can be used
+simultaneously to insert new form-feeds.
+<tr><td>Gn<td>Gets file from user number n (n in the range 0-15).
+<tr><td>H<td>Transfers HEX data. All data are checked for proper
+Intel hex file format. Nonessential characters between
+hex records are removed during the copy operation. The
+console is prompted for corrective action in case
+errors occur.
+<tr><td>I<td>Ignores :00 records in the transfer of Intel hex format
+file. The I parameter automatically sets the H
+parameter.
+<tr><td>L<td>Translates upper-case alphabetics to lower-case.
+<tr><td>N<td>Adds line numbers to each line transferred to the
+destination, starting at one and incrementing by 1.
+Leading zeroes are suppressed, and the number is
+followed by a colon. If N2 is specified, leading zeroes
+are included and a tab is inserted following the
+number. The tab is expanded if T is set.
+<tr><td>O<td>Transfers non-ASCII object files. The normal CP/M end-of-file 
+is ignored.
+<tr><td>Pn<td>Includes page ejects at every n lines with an initial
+page eject. If n = 1 or is excluded altogether, page
+ejects occur every 60 lines. If the F parameter is
+used, form-feed suppression takes place before the new
+page ejects are inserted.
+<tr><td>QS^Z<td>Quits copying from the source device or file when the
+string S, terminated by CTRL-Z, is encountered.
+<tr><td>R<td>Reads system files.
+<tr><td>Ss^Z<td>Start copying from the source device when the string s,
+terminated by CTRL-Z, is encountered. The S and Q
+parameters can be used to abstract a particular section
+of a file, such as a subroutine. The start and quit
+strings are always included in the copy operation.
+<p>If you specify a command line after the PIP command
+keyword, the CCP translates strings following the S and
+Q parameters to uppercase. If you do not specify a
+command line, PIP does not perform the automatic upper-case 
+translation.
+<tr><td>Tn<td>Expands tabs, CTRL-I characters, to every nth column
+during the transfer of characters to the destination
+from the source.
+<tr><td>U<td>Translates lower-case alphabetics to upper-case during
+the copy operation.
+<tr><td>V<td>Verifies that data have been copied correctly by
+rereading after the write operation (the destination
+must be a disk file).
+<tr><td>W<td>Writes over R/O files without console interrogation.
+<tr><td>Z<td>Zeros the parity bit on input for each ASCII character.
+</table></center></a>
+<p>The following examples show valid PIP commands that specify
+parameters in the file transfer.
+<dl>
+<dt>PIP X.ASM=B:[V]
+<dd>Copies X.ASM from drive B to the current drive and verifies
+that the data were properly copied.
+<dt>PIP LPT:=X.ASM[NT8U]
+<dd>Copies X.ASM to the LPT: device; numbers each line, expands
+tabs to every eighth column, and translates lower-case
+alphabetics to upper-case.
+<dt>PIP PUN:=X.HEX[I],Y.ZOT[H]
+<dd>First copies X.HEX to the PUN: device and ignores the
+trailing :00 record in X.HEX; continues the transfer of data
+by reading Y.ZOT, which contains HEX records, including any
+:00 records it contains.
+<dt>PIP X.LIB=Y.ASM[sSUBR1:^zqJMP L3^z]
+<dd>Copies from the file Y.ASM into the file X.LIB. The command
+starts the copy when the string SUBR1: has been found, and
+quits copying after the string JMP L3 is encountered.
+<dt>PIP PRN:=X.ASM[p50]
+<dd>Sends X.ASM to the LST: device with line numbers, expands
+tabs to every eighth column, and elects pages at every 50th
+line. The assumed parameter list for a PRN file is nt8p60;
+p50 overrides the default value.
+</dl>
+<p>Under normal operation, PIP does not overwrite a file that is set
+to a permanent R/O status. If an attempt is made to overwrite an
+R/O file, the following prompt appears:
+<pre>
+     DESTINATION FILE IS R/O, DELETE (Y/N)?
+</pre>
+<p>If you type Y, the file is overwritten. Otherwise, the following
+response appears:
+<pre>
+     ** NOT DELETED **
+</pre>
+<p>The file transfer is skipped, and PIP continues with the next
+operation in sequence. To avoid the prompt and response in the
+case of R/O file overwrite, the command line can include the W
+parameter, as shown in this example:
+<pre>
+     PIP A:=B:*.COM[W]
+</pre>
+<p>The W parameter copies all nonsystem files to the A drive from
+the B drive and overwrites any R/O files in the process. If the
+operation involves several concatenated files, the W parameter
+need only be included with the last file in the list, as in this
+example:
+<pre>
+     PIP A.DAT=B.DAT,F:NEW.DAT,G:OLD.DAT[W]
+</pre>
+<p>Files with the system attribute can be included in PIP transfers
+if the R parameter is included; otherwise, system files are not
+recognized. For example, the command line:
+<pre>
+     PIP ED.COM=B:ED.COM[R]
+</pre>
+<p>reads the ED.COM file from the B drive, even if it has been
+marked as an R/O and system file. The system file attributes are
+copied, if present.
+<p>Downward compatibility with previous versions of CP/M is only
+maintained if the file does not exceed one megabyte, no file
+attributes are set, and the file is created by user 0. If
+compatibility is required with nonstandard, for example, 
+double-density versions of 1.4, it might be necessary to select 1.4
+compatibility mode when constructing the internal disk parameter
+block. See 
+<a href="ch6.htm">Section 6</a> and refer to 
+<a href="ch6.html#Section_6.10">Section 6.10</a>, which describes
+BIOS differences.
+<p align="center"><b>Note:</b>
+<p>To copy files into another user area, PIP.COM must be
+located in that user area. Use the following procedure
+to make a copy of PIP.COM in another user area.
+<p>&nbsp;
+<center>
+<table>
+<tr><td>USER&nbsp;0<td>Log in user 0.
+<tr><td>DDT&nbsp;PIP.COM<td>(note PIP size s) Load PIP to memory.
+<tr><td>GO<td>Return to CCP.
+<tr><td>USER&nbsp;3<td>Log in user 3.
+<tr><td>SAVE&nbsp;s&nbsp;PIP.COM
+</table></center>
+<p>In this procedure, s is the integral number of memory pages, 256-
+byte segments, occupied by PIP. The number s can be determined
+when PIP.COM is loaded under DDT, by referring to the value under
+the NEXT display. If, for example, the next available address is
+1D00, then PIP.COM requires 1C hexadecimal pages, or 1 times 16 +
+12 = 28 pages, and the value of s is 28 in the subsequent save.
+Once PIP is copied in this manner, it can be copied to another
+disk belonging to the same user number through normal PIP
+transfers.
+<p><a name="Section_1.6.5"><h1>1.6.5 ED Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>ED ufn
+</table>
+<p>The ED program is the CP/M system context editor that allows
+creation and alteration of ASCII files in the CP/M environment.
+Complete details of operation are given in 
+<a href="ch2.htm">Section 2</a>. ED allows
+the operator to create and operate upon source files that are
+organized as a sequence of ASCII characters, separated by end-of-line 
+characters (a carriage return/line-feed sequence).  There is
+no practical restriction on line length (no single line can
+exceed the size of the working memory) that is defined by the
+number of characters typed between carriage returns.
+<p>The ED program has a number of commands for character string
+searching, replacement, and insertion that are useful for
+creating and correcting programs or text files under CP/M.
+Although the CP/M has a limited memory work space area
+(approximately 5000 characters in a 20K CP/M system), the file
+size that can be edited is not limited, since data are easily
+paged through this work area.
+<p>If it does not exist, ED creates the specified source file and
+opens the file for access. If the source file does exist, the
+programmer appends data for editing (see the A command). The
+appended data can then be displayed, altered, and written from
+the work area back to the disk (see the W command). Particular
+points in the program can be automatically paged and located by
+context, allowing easy access to particular portions of a large
+file (see the N command).
+<p>If you type the following command line:
+<pre>
+     ED X.ASM
+</pre>
+<p>the ED program creates an intermediate work file with the name
+<pre>
+     X.$$$
+</pre>
+<p>to hold the edited data during the ED run. Upon completion of ED,
+the X.ASM file (original file) is renamed to X.BAK, and the
+edited work file is renamed to X.ASM. Thus, the X.BAK file
+contains the original unedited file, and the X.ASM file contains
+the newly edited file. The operator can always return to the
+previous version of a file by removing the most recent version
+and renaming the previous version. If the current X.ASM file has
+been improperly edited, the following sequence of commands
+reclaim the backup file.
+<p>&nbsp;
+<center><table border="1">
+<tr><td>DIR&nbsp;X.*<td>Checks to see that BAK file is
+available.
+<tr><td>ERA&nbsp;X.ASM<td>Erases most recent version.
+<tr><td>REN&nbsp;X.ASM=X.BAK<td>Renames the BAK file to ASM.
+</table></center>
+<p>You can abort the edit at any point (reboot, power failure, CTRL-C, 
+or CTRL-Q command) without destroying the original file. In
+this case, the BAK file is not created and the original file is
+always intact.
+<p>The ED program allows the user to edit the source on one disk and
+create the back-up file on another disk. This form of the ED
+command is
+<pre>
+     ED ufn d:
+</pre>
+<p>where ufn is the name of the file to edit on the currently logged
+disk and d is the name of an alternate drive. The ED program
+reads and processes the source file and writes the new file to
+drive d using the name ufn. After processing, the original file
+becomes the back-up file. If the operator is addressing disk A,
+the following command is valid.
+<pre>
+     ED X.ASM B:
+</pre>
+<p>This edits the file X.ASM on drive A, creating the new file X.$$$
+on drive B. After a successfuI edit, A:X.ASM is renamed to
+A:X.BAK, and B:X.$$$ is renamed to B:X.ASM. For convenience, the
+currently logged disk becomes drive B at the end of the edit.
+Note that if a file named B:X.ASM exists before the editing
+begins, the following message appears on the screen:
+<pre>
+     FILE EXISTS
+</pre>
+<p>This message is a precaution against accidentally destroying a
+source file. You should first erase the existing file and then
+restart the edit operation.
+<p>Similar to other transient commands, editing can take place on a
+drive different from the currently logged disk by preceding the
+source filename by a drive name. The following are examples of
+valid edit requests:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>ED&nbsp;A:X.ASM<td>Edits the file X ASM on drive A, with new
+file and back-up on drive A.
+<tr><td>ED&nbsp;B:X.ASM&nbsp;A:<td>Edits the file X.ASM on drive B to the
+temporary file X.$$$ on drive A. After
+editing, this command changes X.ASM on drive
+B to X.BAK and changes X.$$$ on drive A to
+X.ASM
+</table></center>
+<p><a name="Section_1.6.6"><h1>1.6.6 SYSGEN Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>SYSGEN
+</table>
+<p>The SYSGEN transient command allows generation of an initialized
+disk containing the CP/M operating system. The SYSGEN program
+prompts the console for commands by interacting as shown.
+<dl>
+<dt>SYSGEN<cr>
+<dd>Initiates the SYSGEN program.
+<dt>SYSGEN VERSION x.x
+<dd>SYSGEN sign-on message.
+<dt>SOURCE DRIVE NAME<br>
+(OR RETURN TO SKIP)
+<dd>Respond with the drive name (one of the letters A, B,
+C, or D) of the disk containing a CP/M system, usually
+A. If a copy of CP/M already exists in memory due to a
+MOVCPM command, press only a carriage return. Typing a
+drive name d causes the response:
+<dt>SOURCE ON d THEN TYPE RETURN
+<dd>Place a disk containing the CP/M operating system on
+drive d (d is one of A, B, C, or D). Answer by pressing
+a carriage return when ready.
+<dt>FUNCTION COMPLETE
+<dd>System is copied to memory. SYSGEN then prompts with
+the following:
+<dt>DESTINATION DRIVE NAME<br>
+(OR RETURN TO REBOOT)
+<dd>If a disk is being initialized, place the new disk into
+a drive and answer with the drive name.  Otherwise,
+press a carriage return and the system reboots from
+drive A. Typing drive name d causes SYSGEN to prompt
+with the following message:
+<dt>DESTINATION ON d<br>
+THEN TYPE RETURN
+<dd>Place new disk into drive d; press return when ready.
+<dt>FUNCTION COMPLETE
+<dd>New disk is initialized in drive d.
+</dl>
+<p>The DESTINATION prompt is repeated until a single carriage return
+is pressed at the console, so that more than one disk can be
+initialized.
+<p>Upon completion of a successful system generation, the new disk
+contains the operating system, and only the built-in commands are
+available. An IBM-compatible disk appears to CP/M as a disk with
+an empty directory; therefore, the operator must copy the
+appropriate COM files from an existing CP/M disk to the newly
+constructed disk using the PIP transient.
+<p>You can copy all files from an existing disk by typing the
+following PIP command:
+<pre>
+     PIP B:=A:*.*[v]
+</pre>
+<p>This command copies all files from disk drive A to disk drive B
+and verifies that each file has been copied correctly. The name
+of each file is displayed at the console as the copy operation
+proceeds.
+<p>Note that a SYSGEN does not destroy the files that already exist
+on a disk; it only constructs a new operating system. If a disk
+is being used only on drives B through P and will never be the
+source of a bootstrap operation on drive A, the SYSGEN need not
+take place.
+<p><a name="Section_1.6.7"><h1>1.6.7 SUBMIT Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>SUBMIT ufn parm#l ... parm#n
+</table>
+<p>The SUBMIT command allows CP/M commands to be batched for
+automatic processing. The ufn given in the SUBMIT command must be
+the filename of a file that exists on the currently logged disk,
+with an assumed file type of SUB. The SUB file contains CP/M
+prototype commands with possible parameter substitution.  The
+actual parameters parm#1 ... parm#n are substituted into the
+prototype commands, and, if no errors occur, the file of
+substituted commands are processed sequentially by CP/M.
+<p>The prototype command file is created using the ED program, with
+interspersed $ parameters of the form:
+<pre>
+     $1 $2 $3 ... $n
+</pre>
+<p>corresponding to the number of actual parameters that will be
+included when the file is submitted for execution. When the
+SUBMIT transient is executed, the actual parameters parm#1 ...
+parm#n are paired with the formal parameters $1 ... $n in the
+prototype commands. If the numbers of formal and actual
+parameters do not correspond, the SUBMIT function is aborted with
+an error message at the console. The SUBMIT function creates a
+file of substituted commands with the name
+<pre>
+     $$$.SUB
+</pre>
+<p>on the logged disk. When the system reboots, at the termination
+of the SUBMIT, this command file is read by the CCP as a source
+of input rather than the console. If the SUBMIT function is
+performed on any disk other than drive A, the commands are not
+processed until the disk is inserted into drive A and the system
+reboots. You can abort command processing at any time by pressing
+the rubout key when the command is read and echoed. In this case,
+the $$$.SUB file is removed and the subsequent commands come from
+the console. Command processing is also aborted if the CCP
+detects an error in any of the commands.  Programs that execute
+under CP/M can abort processing of command files when error
+conditions occur by erasing any existing $$$.SUB file.
+<p>To introduce dollar signs into a SUBMIT file, you can type a $$
+which reduces to a single $ within the command file. A caret,
+^, precedes an alphabetic character s, which produces a single
+CTRL-X character within the file.
+<p>The last command in a SUB file can initiate another SUB file,
+allowing chained batch commands.
+<p>Suppose the file ASMBL.SUB exists on disk and contains the
+prototype commands:
+<pre>
+     ASM $1
+     DIR $1.*
+     ERA *.BAK
+     PIP $2:=$1.PRN
+     ERA $1.PRN
+</pre>
+<p>then, you issue the following command:
+<pre>
+     SUBMIT ASMBL X PRN
+</pre>
+<p>The SUBMIT program reads the ASMBL.SUB file, substituting X for
+all occurrences of $1 and PRN for all occurrences of $2.  This
+results in a $$$.SUB file containing the commands:
+<pre>
+     ASM X
+     DIR X.*
+     ERA *.BAK
+     PIP PRN:=X.PRN
+     ERA X.PRN
+</pre>
+<p>which are executed in sequence by the CCP.
+<p>The SUBMIT function can access a SUB file on an alternate drive
+by preceding the filename by a drive name. Submitted files are
+only acted upon when they appear on drive A. Thus, it is possible
+to create a submitted file on drive B that is executed at a later
+time when inserted in drive A.
+<p>An additional utility program called XSUB extends the power of
+the SUBMIT facility to include line input to programs as well as
+the CCP. The XSUB command is included as the first line of the
+SUBMIT file. When it is executed, XSUB self-relocates directly
+below the CCP. All subsequent SUBMIT command lines are processed
+by XSUB so that programs that read buffered console input, BDOS
+Function 10, receive their input directly from the SUBMIT file.
+For example, the file SAVER.SUB can contain the following SUBMIT
+lines:
+<pre>
+     XSUB
+     DDT
+     I $1.COM
+     R
+     G0
+     SAVE 1 $2.COM
+</pre>
+<p>a subsequent SUBMIT command, such as
+<pre>
+     A:SUBMIT SAVER PIP Y
+</pre>
+<p>substitutes PIP for $1 and Y for $2 in the command stream. The
+XSUB program loads, followed by DDT, which is sent to the command
+lines PIP.COM, R, and G0, thus returning to the CCP. The final
+command SAVE 1 Y.COM is processed by the CCP.
+<p>The XSUB program remains in memory and prints the message
+<pre>
+     (xsub active)
+</pre>
+<p>on each warm start operation to indicate its presence.
+Subsequent SUBMIT command streams do not require the XSUB, unless
+an intervening cold start occurs. Note that XSUB must be loaded
+after the optional CP/M DESPOOL utility, if both are to run
+simultaneously.
+<p><a name="Section_1.6.8"><h1>1.6.8 DUMP Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>DUMP ufn
+</table>
+<p>The DUMP program types the contents of the disk file (ufn) at the
+console in hexadecimal form. The file contents are listed sixteen
+bytes at a time, with the absolute byte address listed to the
+left of each line in hexadecimal. Long typeouts can be aborted by
+pressing the rubout key during printout. The source listing of
+the DUMP program is given in 
+<a href="ch5.htm">Section 5</a> as an example of a program
+written for the CP/M environment.
+<p><a name="Section_1.6.9"><h1>1.6.9 MOVCPM Command</h1></a>
+<table>
+<tr><th align="left">Syntax:
+<tr><td>MOVCPM
+</table>
+<p>The MOVCPM program allows you to reconfigure the CP/M system for
+any particular memory size. Two optional parameters can be used
+to indicate the desired size of the new system and the
+disposition of the new system at program termination. If the
+first parameter is omitted or an * is given, the MOVCPM program
+reconfigures the system to its maximum size, based upon the
+kilobytes of contigous RAM in the host system (starting at
+0000H). If the second parameter is omitted, the system is
+executed, but not permanently recorded; if * is given, the system
+is left in memory, ready for a SYSGEN operation. The MOVCPM
+program relocates a memory image of CP/M and places this image in
+memory in preparation for a system generation operation. The
+following is a list of MOVCPM command forms:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>MOYCPM<td>Relocates and executes CP/M for management of
+the current memory configuration (memory is
+examined for contiguous RAM, starting at
+100H). On completion of the relocation, the
+new system is executed but not permanently
+recorded on the disk. The system that is
+constructed contains a BIOS for the Intel MDS
+800.
+<tr><td>MOVCPM&nbsp;n<td>Creates a relocated CP/M system for
+management of an n kilobyte system (n must be
+in the range of 20 to 64), and executes the
+system as described.
+<tr><td>MOYCPM&nbsp;*&nbsp;*<td>Constructs a relocated memory image for the
+current memory configuration, but leaves the
+memory image in memory in preparation for a
+SYSGEN operation.
+<tr><td>MOYCPM&nbsp;n&nbsp;*<td>Constructs a relocated memory image for an n
+kilobyte memory system, and leaves the memory
+image in preparation for a SYSGEN operation.
+</table></center>
+<p>For example, the command,
+<pre>
+     MOYCPM * *
+</pre>
+<p>constructs a new version of the CP/M system and leaves it in
+memory, ready for a SYSGEN operation. The message
+<pre>
+     READY FOR 'SYSGEN' OR
+     'SAYE 34 CPMxx.COM'
+</pre>
+<p>appears at the console upon completion, where xx is the current
+memory size in kilobytes. You can then type the following
+sequence:
+<dl>
+<dt>SYSGEN
+<dd>This starts the system generation.
+<dt>SOURCE DRIVE NAME<br>
+(OR RETURN TO SKIP)
+<dd>Respond with a carriage return to skip the CP/M read
+operation, because the system is already in memory as a
+result of the previous MOVCPM operation.
+<dt>DESTINATION DRIVE NAME<br>
+OR RETURN TO REBOOT)
+<dd>Respond with B to write new system to the disk in drive
+B. SYSGEN prompts with the following message:
+<dt>DESTINATION ON B,<br>
+THEN TYPE RETURN
+<dd>Place the new disk on drive B and press the RETURN key
+when ready.
+</dl>
+<p>If you respond with A rather than B above, the system is written
+to drive A rather than B. SYSGEN continues to print this prompt:
+<pre>
+     DESTINATION DRIVE NAME (OR RETURN TO REBOOT)
+</pre>
+<p>until you respond with a single carriage return, which stops the
+SYSGEN program with a system reboot.
+<p>You can then go through the reboot process with the old or new
+disk. Instead of performing the SYSGEN operation, you can type a
+command of the form:
+<pre>
+     SAVE 34 CPMxx.COM
+</pre>
+<p>at the completion of the MOVCPM function, where xx is the value
+indicated in the SYSGEN message. The CP/M memory image on the
+currently logged disk is in a form that can be patched. This is
+necessary when operating in a nonstandard environment where the
+BIOS must be altered for a particular peripheral device
+configuration, as described in Section 6.
+<p>The following are valid MOVCPM commands:
+<p>&nbsp;
+<center><table border="1">
+<tr><td>MOVCPM&nbsp;48<td>Constructs a 48K version of CP/M and starts
+execution.
+<tr><td>MOVCPM&nbsp;48&nbsp;*<td>Constructs a 
+48K version of CP/M in
+preparation for permanent recording; the
+response is
+<p>READY FOR 'SYSGEN' OR<br>
+'SAVE 34 CPM48.COM'
+<tr><td>MOVCPM<td>Constructs a maximum memory version of CP/M
+and starts execution.
+</table></center>
+<p>The newly created system is serialized with the number attached
+to the original disk and is subject to the conditions of the
+Digital Research Software Licensing Agreement.
+<p><a name="Section_1.7"><h1>1.7 BDOS Error Messages</h1>
+<p>There are three error situations that the Basic Disk Operating
+System intercepts during file processing. When one of these
+conditions is detected, the BDOS prints the message:
+<pre>
+     BDOS ERR ON d: error
+</pre>
+<p>where d is the drive name and error is one of the three error
+messages:
+<pre>
+     BAD SECTOR
+     SELECT
+     READ ONLY
+</pre>
+<p>The BAD SECTOR message indicates that the disk controller
+electronics has detected an error condition in reading or writing
+the disk. This condition is generally caused by a malfunctioning
+disk controller or an extremely worn disk. If you find that CP/M
+reports this error more than once a month, the state of the
+controller electronics and the condition of the media should be
+checked.
+<p>You can also encounter this condition in reading files generated
+by a controller produced by a different manufacturer.  Even
+though controllers claim to be IBM compatible, one often finds
+small differences in recording formats. The MDS-800 controller,
+for example, requires two bytes of ones following the data CRC
+byte, which is not required in the IBM format. As a result, disks
+generated by the Intel MDS can be read by almost all other IBM-
+compatible systems, while disk files generated on other
+manufacturers' equipment produce the BAD SECTOR message when read
+by the MDS. To recover from this condition, press a CTRL-C to
+reboot (the safest course), or a return, which ignores the bad
+sector in the file operation.
+<table>
+<td><th valign="top">Note:<td>pressing a return might 
+destroy disk integrity if the
+operation is a directory write. Be sure you have
+adequate back-ups in this case.
+</table>
+<p>The SELECT error occurs when there is an attempt to address a
+drive beyond the range supported by the BIOS. In this case, the
+value of d in the error message gives the selected drive. The
+system reboots following any input from the console.
+<p>The READ ONLY message occurs when there is an attempt to write to
+a disk or file that has been designated as Read-Only in a STAT
+command or has been set to Read-Only by the BDOS. Reboot CP/M by
+using the warm start procedure, CTRL-C, or by performing a cold
+start whenever the disks are changed. If a changed disk is to be
+read but not written, BDOS allows the disk to be changed without
+the warm or cold start, but internally marks the drive as Read-
+Only. The status of the drive is subsequently changed to Read-
+Write if a warm or cold start occurs. On issuing this message,
+CP/M waits for input from the console. An automatic warm start
+takes place following any input.
+<p><a name="Section_1.8"><h1>1.8 Operation of CP/M on the MDS</h1></a>
+<p>This section gives operating procedures for using CP/M on the
+Intel MDS microcomputer development system. Basic knowledge of
+the MDS hardware and software systems is assumed.
+<p>CP/M is initiated in essentially the same manner as the Intel
+ISIS operating system. The disk drives are labeled 0 through 3 on
+the MDS, corresponding to CP/M drives A through D, respectively.
+The CP/M system disk is inserted into drive 0, and the BOOT and
+RESET switches are pressed in sequence. The interrupt 2 light
+should go on at this point. The space bar is then pressed on the
+system console, and the light should go out. If it does not, the
+user should check connections and baud rates. The BOOT switch is
+turned off, and the CP/M sign-on message should appear at the
+selected console device, followed by the A&gt; system prompt. You
+can then issue the various resident and transient commands.
+<p>The CP/M system can be restarted (warm start) at any time by
+pushing the INT 0 switch on the front panel. The built-in Intel
+ROM monitor can be initiated by pushing the INT 7 switch, which
+generates an RST 7, except when operating under DDT, in which
+case the DDT program gets control instead.
+<p>Diskettes can be removed from the drives at any time, and the
+system can be shut down during operation without affecting data
+integrity. Do not remove a disk and replace it with another
+without rebooting the system (cold or warm start) unless the
+inserted disk is Read-Only.
+<p>As a result of hardware hang-ups or malfunctions, CP/M might
+print the following message:
+<pre>
+     BDOS ERR ON d: BAD SECTOR
+</pre>
+<p>where d is the drive that has a permanent error. This error can
+occur when drive doors are opened and closed randomly, followed
+by disk operations, or can be caused by a disk, drive, or
+controller failure. You can optionally elect to ignore the error
+by pressing a single return at the console. The error might
+produce a bad data record, requiring reinitialization of up to
+128 bytes of data. You can reboot the CP/M system and try the
+operation again.
+<p>Termination of a CP/M session requires no special action, except
+that it is necessary to remove the disks before turning the power
+off to avoid random transients that often make their way to the
+drive electronics.
+<p>You should use IBM-compatible disks rather than disks that have
+previously been used with any ISIS version. In particular, the
+ISIS FORMAT operation produces nonstandard sector numbering
+throughout the disk. This nonstandard numbering seriously
+degrades the performance of CP/M, and causes CP/M to operate
+noticeably slower than the distribution version. If it becomes
+necessary to reformat a disk, which should not be the case for
+standard disks, a program can be written under CP/M that causes
+the MDS 800 controller to reformat with sequential sector
+numbering (1-26) on each track.
+<p>Generally, IBM-compatible 8-inch disks do not need to be
+formatted. However, 5 1/4-inch disks need to be formatted.
+<p><hr><p><a href="index.htm">Back to title page</a>
+&nbsp;&nbsp&nbsp&nbsp&nbsp<a href="ch2.htm"> Next</a></body></html>

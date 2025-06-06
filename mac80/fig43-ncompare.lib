@@ -1,0 +1,77 @@
+;	macro library for 8-bit comparison operation
+;
+test?	macro	x,y
+;;	utiltity macro to qenerate condition codes
+	if	not nul x	;;then load x
+	lda	x		;;x assumed to be in memory
+	endif
+	irpc	?Y,y	;;y may be constant operand
+tdig?	set	'&?Y'-'0'	;;first char diqit?
+	exitm			;;stop irpc after first char
+	endm
+	if	tdig? <= 9	;;y numeric.
+	sui	y		;;yes, so sub immediate
+	else
+	lxi	b,y		;;y not numeric
+	sub	m	;;so sub from memory
+	endm
+;
+	lss	macro	x,y,tl,fl
+;;	x lss than y test,
+;;	if tl is present, assume true test
+;;	if tl is absent, then invert test
+	if	nul tl
+	geq	x,y,fl
+	else
+	test?	x,y	;;set condition codes
+	jc	tl
+	endm
+;
+leq	macro x,y,tl,fl
+;;	x less than or equal to y test
+	if	nul tl
+	geq	x,y,fl
+	else
+	lss	x,y,tl
+	jz	tl
+	endm
+;
+eql	macro	x,y,tl,fl
+;;	x equal to y test
+	if	nul tl
+	neq	x,y,fl
+	else
+	test?	x,y
+	jz	tl
+	endm
+
+neq	macro	x,y,tl,fl
+;;	x not equal to y test
+	if	nul tl
+	eql	x,y,fl
+	else
+	test?	x,y
+	jnz	tl
+	endm
+;
+geq	macro	x,y,tl,fl
+;;	x qreater than or equal to y test
+	if	nul tl
+	lss	x,y,,fl
+	else
+	test?	x,y
+	jnc	tl
+	endm
+;
+gtr	macro	x,y,tl,fl
+;;	x qreater than y test
+	if	nul tl
+	leq	x,y,fl
+	else
+	local	gfl	;;false label
+	test?	x,y
+	jc	gfl
+	dcr	a
+	jnc	tl
+gfl:	endm
+

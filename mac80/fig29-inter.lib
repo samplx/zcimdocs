@@ -1,0 +1,100 @@
+;	macro library for basic intersection
+;
+;	global definitions for debug processing
+true	equ	0ffffh		;value of true
+false	equ	not true;value of false
+debug	set	false	;initially false
+bdos	equ	5	;entry to cp/m bdos
+rchar	equ	1	;read character function
+wbuff	equ	9	;write buffer function
+cr	equ	0dh	;carriage return
+lf	equ	0ah	;line feed
+
+;	input/output ports for light and clock
+light	equ	00h	;traffic light control
+clock	equ	03h	;24 hour clock (0,1,...,23)
+;
+;	bit positions for traffic light control
+nsbits	equ	4	;north souuth bits
+ewbits	equ	0	;east west bits
+;
+;	constant values for traffic light control
+off	equ	0	;turn light off
+red	equ	1	;value for red light
+yellow	equ	2	;value for yellow light
+green	equ	3	;green light
+;
+setlite	macro	dir,color
+;;	set light "dir" (ns,ew) to "color" (off,red,yellow,green)
+	if	debug	;;print info at console
+	local	setmsg,pastmsg
+	mvi	c,wbuff	;;write buffer function
+	lxi	d,setmsg
+	call	bdos	;;write the trace info
+	jmp	pastmsg
+setmsg:	db	cr,lf
+	db	'&DIR changing to &COLOR$'
+pastmsg:
+	exitm
+	endif
+	mvi	a,color shl dir&bits	;;color readied
+	out	light	;;sent in proper bit position
+	endm
+;
+;	(remaining macros are identical to the previous figure,
+;	but each contains trace information similar to "setlite")
+;
+timer	macro	seconds
+;;	construct inline time-out loop
+	if	debug	;;print info at console
+	local	setmsg,pastmsg
+	mvi	c,wbuff	;;write buffer function
+	lxi	d,setmsg
+	call	bdos	;;write the trace info
+	jmp	pastmsg
+setmsg:	db	cr,lf
+	db	'timer &SECONDS$'
+pastmsg:
+	exitm
+	local	t1,t2,t3	;;loop entries
+	mvi	d,4*seconds	;;basic loop control
+t1:	mvi	b,250		;;250msec * 4 = 1 sec
+t2:	mvi	c,182		;;182 * 5.5usec = lmsec
+t3:	dcr	c	;;1 cy = .5 usec
+	jnz	t3	;;+10 cy = 5.5 usec
+	dcr	b	;;count 250,249 
+	jnz	t2	;;loop on b register
+	dcr	d	;;basic loop control
+	jnz	t1	;;loop on d register
+;;	arrive here with approximately "seconds" secs timeout
+	endm
+;
+clock?	macro	low,high,iftrue
+;;	jump to	"iftrue" if clock is between low and high
+	local	iffalse ;;alternate to true case
+	in	clock	;;read real-time clock
+	if	not nul	high	;;check high clock
+	cpi	high	;;equal or greater?
+	jnc	iffalse	;;skip to end if so
+	endif
+	cpi	low	;;less than low value?
+	jnc	iftrue	;;skip to label if not
+iffalse:
+	endm
+;
+retry	macro	golabel
+;;	continue execution at "golabel"
+	if	debug	;;print info at console
+	local	setmsg,pastmsg
+	mvi	c,wbuff	;;write buffer function
+	lxi	d,setmsg
+	call	bdos	;;write the trace info
+	jmp	pastmsg
+setmsg:	db	cr,lf
+	db	'retry &GOLABEL$'
+pastmsg:
+	ret
+	exitm
+	jmp	golabel
+	endm
+

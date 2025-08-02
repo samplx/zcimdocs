@@ -10,10 +10,10 @@ WORKING="$(mktemp -d)"
 TARGET="$(pwd)"
 
 [ -d "$WORKING" ] || mkdir -p "$WORKING"
-cd "$WORKING"
+cd "$WORKING" || exit 86
 unzip "$SOURCE_ZIP"
 
-rsync -av asm cbasic cpm* ddt ed link80 mac80 pascal pli80 sid tex zcim* "$TARGET"/
+rsync -av asm cbasic cpm13 cpm14 cpm20 cpm22 cpm30 ddt ed link80 mac80 pascal pli80 sid tex zcim zcim-library.typ "$TARGET"/
 
 cd "$TARGET" || exit 86
 

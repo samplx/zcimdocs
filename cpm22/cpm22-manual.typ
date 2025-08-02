@@ -1,34 +1,22 @@
+
 // -------------------------------------------------------------------------------
 // START of COMMON
 // -------------------------------------------------------------------------------
+
+#import "/zcim-library.typ": *
+
 // define the page size
-#set page(paper: "us-letter")
-
-// by default, justify paragraphs
-#set par(justify: true)
-// old eyes like lots of leading
-#set par(leading: 0.95em)
+#set page(paper: page-size)
 // default font
-#set text(font: "EB Garamond", size: 12pt)
-
-// display well-known acronyms in smallcaps
-#show "BDOS" : smallcaps(all: true)[BDOS]
-#show "CBIOS" : smallcaps(all : true)[CBIOS]
-#show "CTRL-" : smallcaps(all : true)[CTRL-]
-#show "BIOS" : smallcaps(all : true)[BIOS]
-#show "CCP" : smallcaps(all : true)[CCP]
-//#show "FCB" : smallcaps(all : true)[FCB]
-#show "TPA" : smallcaps(all : true)[TPA]
-#show "ASCII" : smallcaps(all : true)[ASCII]
-#show "DMA" : smallcaps(all : true)[DMA]
-#show "IOBYTE" : smallcaps(all: true)[IOBYTE]
-#show "FDOS" : smallcaps(all: true)[FDOS]
-#show "BCD" : smallcaps(all: true)[BCD]
-#show "CPU" : smallcaps(all: true)[CPU]
+#set text(font: sans-font)
+// default font for raw text
+#show raw : set text(font: mono-font)
+// set default leading
+#set par(leading: leading-length)
 
 // make visible control characters a little more visible
-#show "␍" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␍]
-#show "␊" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␊]
+#show "␍" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␍]
+#show "␊" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␊]
 
 // don't split these at the slash
 #show "CP/M" : box([CP/M])
@@ -36,67 +24,55 @@
 #show "PL/M" : box([PL/M])
 #show "PL/I" : box([PL/I])
 
+#import "@preview/headcount:0.1.0": *
+
+#let document-version = [version 2025-07-31]
+
+
 // -------------------------------------------------------------------------------
 // END of COMMON
 // -------------------------------------------------------------------------------
+#title-page(
+  title-text: [
+    Digital Research CP/M® 2.2 \
+    _Operating System Manual_
+  ],
+  version: document-version
+)
 
-
-#align(center)[
-
-#pad(y: 64pt)[#text(size: 24pt)[
-Digital Research CP/M® \
-_Operating System Manual_
-]]
-*Version 2.2*
-]
 #pagebreak()
-#align(center)[
-
-#pad(top: 2em)[*Copyright*]
-
-Copyright © 1976, 1977, 1978, 1979, 1982, and 1983 by Digital
-Research. All rights reserved. No part of this publication may be  reproduced,
-transmitted, transcribed, stored in a retrieval system, or  translated into any
-language or computer language, in any form or by any  means, electronic,
-mechanical, optical, chemical, manual or otherwise,  without the prior written permission of \
+#credits-page(
+  copyright: [
+Copyright © 1976, 1977, 1978, 1979, 1982, and 1983 by Digital Research.
+All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
 #strike[Digital Research, Post Office Box  579, Pacific Grove, California 93950]. \
 #strike[http://www.lineo.com] \
-DRDOS, Inc [Bryan Sparks]
-
-#pad(top: 2em)[*Disclaimer*]
-
-Digital Research makes no representations or warranties with respect to  the
-contents hereof and specifically disclaims any implied warranties of
-merchantability or fitness for any particular purpose. Further, Digital
-Research reserves the right to revise this publication and to make changes  from
-time to time in the content hereof without obligation of Digital  Research to
-notify any person of such revision or changes.
-
-#pad(top: 2em)[*Trademarks*]
-
+DRDOS, Inc [Bryan Sparks] \
+Copyright © 2025 by James Burlingame.
+   
+  ],
+  trademarks: [
 CP/M and CP/NET are registered trademarks of Digital Research. ASM,
 DESPOOL, DDT, LINK-80, MAC, MP/M, PL/I-80, and SID are trademarks of  Digital
 Research. Intel is a registered trademark of Intel Corporation. TI  Silent 700
 is a trademark of Texas Instruments Incorporated. Zilog and Z80  are registered
 trademarks of Zilog, Inc.
 
-#pad(top: 2em)[*Printing*]
-The _CP/M Operating System Manual_ *was* printed in the United States of America.
+  ],
+  printing: [
+The _CP/M Operating System Manual_ *was* printed in the United States of America. \
+First Edition: 1976 \
+Second Edition: July 1982 \
+Third Edition: September 1983 \
 
-First Edition: 1976
-
-Second Edition: July 1982
-
-Third Edition: September 1983
-
-Typst Edition: 2025
-]
-
+    #zcim-project edition: #document-version
+  ]
+)
 #pagebreak()
 
 #set heading(numbering: "1.", supplement: [Section])
 #set page(numbering: "i")
-#set figure(numbering: "1.")
+#set figure(numbering: dependent-numbering("1-1"))
 #outline()
 #outline(
   title: [List of Tables],
@@ -105,6 +81,7 @@ Typst Edition: 2025
 #counter(page).update(0)
 #pagebreak()
 #set page(numbering: "1")
+#set heading(numbering: "1.", supplement: [Section])
 
 = CP/M Features and Facilities <CPMFeatures>
 
@@ -121,7 +98,7 @@ an Intel 8080 Central Processing Unit (CPU) and has at least 20K
 bytes of main memory with up to 16 disk drives. A detailed
 discussion of the modifications required for any particular
 hardware environment is given in
-Section 6. Although the standard
+@Alteration. Although the standard
 Digital Research version operates on a single-density Intel MDS
 800, several different hardware manufacturers support their own
 input-output (I/O) drivers for CP/M.
@@ -152,8 +129,8 @@ random access functions are present in CP/M 2 that provide
 direct access to any of the 65536 records of an eight-megabyte
 file.
 
-CP/M also supports ED, a powerful context editor, ASM, an Intel-compatible
-assembler, and DDT, debugger subsystems. Optional
+CP/M also supports `ED`, a powerful context editor, `ASM`, an Intel-compatible
+assembler, and `DDT`, debugger subsystems. Optional
 software includes a powerful Intel-compatible macro assembler,
 symbolic debugger, along with various high-level languages. When
 coupled with CP/M's Console Command Processor (CCP), the
@@ -265,7 +242,8 @@ on a particular disk attached to CP/M. These file references are
 either unambiguous (_ufn_) or ambiguous (_afn_). An unambiguous file
 reference uniquely identifies a single file, while an ambiguous
 file reference is satisfied by a number of different files.
-<p>File references consist of two parts: the primary filename and
+
+File references consist of two parts: the primary filename and
 the filetype. Although the filetype is optional, it usually is
 generic. For example, the filetype `ASM` is used to denote that the
 file is an assembly language source file, while the primary
@@ -409,20 +387,20 @@ commands can occur after the CP/M system is loaded from disk
 ```
 CP/M VER 2.2
 ```
-`A>`#text(fill: purple)[`DIR`↵] \
+`A>`#text(fill: ui-fill)[`DIR`↵] \
 ```
 A:SAMPLE  ASM SAMPLE  PRN
 ```
-`A>`#text(fill: purple)[`B:`↵] \
-`B>`#text(fill: purple)[`DIR *.ASM`↵] \
+`A>`#text(fill: ui-fill)[`B:`↵] \
+`B>`#text(fill: ui-fill)[`DIR *.ASM`↵] \
 ```
 B:DUMP    ASM FILES   ASM
 ```
-`B>`#text(fill: purple)[`A>`↵] \
+`B>`#text(fill: ui-fill)[`A>`↵] \
 `A>` \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 1.9em)[List all the files on disk A] \
     #pad(top: -0.2em)[Switch to disk B] \
     #pad(top: -2.2em)[List all ASM files on B] \
@@ -1606,20 +1584,20 @@ to make a copy of `PIP.COM` in another user area.
     dir: ltr,
     spacing: 4em,
     [
-`A>`#text(fill: purple)[`USER 0`↵] \
-`A>`#text(fill: purple)[`DDT PIP.COM`↵] \
+`A>`#text(fill: ui-fill)[`USER 0`↵] \
+`A>`#text(fill: ui-fill)[`DDT PIP.COM`↵] \
 ```
 DDT VERS 2.2
 NEXT  PC
 1E00 0100
 ```
-`-`#text(fill: purple)[`G0`↵] \
-`A>`#text(fill: purple)[`USER `_N_↵] \
-`A>`#text(fill: purple)[`SAVE `_S_` PIP.COM`↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
+`A>`#text(fill: ui-fill)[`USER `_N_↵] \
+`A>`#text(fill: ui-fill)[`SAVE `_S_` PIP.COM`↵] \
 `A>` \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.2em)[Log in as user 0] \
     #pad(top: -2.2em)[Load `PIP` into memory. Note `PIP` size _S_] \
     #pad(top: 2.5em)[Return to CCP] \
@@ -2406,7 +2384,7 @@ single CTRL-Z, denoted by an up arrow ^Z, returns `ED` to command
 mode. The *CP* is positioned after the last character entered. The
 following sequence:
 
-#text(fill: purple)[```
+#text(fill: ui-fill)[```
 I↵
 NOW IS THE↵
 TIME FOR↵
@@ -2522,7 +2500,7 @@ letters to avoid automatic translation of strings to upper-case.
   stroke: none,
   [`B2T`↵],
   table.cell(breakable: false)[Move to the beginning of the buffer and type two lines: \
-  #text(fill: purple)[
+  #text(fill: ui-fill)[
     ```
     NOW IS THE↵
     TIME FOR↵
@@ -4051,10 +4029,10 @@ program.
 In the sample:
 
 / output text : `is in monospace`
-/ input text : #text(fill: purple)[`is in purple`]
-/ carriage-return : is displayed as #text(fill: purple, size: 1.5em)[↵]
-/ rubout/DEL key : is displayed as #text(fill: purple, font: "DejaVu Sans", size: 1.5em)[⌫].
-/ comments : #text(font: "Permanent Marker")[displayed in marker text].
+/ input text : #text(fill: ui-fill)[`is in `#raw(ui-fill-name)]
+/ carriage-return : is displayed as #text(fill: ui-fill, size: 1.5em)[↵]
+/ rubout/DEL key : is displayed as #text(fill: ui-fill, size: 1.5em)[⌫].
+/ comments : #text(font: cursive-font)[displayed in #cursive-font-name].
 
 #pad(top: 3em)[
   #box(
@@ -4066,14 +4044,14 @@ In the sample:
     dir: ltr,
     spacing: 4em,
     [
-`A>`#text(fill: purple)[`ASM SORT`↵]
+`A>`#text(fill: ui-fill)[`ASM SORT`↵]
 ```
 CP/M ASSEMBLER - VER 2.0
 0015C
 003H USE FACTOR
 END OF ASSEMBLY
 ```
-`A>`#text(fill: purple)[`DIR SORT.*`↵]
+`A>`#text(fill: ui-fill)[`DIR SORT.*`↵]
 ```
 SORT  ASM
 SORT  BAK
@@ -4082,7 +4060,7 @@ SORT  HEX
 ```
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 3.5em)[next free address] \
     #pad(top: -2.5em)[percent of table used 00 to ff (hexadecimal)] \
     #pad(top: 2.0em)[Source file] \
@@ -4103,7 +4081,7 @@ SORT  HEX
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`TYPE SORT.PRN`↵]
+`A>`#text(fill: ui-fill)[`TYPE SORT.PRN`↵]
 ```
             ;       SORT PROGRAM IN CP/M ASSEMBLY LANGUAGE
             ;       START AT THE BEGINNING OF THE TRANSIENT PROGRAM AREA
@@ -4143,7 +4121,7 @@ SORT  HEX
 ```]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.5em, left: 14em)[⇙Source Program⇘] \
     #pad(top: 0.5em, left: 0.5em)[⇙Machine code location] \
     #pad(top: -1.5em, left: 3.5em)[⇙generated code] \
@@ -4184,7 +4162,7 @@ SORT  HEX
 015C                END
 
 ```
-`A>`#text(fill: purple)[`TYPE SORT.HEX`↵]
+`A>`#text(fill: ui-fill)[`TYPE SORT.HEX`↵]
 ```
 :10010000214601360121470136007EFE09D2190140
 :100110002146017EB7C20001FF5F16002148011988
@@ -4199,7 +4177,7 @@ SORT  HEX
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -0.5em, left: 14em)[(continued)] \
     #pad(top: 19.0em, left: 4em)[⇖equate value] \
     #pad(top: 2.5em, left: 24em)[Machine Code] \
@@ -4217,18 +4195,18 @@ SORT  HEX
     dir: ltr,
     spacing: -20em,
     [
-`A>`#text(fill: purple)[`DDT SORT.HEX`↵]
+`A>`#text(fill: ui-fill)[`DDT SORT.HEX`↵]
 ```
 DDT VER 2.2
 NEXT PC
 015C 0000
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0000 `#text(fill: purple)[`100`↵] \
-`-`#text(fill: purple)[`UFFFF`↵] \
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0000 `#text(fill: ui-fill)[`100`↵] \
+`-`#text(fill: ui-fill)[`UFFFF`↵] \
+#text(fill: ui-fill)[⌫] \
 `C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 LXI H,0146*0100` \
-`-`#text(fill: purple)[`T10`↵] \
+`-`#text(fill: ui-fill)[`T10`↵] \
 ```
 C0Z0M0E0I0 A=01 B=0000 D=0000 H=0146 S=0100 P=0100 LXI H, 0146
 C0Z0M0E0I0 A=01 B=0000 D=0000 H=0146 S=0100 P=0103 MVI M, 01
@@ -4247,16 +4225,16 @@ C0Z0M0E0I0 A=01 B=0000 D=0000 H=0146 S=0100 P=0105 LXI H, 0147
 C0Z0M0E0I0 A=01 B=0000 D=0000 H=0147 S=0100 P=0108 MVI M, 00
 C0Z0M0E0I0 A=01 B=0000 D=0000 H=0147 S=0100 P=010A MOV A, M*010B
 ```
-`-`#text(fill: purple)[`A10D`↵] \
+`-`#text(fill: ui-fill)[`A10D`↵] \
 \
-`010D `#text(fill: purple)[`JC 119`↵] \
-`0110 `#text(fill: purple)[``↵] \
+`010D `#text(fill: ui-fill)[`JC 119`↵] \
+`0110 `#text(fill: ui-fill)[``↵] \
 \
-`-`#text(fill: purple)[`XP`↵] \
-`P=010B `#text(fill: purple)[`100`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=010B `#text(fill: ui-fill)[`100`↵] \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     Start debug run \
     \
     \
@@ -4285,7 +4263,7 @@ C0Z0M0E0I0 A=01 B=0000 D=0000 H=0147 S=0100 P=010A MOV A, M*010B
     dir: ltr,
     spacing: -17em,
     [
-`-`#text(fill: purple)[`T10`↵] \
+`-`#text(fill: ui-fill)[`T10`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0147 S=0100 P=0100 LXI H,0146
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0146 S=0100 P=0103 MVI M,01
@@ -4304,7 +4282,7 @@ C0Z0M1E0I0 A=00 B=0005 D=0000 H=0148 S=0100 P=0122 MOV A,C
 C0Z0M1E0I0 A=05 B=0005 D=0000 H=0148 S=0100 P=0123 INX H
 C0Z0M1E0I0 A=05 B=0005 D=0000 H=0149 S=0100 P=0124 MOV B,M*0125
 ```
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
  0100   LXI H,0146
  0103   MVI M,01
@@ -4318,7 +4296,7 @@ C0Z0M1E0I0 A=05 B=0005 D=0000 H=0149 S=0100 P=0124 MOV B,M*0125
  0114   ORA A
  0115   JNZ 0100
 ```
-`-`#text(fill: purple)[`L`↵] \
+`-`#text(fill: ui-fill)[`L`↵] \
 ```
 
  0118   RST 07
@@ -4326,10 +4304,10 @@ C0Z0M1E0I0 A=05 B=0005 D=0000 H=0149 S=0100 P=0124 MOV B,M*0125
  011A   MVI D,00
  011C   LXI H,0148
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
+#text(fill: ui-fill)[⌫] \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     Trace execution for 10h steps \
     #pad(top: 7.0em, left: 14em)[⇙Altered instruction]\
     #pad(top: 8.5em, left: 15em)[⇙Automatic breakpoint]\
@@ -4351,10 +4329,10 @@ C0Z0M1E0I0 A=05 B=0005 D=0000 H=0149 S=0100 P=0124 MOV B,M*0125
     dir: ltr,
     spacing: -17em,
     [
-`-`#text(fill: purple)[`G,11B`↵] \
+`-`#text(fill: ui-fill)[`G,11B`↵] \
 \
 `*0127` \
-`-`#text(fill: purple)[`T4`↵] \
+`-`#text(fill: ui-fill)[`T4`↵] \
 ```
 
 C0Z0M0E0I0 A=38 B=0064 D=0006 H=0156 S=0100 P=0127 MOV D,A
@@ -4362,36 +4340,36 @@ C0Z0M0E0I0 A=38 B=0064 D=3806 H=0156 S=0100 P=0128 MOV A,B
 C0Z0M0E0I0 A=00 B=0064 D=3806 H=0156 S=0100 P=0129 INX H
 C0Z0M0E0I0 A=00 B=0064 D=3806 H=0157 S=0100 P=012A SBB M*012B
 ```
-`-`#text(fill: purple)[`D148`↵] \
+`-`#text(fill: ui-fill)[`D148`↵] \
 ```
 0148 05 00 07 00 14 00 1E 00 ........
 0150 32 00 64 00 64 00 2C 01 E8 03 01 80 00 00 00 00 2.D.D.,........
 0160 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ...............
 ```
-`-`#text(fill: purple)[`G0`↵] \
-`A>`#text(fill: purple)[`DDT SORT.HEX`↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
+`A>`#text(fill: ui-fill)[`DDT SORT.HEX`↵] \
 ```
 DDT VER 2.2
 NEXT PC
 015C 0000
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0000 `#text(fill: purple)[`100`↵] \
-`-`#text(fill: purple)[`L10D`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0000 `#text(fill: ui-fill)[`100`↵] \
+`-`#text(fill: ui-fill)[`L10D`↵] \
 ```
 
 010D   JNC 0119
 0110   LXI H,0146
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`A10D`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`A10D`↵] \
 \
-`010D `#text(fill: purple)[`JC 119`↵] \
-`0110 `#text(fill: purple)[``↵] \
+`010D `#text(fill: ui-fill)[`JC 119`↵] \
+`0110 `#text(fill: ui-fill)[``↵] \
 \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.5em)[Start program from current PC (0125H)] \
     #pad(top: -2.8em)[and run in real time to 11BH]
     #pad(top: -0.5em)[Front-panel interrupt (infinite loop)] \
@@ -4418,7 +4396,7 @@ NEXT PC
     dir: ltr,
     spacing: -18em,
     [
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
 
 0100   LXI H,0146
@@ -4426,25 +4404,25 @@ NEXT PC
 0105   LXI H,0147
 0108   MVI M,00
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`A103`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`A103`↵] \
 \
-`0103 `#text(fill: purple)[`MVI M,0`↵] \
-`0115 `#text(fill: purple)[``↵] \
+`0103 `#text(fill: ui-fill)[`MVI M,0`↵] \
+`0115 `#text(fill: ui-fill)[``↵] \
 \
-`-`#text(fill: purple)[`^C`] \
-`A>`#text(fill: purple)[`SAVE 1 SORT.COM`↵] \
+`-`#text(fill: ui-fill)[`^C`] \
+`A>`#text(fill: ui-fill)[`SAVE 1 SORT.COM`↵] \
 \
-`A>`#text(fill: purple)[`DDT SORT.COM`↵] \
+`A>`#text(fill: ui-fill)[`DDT SORT.COM`↵] \
 ```
 
 DDT VER 2.2
 NEXT PC
 0200 0100
 ```
-`-`#text(fill: purple)[`G`↵] \
+`-`#text(fill: ui-fill)[`G`↵] \
 `*0118` \
-`-`#text(fill: purple)[`D148`↵] \
+`-`#text(fill: ui-fill)[`D148`↵] \
 ```
 
 0148 05 00 07 00 14 00 1E 00 ........
@@ -4452,11 +4430,11 @@ NEXT PC
 0160 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 0170 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 ```
-`-`#text(fill: purple)[`G0`↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
 
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.5em)[List starting section of program] \
     #pad(top: 4.5em)[Abort list with Rubout/DEL]\
     #pad(top: -2.0em)[Change switch initialization to 00] \
@@ -4483,28 +4461,28 @@ NEXT PC
     dir: ltr,
     spacing: -14em,
     [
-`A>`#text(fill: purple)[`ED SORT.ASM`↵] \
-`*`#text(fill: purple)[`N,0^Z0TT`↵] \
+`A>`#text(fill: ui-fill)[`ED SORT.ASM`↵] \
+`*`#text(fill: ui-fill)[`N,0^Z0TT`↵] \
 `       MVI     M,0     ;I = 0` \
-`*`#text(fill: purple)[`-`↵] \
+`*`#text(fill: ui-fill)[`-`↵] \
 `       LXI     H,I     ;ADDRESS INDEX` \
-`*`#text(fill: purple)[`-`↵] \
+`*`#text(fill: ui-fill)[`-`↵] \
 `       MVI     M,1     ;SET TO 1 FOR FIRST ITERATION` \
-`*`#text(fill: purple)[`KT`↵] \
+`*`#text(fill: ui-fill)[`KT`↵] \
 `       LXI     H,I     ;ADDRESS INDEX` \
-`*`#text(fill: purple)[`I`↵] \
-#text(fill: purple)[`       MVI     M,0     ;ZERO SW`↵] \
-`*`#text(fill: purple)[`T`↵] \
+`*`#text(fill: ui-fill)[`I`↵] \
+#text(fill: ui-fill)[`       MVI     M,0     ;ZERO SW`↵] \
+`*`#text(fill: ui-fill)[`T`↵] \
 `       LXI     H,I     ;ADDRESS INDEX` \
-`*`#text(fill: purple)[`NJNC^Z0T`↵] \
-`       JNC*` #text(fill: purple)[`T`↵] \
+`*`#text(fill: ui-fill)[`NJNC^Z0T`↵] \
+`       JNC*` #text(fill: ui-fill)[`T`↵] \
 `       CONT    ;CONTINUE IF I <= (N-2)` \
-`*`#text(fill: purple)[`-2DIC^Z0LT`↵] \
+`*`#text(fill: ui-fill)[`-2DIC^Z0LT`↵] \
 `       JC      CONT    ;CONTINUE IF I <= (N-2)` \
-`*`#text(fill: purple)[`E`↵] \
+`*`#text(fill: ui-fill)[`E`↵] \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     Make changes to original program \
     #pad(top: -0.2em)[find next ",0" (`^Z` is CTRL-Z)] \
     #pad(top: -1.0em)[up one line in text] \
@@ -4526,22 +4504,22 @@ NEXT PC
     dir: ltr,
     spacing: -18em,
     [
-`A>`#text(fill: purple)[`ASM SORT.AAZ`↵] \
+`A>`#text(fill: ui-fill)[`ASM SORT.AAZ`↵] \
 ```
 CP/M ASSEMBLER - VER 2.0
 015C
 003H USE FACTOR
 END OF ASSEMBLY
 ```
-`A>`#text(fill: purple)[`DDT SORT.HEX`↵] \
+`A>`#text(fill: ui-fill)[`DDT SORT.HEX`↵] \
 ```
 DDT VER 2.2
 NEXT PC
 015C 0000
 ```
-`-`#text(fill: purple)[`G100`↵] \
+`-`#text(fill: ui-fill)[`G100`↵] \
 `*0118` \
-`-`#text(fill: purple)[`D148`↵] \
+`-`#text(fill: ui-fill)[`D148`↵] \
 ```
 
 0148 05 00 07 00 14 00 1E 00 ........
@@ -4549,11 +4527,11 @@ NEXT PC
 0160 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 0170 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`G0`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`G0`↵] \
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -0.0em)[Source from disk A, Hex to disk A, Skip PRN] \
     #pad(top: -0.5em)[next address to assemble] \
     #pad(top: 0.5em)[test program changes] \
@@ -5120,11 +5098,11 @@ vector and stored into `LARGE` at the termination of the program.
 #block(breakable: false, below: 2em)[
 In the sample:
 / output text : `is in a monospace font`
-/ input text : #text(fill: purple)[`is in purple`]
-/ carriage-return : is displayed as #text(fill: purple)[↵]
-/ rubout/DEL key : is displayed as #text(fill: purple, font: "DejaVu Sans")[⌫].
-/ CTRL-Z : #text(fill: purple)[^Z]
-/ comments : #text(font: "Permanent Marker")[are displayed in a marker text font].
+/ input text : #text(fill: ui-fill)[`is in `#raw(ui-fill-name)]
+/ carriage-return : is displayed as #text(fill: ui-fill)[↵]
+/ rubout/DEL key : is displayed as #text(fill: ui-fill)[⌫].
+/ CTRL-Z : #text(fill: ui-fill)[^Z]
+/ comments : #text(font: cursive-font)[are displayed in #cursive-font-name].
 ]
 
 #box(
@@ -5136,10 +5114,10 @@ In the sample:
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`ED SCAN.ASM`↵] \
+`A>`#text(fill: ui-fill)[`ED SCAN.ASM`↵] \
 `NEW FILE` \
-`     : *`#text(fill: purple)[`I`↵]
-#text(fill: purple)[```
+`     : *`#text(fill: ui-fill)[`I`↵]
+#text(fill: ui-fill)[```
                 ORG          100H           ;START OF TRANSIENT↵
                                             ;AREA↵
                 MVI          B, LEN         ;LENGTH OF VECTOR TO SCAN↵
@@ -5172,7 +5150,7 @@ LARGE:          DS           1              ;LARGEST VALUE ON EXIT↵
 
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.5em, left: 14em)[Create Source Program] \
   ]
 ))
@@ -5186,7 +5164,7 @@ LARGE:          DS           1              ;LARGEST VALUE ON EXIT↵
     dir: ltr,
     spacing: -34em,
     [
-`     : *`#text(fill: purple)[`B0P`↵]
+`     : *`#text(fill: ui-fill)[`B0P`↵]
 ```
     1:                  ORG          100H           ;START OF TRANSIENT
     2:                                              ;AREA
@@ -5212,9 +5190,9 @@ LARGE:          DS           1              ;LARGEST VALUE ON EXIT↵
    22:  VECT:           DB           2,0,4,3,5,6,1,5
    23:  LEN             EQU          $-VECT         ;LENGTH
 ```
-`    1: *`#text(fill: purple)[`E`↵] \
+`    1: *`#text(fill: ui-fill)[`E`↵] \
 \
-`A>`#text(fill: purple)[`ASM SCAN`↵]
+`A>`#text(fill: ui-fill)[`ASM SCAN`↵]
 ```
 CP/M ASSEMBLER - VER 2.0
 0122
@@ -5225,7 +5203,7 @@ END OF ASSEMBLY
 
   ],
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 34em, left: 8em)[End of edit] \
     #pad(top: -0.5em, left: 8em)[Start Assembler] \
   ]
@@ -5240,8 +5218,8 @@ END OF ASSEMBLY
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`TYPE SCAN.PRN`↵]
-#text(size: 11pt)[```
+`A>`#text(fill: ui-fill)[`TYPE SCAN.PRN`↵]
+#text(size: 10pt)[```
  0100                           ORG          100H           ;START OF TRANSIENT
                                                             ;AREA
  0100 0608                      MVI          B, LEN         ;LENGTH OF VECTOR TO SCAN
@@ -5273,7 +5251,7 @@ END OF ASSEMBLY
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -1em, left: 14em)[Assembly complete; look at program listing] \
     #pad(top: -2em, left: 10em)[⇘Source Program⇘] \
     #pad(top: -4.0em, left: -3em)[⇘Code Address] \
@@ -5296,26 +5274,26 @@ END OF ASSEMBLY
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`DDT SCAN.HEX`↵] \
+`A>`#text(fill: ui-fill)[`DDT SCAN.HEX`↵] \
 ```
 DDT VERS 2.2
 NEXT PC
 0121 0000
 ```
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0000 JMP  FA03
 
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0000 `#text(fill: purple)[`100`↵] \
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0000 `#text(fill: ui-fill)[`100`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 
 ```
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
   0100  MVI  B,08
   0102  MVI  C,00
@@ -5329,7 +5307,7 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
   010F  JNZ  0107
   0112  MOV  A,C
 ```
-`-`#text(fill: purple)[`L`↵] \
+`-`#text(fill: ui-fill)[`L`↵] \
 ```
   0113  STA  0121
   0116  JMP  0000
@@ -5346,7 +5324,7 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0em, left: 14em)[Start debugger using hex format machine code] \
     #pad(top: 1.5em, left: 7em)[⇖last load address + 1] \
     #pad(top: -2.5em, left: 12em)[Examine registers before debug run] \
@@ -5375,10 +5353,10 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
     dir: ltr,
     spacing: -34em,
     [
-`-`#text(fill: purple)[`A116`↵] \
-`0116 `#text(fill: purple)[`RST 7`↵] \
-`0117 `#text(fill: purple)[↵] \
-`-`#text(fill: purple)[`L113`↵] \
+`-`#text(fill: ui-fill)[`A116`↵] \
+`0116 `#text(fill: ui-fill)[`RST 7`↵] \
+`0117 `#text(fill: ui-fill)[↵] \
+`-`#text(fill: ui-fill)[`L113`↵] \
 ```
   0113  STA  0121
   0116  RST  07
@@ -5392,27 +5370,27 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
   011E  MVI  B,01
   0120  DCR  B
 ```
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08*0102
 
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0102 MVI C,00*0104
 
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0104 LXI H,0119*0107
 
 ```
-`-`#text(fill: purple)[`T3`↵] \
+`-`#text(fill: ui-fill)[`T3`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0119 S=0100 P=0107 MOV A,M
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0108 SUB C
@@ -5423,7 +5401,7 @@ C0Z0M0E0I1 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JNC 010D*010D
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -0.5em, left: 14em)[Enter inline assembly mode to change the] \
     #pad(top: -3em, left: 14em)[JMP to 0000 into a RST 7, which will] \
     #pad(top: -3em, left: 14em)[return to DDT if ever executed] \
@@ -5452,7 +5430,7 @@ C0Z0M0E0I1 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JNC 010D*010D
     dir: ltr,
     spacing: -34em,
     [
-`-`#text(fill: purple)[`D119`↵] \
+`-`#text(fill: ui-fill)[`D119`↵] \
 ```
 
 0119 02 00 04 03 05 06 01 .......
@@ -5469,12 +5447,12 @@ C0Z0M0E0I1 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JNC 010D*010D
 01C0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 
 ```
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=010D INX  H
 
 ```
-`-`#text(fill: purple)[`T5`↵] \
+`-`#text(fill: ui-fill)[`T5`↵] \
 ```
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=010D INX  H
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=011A S=0100 P=010E DCR  B
@@ -5482,22 +5460,22 @@ C0Z0M0E0I0 A=02 B=0700 D=0000 H=011A S=0100 P=010F JNZ  0107
 C0Z0M0E0I0 A=02 B=0700 D=0000 H=011A S=0100 P=0107 MOV  A,M
 C0Z0M0E0I0 A=00 B=0700 D=0000 H=011A S=0100 P=0108 SUB  C*0109
 ```
-`-`#text(fill: purple)[`U5`↵] \
+`-`#text(fill: ui-fill)[`U5`↵] \
 ```
 C0Z1M0E0I0 A=00 B=0700 D=0000 H=011A S=0100 P=0109 JNC  010D*0108
 ```
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z0M0E0I0 A=04 B=0600 D=0000 H=011B S=0100 P=0108 SUB  C
 
 ```
-`-`#text(fill: purple)[`G`↵] \
+`-`#text(fill: ui-fill)[`G`↵] \
 
 `*0116` \
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.0em, left: 5em)[Display memory starting at 119H] \
     #pad(top: -1.8em, left: 3em)[⇓ program data ⇘] \
     #pad(top: -3.0em, left: 3em)[#rect(height: 1.1em, width: 10em)]
@@ -5530,19 +5508,19 @@ C0Z0M0E0I0 A=04 B=0600 D=0000 H=011B S=0100 P=0108 SUB  C
     dir: ltr,
     spacing: -34em,
     [
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0116 RST  07
 
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0116 `#text(fill: purple)[`100`↵] \
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0116 `#text(fill: ui-fill)[`100`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0100 MVI  B,08
 
 ```
-`-`#text(fill: purple)[`T10`↵] \
+`-`#text(fill: ui-fill)[`T10`↵] \
 ```
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0100 MVI  B,08
 C0Z1M0E0I0 A=00 B=0800 D=0000 H=0121 S=0100 P=0102 MVI  C,00
@@ -5562,15 +5540,15 @@ C0Z0M0E0I0 A=00 B=0600 D=0000 H=011B S=0100 P=010F JNZ  0107
 C0Z0M0E0I0 A=00 B=0600 D=0000 H=011B S=0100 P=0107 MOV  A,M*0108
 
 ```
-`-`#text(fill: purple)[`A109`↵] \
-`-`#text(fill: purple)[`JC 10D`↵] \
-`010C`#text(fill: purple)[↵] \
-`-`#text(fill: purple)[`G0`↵] \
-`A>`#text(fill: purple)[`SAVE 1 SCAN.COM`↵] \
+`-`#text(fill: ui-fill)[`A109`↵] \
+`-`#text(fill: ui-fill)[`JC 10D`↵] \
+`010C`#text(fill: ui-fill)[↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
+`A>`#text(fill: ui-fill)[`SAVE 1 SCAN.COM`↵] \
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0em, left: 7em)[CPU State at end of program] \
     #pad(top: -0.5em, left: 7em)[Examine and change program counter] \
     #pad(top: 3.5em, left: 7em)[Trace 10 (hexadecimal) steps] \
@@ -5602,14 +5580,14 @@ C0Z0M0E0I0 A=00 B=0600 D=0000 H=011B S=0100 P=0107 MOV  A,M*0108
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`DDT SCAN.COM`↵] \
+`A>`#text(fill: ui-fill)[`DDT SCAN.COM`↵] \
 ```
 DDT VERS 2.2
 NEXT PC
 0200 0100
 
 ```
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
   0100  MVI  B,08
   0102  MVI  C,00
@@ -5624,9 +5602,9 @@ NEXT PC
   0112  MOV  A,C
 
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0100 `#text(fill: purple)[↵] \
-`-`#text(fill: purple)[`T10`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0100 `#text(fill: ui-fill)[↵] \
+`-`#text(fill: ui-fill)[`T10`↵] \
 ```
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0102 MVI C,00
@@ -5650,7 +5628,7 @@ C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=010F JNZ 0107*0107
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -0.0em, left: 12em)[restart DDT with the saved image to continue testing] \
     #pad(top: 3.0em, left: 14em)[List some code] \
     #pad(top: 4.3em, left: 12em)[⇐ Previous patch is present in SCAN.COM] \
@@ -5675,45 +5653,45 @@ C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=010F JNZ 0107*0107
     dir: ltr,
     spacing: -34em,
     [
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=0107 MOV A,M
 
 ```
-`-`#text(fill: purple)[`G,108`↵] \
+`-`#text(fill: ui-fill)[`G,108`↵] \
 \
 `*0108` \
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C
 
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C*0109
 
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=0109 JC 010D*010C
 
 ```
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=010C MOV C,A
 
 ```
-`-`#text(fill: purple)[`G`↵] \
+`-`#text(fill: ui-fill)[`G`↵] \
 `*0116` \
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
 
 ```
-`-`#text(fill: purple)[`S121`↵] \
-` 0121   03  `#text(fill: purple)[↵] \
-` 0122   52  `#text(fill: purple)[`.`↵] \
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`S121`↵] \
+` 0121   03  `#text(fill: ui-fill)[↵] \
+` 0122   52  `#text(fill: ui-fill)[`.`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
   0100  MVI  B,08
   0102  MVI  C,00
@@ -5730,7 +5708,7 @@ C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 3.5em, left: 14em)[Run from current PC and breakpoint at 108H] \
     #pad(top: 2.0em, left: 10.5em)[⇙next data item] \
     #pad(top: -1.0em, left: 10em)[Single step for a few cycles] \
@@ -5754,7 +5732,7 @@ C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
     dir: ltr,
     spacing: -34em,
     [
-`-`#text(fill: purple)[`L`↵] \
+`-`#text(fill: ui-fill)[`L`↵] \
 ```
   0113  STA  0121
   0116  RST  07
@@ -5768,41 +5746,41 @@ C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
   011E  MVI  B,01
   0120  DCR  B
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0116 `#text(fill: purple)[`100`↵] \
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0116 `#text(fill: ui-fill)[`100`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0100 MVI B,08*0102
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z1M0E1I1 A=03 B=0803 D=0000 H=0121 S=0100 P=0102 MVI C,00*0104
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z1M0E1I1 A=03 B=0800 D=0000 H=0121 S=0100 P=0104 LXI H,0119*0107
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z1M0E1I1 A=03 B=0800 D=0000 H=0119 S=0100 P=0107 MOV A,M*0108
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z1M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0108 SUB  C*0109
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JC   010D*010C
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=010C MOV  C,A*010D
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0802 D=0000 H=0119 S=0100 P=010D INX H*010E
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0802 D=0000 H=011A S=0100 P=010E DCR B*010F
 ```
@@ -5810,7 +5788,7 @@ C0Z0M0E0I1 A=02 B=0802 D=0000 H=011A S=0100 P=010E DCR B*010F
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 10em, left: 20em)[Review the code (continued)] \
     #pad(top: 3.7em, left: 14em)[Reset the PC] \
     #pad(top: -0.9em, left: 14em)[Single step, and watch data values] \
@@ -5833,27 +5811,27 @@ C0Z0M0E0I1 A=02 B=0802 D=0000 H=011A S=0100 P=010E DCR B*010F
     dir: ltr,
     spacing: -31.5em,
     [
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0702 D=0000 H=011A S=0100 P=010F JNZ 0107*0107
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0702 D=0000 H=011A S=0100 P=0107 MOV A,M*0108
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=00 B=0702 D=0000 H=011A S=0100 P=0108 SUB C*0109
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C1Z0M1E0I0 A=FE B=0702 D=0000 H=011A S=0100 P=0109 JC 010D*010D
 ```
-`-`#text(fill: purple)[`T`↵] \
+`-`#text(fill: ui-fill)[`T`↵] \
 ```
 C1Z0M1E0I0 A=FE B=0702 D=0000 H=011A S=0100 P=010D INX H*010E
 ```
-`-`#text(fill: purple)[`L100`↵] \
+`-`#text(fill: ui-fill)[`L100`↵] \
 ```
  0100   MVI        B,08
  0102   MVI        C,00
@@ -5867,23 +5845,23 @@ C1Z0M1E0I0 A=FE B=0702 D=0000 H=011A S=0100 P=010D INX H*010E
  010F   JNZ        0107
  0112   MOV        A,C
 ```
-`-`#text(fill: purple)[`A108`↵] \
-`-`#text(fill: purple)[`CMP C`↵] \
-`0109`#text(fill: purple)[↵] \
-`-`#text(fill: purple)[`G0`↵] \
-`A>`#text(fill: purple)[`SAVE 1 SCAN.COM`↵] \
-`A>`#text(fill: purple)[`DDT SCAN.COM`↵] \
+`-`#text(fill: ui-fill)[`A108`↵] \
+`-`#text(fill: ui-fill)[`CMP C`↵] \
+`0109`#text(fill: ui-fill)[↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
+`A>`#text(fill: ui-fill)[`SAVE 1 SCAN.COM`↵] \
+`A>`#text(fill: ui-fill)[`DDT SCAN.COM`↵] \
 ```
 DDT VERS 2.2
 NEXT PC
 0200 0100
 ```
-`-`#text(fill: purple)[`XP`↵] \
-`P=0100 `#text(fill: purple)[↵] \
+`-`#text(fill: ui-fill)[`XP`↵] \
+`P=0100 `#text(fill: ui-fill)[↵] \
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 8.4em, left: 7.5em)[⇙Second data item brought to A] \
     #pad(top: 0em, left: 7.5em)[⇙Subtract destroys data value that was loaded!] \
     #pad(top: 9.7em, left: 11em)[⇐ This should have been a CMP so that] \
@@ -5908,7 +5886,7 @@ NEXT PC
     spacing: -34em,
     [
 
-`-`#text(fill: purple)[`L116`↵] \
+`-`#text(fill: ui-fill)[`L116`↵] \
 ```
  0116   RST        07
  0117   NOP
@@ -5916,39 +5894,39 @@ NEXT PC
  0119   STAX       B
  011A   NOP
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`G,116`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`G,116`↵] \
 ```
 
 *0116
 ```
-`-`#text(fill: purple)[`XC`↵] \
-`C1 `#text(fill: purple)[↵] \
-`-`#text(fill: purple)[`X`↵] \
+`-`#text(fill: ui-fill)[`XC`↵] \
+`C1 `#text(fill: ui-fill)[↵] \
+`-`#text(fill: ui-fill)[`X`↵] \
 ```
 C1Z1M0E1I1 A=06 B=0006 D=0000 H=0121 S=0100 P=0116 RST 07
 ```
-`-`#text(fill: purple)[`S121`↵] \
-` 0121   06  `#text(fill: purple)[↵] \
-` 0122   00  `#text(fill: purple)[↵] \
-` 0123   22  `#text(fill: purple)[`.`↵] \
-`-`#text(fill: purple)[`G0`↵] \
-`A>`#text(fill: purple)[`ED SCAN.ASM`↵] \
-`     : *`#text(fill: purple)[`NSUB`↵] \
-`    7: *`#text(fill: purple)[`0LT`↵] \
+`-`#text(fill: ui-fill)[`S121`↵] \
+` 0121   06  `#text(fill: ui-fill)[↵] \
+` 0122   00  `#text(fill: ui-fill)[↵] \
+` 0123   22  `#text(fill: ui-fill)[`.`↵] \
+`-`#text(fill: ui-fill)[`G0`↵] \
+`A>`#text(fill: ui-fill)[`ED SCAN.ASM`↵] \
+`     : *`#text(fill: ui-fill)[`NSUB`↵] \
+`    7: *`#text(fill: ui-fill)[`0LT`↵] \
 `    7:                   SUB     C           ;LARGER VALUE IN C?` \
-`    7: *`#text(fill: purple)[`SSUB`^Z`CMP`^Z`0LT`↵] \
+`    7: *`#text(fill: ui-fill)[`SSUB`^Z`CMP`^Z`0LT`↵] \
 `    7:                   CMP     C           ;LARGER VALUE IN C?` \
-`    7: *`#text(fill: purple)[↵] \
+`    7: *`#text(fill: ui-fill)[↵] \
 `    8:                   JNC     NFOUND      ;JUMP IF LARGER VALUE NOT FOUND` \
-`    8: *`#text(fill: purple)[`SNC`^Z`C`^Z`0LT`↵] \
+`    8: *`#text(fill: ui-fill)[`SNC`^Z`C`^Z`0LT`↵] \
 `    8:                   JC      NFOUND      ;JUMP IF LARGER VALUE NOT FOUND` \
-`    8: *`#text(fill: purple)[`E`↵] \
+`    8: *`#text(fill: ui-fill)[`E`↵] \
 \
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: 0.0em, left: 14em)[Look at code to see if it was properly loaded] \
     #pad(top: 5.5em, left: 14em)[(long type-out aborted with rubout/DEL)] \
     #pad(top: -2.5em, left: 14em)[Run from 100H to completion] \
@@ -5974,7 +5952,7 @@ C1Z1M0E1I1 A=06 B=0006 D=0000 H=0121 S=0100 P=0116 RST 07
     dir: ltr,
     spacing: -34em,
     [
-`A>`#text(fill: purple)[`ASM SCAN.AAZ`↵] \
+`A>`#text(fill: ui-fill)[`ASM SCAN.AAZ`↵] \
 ```
 CP/M ASSEMBLER - VER 2.0
 0122
@@ -5982,7 +5960,7 @@ CP/M ASSEMBLER - VER 2.0
 END OF ASSEMBLY
 
 ```
-`A>`#text(fill: purple)[`DDT SCAN.HEX`↵] \
+`A>`#text(fill: ui-fill)[`DDT SCAN.HEX`↵] \
 ```
 
 DDT VERS 2.2
@@ -5990,32 +5968,32 @@ NEXT PC
 0121 0000
 
 ```
-`-`#text(fill: purple)[`L116`↵] \
+`-`#text(fill: ui-fill)[`L116`↵] \
 ```
  0116   JMP        0000
  0119   STAX       B
  011A   NOP
  011B   INR        B
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`G100,116`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`G100,116`↵] \
 ```
 *0116
 ```
-`-`#text(fill: purple)[`D121`↵] \
+`-`#text(fill: ui-fill)[`D121`↵] \
 ```
 0121 06 00 22 21 00 02 7E EB 77 13 23 EB 0B 78 B1 .. '!... W .#..X.
 0130 C2 27 01 C3 03 29 00 00 00 00 00 00 00 00 00 00 .'...)........
 0140 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ..............
 ```
-#text(fill: purple, font: "DejaVu Sans")[⌫] \
-`-`#text(fill: purple)[`G0`↵] \
+#text(fill: ui-fill)[⌫] \
+`-`#text(fill: ui-fill)[`G0`↵] \
 \
 
 ]
   ,
   block(spacing: 0.9em)[
-    #set text(font: "Permanent Marker")
+    #set text(font: cursive-font)
     #pad(top: -0.5em, left: 14em)[Re-assemble, selecting source from disk A] \
     #pad(top: -2.5em, left: 18em)[hex to disk A] \
     #pad(top: -2.5em, left: 18em)[Print to Z (selects no print file)] \
@@ -6821,7 +6799,7 @@ or line-feed is typed.  The Read Buffer takes the form:
 
 ]
 
-where *m* is the maximum number of characters that the buffer will
+where *mx* is the maximum number of characters that the buffer will
 hold, 1 to 255, and *nc* is the number of characters read (set by
 FDOS upon return) followed by the characters read from the
 console.  If *$"nc" < "mx" $*, then uninitialized positions follow the
@@ -7092,7 +7070,7 @@ The *Search for Next* function is similar to the *Search for First* function, ex
 that the directory scan continues from the last matched entry.
 Similar to Function 17, Function 18 returns the decimal value `255`
 in `A` when no more directory items match.
-
+#pagebreak()
 === Delete File
 
 #align(center)[
@@ -7746,6 +7724,7 @@ destination file.  Upon completion of the data transfer, the
 destination file is closed and the program returns to the
 CCP command level by jumping to `BOOT`.
 
+
 ```
                 ;        sample file-to-file copy program
                 ;
@@ -7790,7 +7769,7 @@ CCP command level by jumping to `BOOT`.
  0113 AF                 xra  a         ;a = 00h
  0114 32F901             sta  dfcbcr    ;current rec = 0
                 ;
-                ;        source and destination fcb's ready
+                ;        source and destination fcbs ready
                 ;
  0117 115C00             lxi  d,sfcb    ;source file
  011A CD6901             call open      ;error if 255
@@ -7829,7 +7808,7 @@ CCP command level by jumping to `BOOT`.
  0154 CD6E01             call close     ;255 if error
  0157 21BA01             lxi  h,wrprot  ;ready message
  015A 3C                 inr  a         ;255 becomes 00
- 015B CC6101             cz   finis     ;shouldn't happen
+ 015B CC6101             cz   finis     ;should not happen
                 ;
                 ;        copy operation complete, end
  015E 11CB01             lxi  d,normal  ;ready message
@@ -8553,7 +8532,7 @@ files from the disk as well.
 
 #pagebreak()
 #set heading(numbering: "1.", supplement: [Section])
-= CP/M Alteration
+= CP/M Alteration <Alteration>
 
 == Introduction
 
@@ -10278,6 +10257,7 @@ assembly with `MAC`.
 
 #line(length: 98%)
 #set text(size: 10pt)
+#set par(leading: 0.75em)
 
 ```
      1                  ;	MDS-800 I/O DRIVERS FOR CP/M 2.2
@@ -13380,7 +13360,7 @@ information.  Two 64-byte employee records can be stored in one
 128-byte physical record.  Records are grouped together to form a
 file.]
 
-/ recursive procedure : Code that can call itself during execution.
+/ recursive-font procedure : Code that can call itself during execution.
 
 / reentrant procedure : #text[Code that can be called by one process while another is already
 executing it.  Thus, reentrant code can be shared between
@@ -14134,10 +14114,15 @@ disk.],
 
 #pagebreak()
 #set heading(numbering: none)
-= Notes on the Typst Edition
+= Notes on the #zcim-project Edition
 
-The _Typst_ edition of this manual was created by Jim Burlingame (_jb\@samplx.org_),
-for the site #link("https://www.z80cim.org")[z80cim.org].
+The #zcim-project goal is to improve the accessibility of legacy Z80 CP/M era content.
+As part of the project, Jim Burlingame (_jb\@samplx.org_) created a _Typst_ version of this manual.
+
+You can find out more about the project at its site #link("https://www.z80cim.org")[z80cim.org].
+The sources of this document are available on
+#link("https://github.com/samplx/zcimdocs")[GitHub].
+
 
 The source material is from the
 #link("http://cpm.z80.de/drilib.html")[Tim Olmstead Memorial Digital Research CP/M Library]
@@ -14155,9 +14140,6 @@ The contents of the manual were edited using the #link("https://Typst.app/")[Typ
 The figures for Section 2 (_The CP/M Editor_) were recreated as `SVG` files using
 #link("https://inkscape.org/")[Inkscape].
 
-The sources to the _Typst_ version of the document are available at
-#link("https://github.com/samplx/zcimdocs")[GitHub].
-
 == License
 
 The source documentation is under a license granted by the owner
@@ -14165,7 +14147,7 @@ of the Digital Research intellectual property
 in an email recreated at
 #link("http://cpm.z80.de/license.html").
 
-The _Typst_ version is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
+The #zcim-project edition is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
 
 
 

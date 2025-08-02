@@ -13,24 +13,7 @@ TARGET="$(pwd)"
 cd "$WORKING"
 unzip "$SOURCE_ZIP"
 
-if [ -f "link80-manual.typ" ]
-then
-    rm -f "$TARGET/link80/link80-manual.typ"
-    mv -v "link80-manual.typ" "$TARGET/link80/link80-manual.typ"
-fi
-
-if [ -f "mac80-manual.typ" ]
-then
-    rm -f "$TARGET/mac80/mac80-manual.typ"
-    mv -v "mac80-manual.typ" "$TARGET/mac80/mac80-manual.typ"
-fi
-
-if [ -f "cpm22-manual.typ" ]
-then
-    rm -f "$TARGET/cpm22/cpm22-manual.typ"
-    mv -v "cpm22-manual.typ" "$TARGET/cpm22/cpm22-manual.typ"
-fi
-
+rsync -av asm cbasic cpm* ddt ed link80 mac80 pascal pli80 sid tex zcim* "$TARGET"/
 
 cd "$TARGET" || exit 86
 

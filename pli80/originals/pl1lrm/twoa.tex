@@ -1,0 +1,945 @@
+.bp odd
+.pn 1
+.cs 5
+.mt 5
+.mb 6
+.pl 66
+.ll 65
+.po 10
+.hm 2
+.fm 2
+.he
+.ft                                2-%
+.ce 
+.sh
+Section 2
+.qs
+.sp
+.ce
+.sh 
+Program Structure 
+.qs
+.tc 2  Program Structure 
+.in 0
+.sp 3
+.sh
+2.1  High-level Organization     
+.qs
+.ix high-level organization of PL/I programs
+.he PL/I Reference Manual                2.1  High-level Organization        
+.tc    2.1  High-level Organization
+.pp 0
+The following statements comprise every PL/I program:
+.sp
+.nf
+.in 3
+o Structural statements 
+o Declarative statements 
+o Executable statements 
+.ix structural statements
+.ix statements, structural
+.fi
+.in 0
+.pp
+Structural statements define distinct, logical units within a program and 
+therefore determine the overall, high-level organization.  When a program
+runs, control always flows from one of these logical units to another.  
+Logical units can contain other logical units; they can be nested. 
+Structural statements also determine the hierarchical structure of a program
+where some logical units are subordinate to others.
+.ix logical units
+.ix declarative statements
+.ix statements, declarative
+.ix environment
+.ix context for executable statements
+.pp
+Declarative statements determine the environment of a logical unit.  The 
+environment is simply the names and attributes of variables that are available 
+or active in a logical unit.  Declarative statements specify the context of 
+variables that can be legally manipulated in a logical unit.
+.pp
+.ix executable statements
+.ix statements, executable
+Executable statements are statements that perform some action.  Both structural
+statements and declarative statements serve only to create a context for 
+executable statements.  All executable statements fall into one of the 
+following categories:
+.sp 2
+.in 5
+.ix preprocessor statements
+.ix statements, preprocessor
+.ti -2
+.ix assignment statements
+.ix statements, assignment
+o Assignment statements that assign the value of an expression or constant to
+a variable. 
+.sp
+.ti -2
+.ix condition handling statements
+.ix statements, condition handling
+.ix run-time errors, interception of and recovery from
+.ix error recovery
+o Condition handling statements that allow a program to intercept and recover 
+from run-time errors.
+.sp
+.ti -2
+.ix I/O statements
+.ix statements, I/O
+o I/O statements that control the flow of data to and from I/O devices.
+.sp
+.ti -2
+.ix memory management statements
+.ix statements, memory management
+o Memory management statements that manipulate storage.
+.sp
+.ti -2
+.ix null statements
+.ix statements, null
+o Null statements that perform no action but function as placeholders. 
+.sp
+.ti -2
+o Preprocessor statements that execute at compile time and manipulate external 
+source files.
+.sp
+.ti -2
+.ix sequence control statements
+.ix statements, sequence control
+.ix flow of control between logical units
+o Sequence control statements that transfer the flow of control between 
+logical units.
+.sp
+.in 0
+.pp
+.ix statement label
+.ix PL/I keyword
+All PL/I statements, except the assignment statement, consist of an optional
+label, followed by a keyword (see section 2.2) and statement body, and end 
+with a semicolon.  Subsequent sections of this manual describe each type of 
+statement in detail.  For reference, Section 15 contains a complete 
+alphabetical list of PL/I statements. 
+.sp 2
+.cp 5
+.sh
+2.2  Blocks
+.he PL/I Reference Manual                                 2.2  Blocks 
+.tc    2.2  Blocks
+.ix block-structure in PL/I
+.ix logical units
+.pp
+PL/I is a block-structured language.  That is, you group one or more
+statements into logical units called blocks.  A block is a collection of 
+statements in which declared variables are known.  Inside a block, you can 
+declare variables and, for certain variables, you can allocate and freå 
+storage®  Yoõ caî nesô blockó iî onå another¬ buô noô overlap them.
+.pp
+.ix BEGIN blocks
+.ix PROCEDURE blocks
+.ix statements, BEGIN
+.ix BEGIN statements
+.ix statements, END
+.ix END statements
+.ix PROCEDURE statements
+.ix statements, PROCEDURE
+There are two types of blocks: BEGIN blocks and PROCEDURE blocks.  A BEGIN 
+block is a sequence of statements delimited by BEGIN and END statements.  A 
+PROCEDURE block is delimited by PROCEDURE and END statements.
+.pp
+A BEGIN block has the format:
+.sp 2
+.nf
+.in 5
+[label:]            
+       BEGIN;       
+       statement-1; 
+            .       
+            .       
+            .       
+       statement-n; 
+       END [label]; 
+.fi
+.in 0
+.sp 2
+.ix nested BEGIN blocks
+.ix block balance
+where statement-1 through statement-n are any PL/I statements constituting 
+the body of the block.  BEGIN blocks can contain nested PROCEDURE blocks, and 
+nested BEGIN blocks.  Iî PL/I¬ thå labeì optioî foò thå END statement doeó noô 
+automaticallù cause the blocë tï balance¬ as it does in some implementations
+of full PL/I.
+.sp
+.sh
+Note:  \c
+.qs
+the label for the END statement is optional, but if included it must match the
+label for the BEGIN statement.
+.pp
+A PROCEDURE block has the format:
+.sp 2 
+.nf
+.in 5
+proc-name:
+         PROCEDURE-statement;
+         statement-1;
+              . 
+              . 
+              .
+         statement-n;
+         END [proc-name];
+.fi
+.in 0
+.bp
+where proc-name identifies the procedure, and statement-1 through statement-n 
+are any PL/I statements constituting the body of the block.  Section 2.9
+describes the PROCEDURE statement.  
+.sp
+.sh
+Note:\c
+.qs
+\  the proc-name for the END statement is optional, but if included it must 
+match the proc-name for the PROCEDURE statement.
+.ix control
+.pp
+The essential difference between a BEGIN block and a PROCEDURE block is how
+they receive control when the program is running.  Control flows into a BEGIN 
+block in the usual sequential manner.  At this point, the block becomes 
+active.  When control transfers, programmatically, outside the block, or its 
+corresponding END statement executes, the block terminates.
+.pp
+.ix block activation
+.ix block termination
+.ix procedure invocation
+.ix invoking a procedure
+PL/I skips PROCEDURE blocks during the usual execution sequence, and they 
+receive control only when invoked (see Section 2.5).  Figure 2-1 illustrates 
+the block concept. 
+.bp
+.in 3
+.nf
+         PROCEDURE block                     BEGIN block
+
+  A:                                      begin;
+     procedure options(main);                     .
+              .                                  .
+              .                                  .
+          statement(s)                         statement(s)
+              .                                  .
+              .                                  .
+              .                                  .
+         
+  end A;                                  end;
+
+
+
+
+        A:
+          procedure options(main); 
+              .
+              .
+              .
+ 
+              begin;
+               .
+               .
+               .
+              end;
+
+
+              begin; 
+               .
+               .
+               .
+              
+
+                       begin;
+                        .
+                        .
+                        .
+                       end;
+
+             end;
+
+       end A;
+.fi
+.in 0
+.sp 2
+.ce
+.sh
+Figure 2-1.  BEGIN and PROCEDURE Blocks
+.ix internal block
+.ix external block
+.ix nested block
+.ix encompassing block
+.bp 
+.sh
+2.3  Internal vs. External Blocks    
+.qs
+.he PL/I Reference Manual           2.3  Internal vs. External Blocks    
+.tc    2.3  Internal vs. External Blocks
+.ix main procedure
+.pp
+Each block is characterized as either internal or external depending on 
+its relationship with other blocks.  An internal procedure is one that is 
+contained in an encompassing block.  An external procedure is separate from 
+other blocks.  The procedure is not contained (nested) in any other block.  
+Thus, the main procedure is always an external procedure.  
+.pp
+A PL/I program can have one or more external procedures that contain nested 
+internal procedures or blocks.  Each external procedure can be separately 
+compiled and linked together to form a runnable program.  One of the external 
+procedures forming the program must be the main procedure.  
+.ix separate compilation of external procedures
+.pp
+In Figure 2-2(a), blocks P1, P2, and P3 are all external but the BEGIN block 
+is internal to P3.  In Figure 2-2(b), P1 is the external block, and P2, P3, 
+and the BEGIN block are all internal.  The main procedure has the form:
+.sp 2
+.in 5
+.nf
+proc-name:
+      PROCEDURE OPTIONS(MAIN);
+               .
+               .
+               .
+      Statements or Blocks
+               .
+               .
+               .
+      END [proc-name];
+.in 0
+.bp
+.nf
+
+    P1:                             P1:
+      procedure options(main);        procedure options(main);
+             
+             
+             
+    end P1;                                   
+
+
+    P2:                                 P2:           
+      procedure;                          procedure;
+            
+            
+    end P2;                             end P2;
+
+
+    P3:                                P3:
+      procedure;                         procedure;
+            
+            
+
+          begin;                             begin;
+            
+            
+            
+          end;                               end;
+
+          
+          
+                                       end P3;
+    end P3;                                                       
+                                    end P1;                      
+
+.sh
+               (a)                               (b)
+
+.fi
+.sp 2
+.ce
+.sh
+Figure 2-2.  Internal and External Blocks
+.sp 2
+.ix external block
+.ix internal block
+.pp
+The 
+.ul
+PL/I Language Programmer's Guide\c 
+.qu
+\ contains specific examples of program structure and how you can separately 
+compile, link, and load external procedures.
+.ix external procedures
+.sp 2
+.sh
+2.4  Scope of Variables 
+.qs
+.he PL/I Reference Manual                     2.4  Scope of Variables 
+.tc    2.4  Scope of Variables 
+.ix scope of a variable
+.ix variables, local
+.ix varibles, external
+.ix containing block
+.ix local variable
+.ix external variable
+.pp
+The scopå oæ á variablå ió thå set of blocks in which the variable is known.
+Variables can be either local or external relative to a block in which they 
+appear.  
+.bp
+.pp 0
+When you declare a variable in a block, you can reference it in that block
+or any contained block.  The variable is said to be local to that block 
+because you cannot reference it outside the block where you declare it.  In a 
+contained block, a reference to a variable declared in a containing block is 
+called an up-level reference. 
+.ix up-level reference
+.pp
+The following example illustrates the concept of scope:
+.sp 2
+.in 5
+.nf
+P1:
+  procedure;                                                         
+  declare                                                            
+  (a,b) fixed binary(7);                                             
+  a = 2;       /* a is local to P1 */                                
+  b = 3;       /* b is local to P1 */                                
+  P2:                                                                
+    procedure;                                                       
+    declare                                                          
+    b fixed binary(7);                                               
+    b = 2;   /* b is local to P2 */                                  
+    a = a*b; /* b here is b in P2, not b in P1 */                    
+  end P2;                                                            
+  put list (a,b);                                                    
+                                                             
+end P1;                                                            
+.fi
+.in 0
+.sp  
+.pp
+PL/I creates a new variable b in block P2 because it is a declared variable in 
+that block.  The PUT LIST statement is outside P2; therefore, the value of the 
+variable b of P1 is 3.  Because there is no declaration for the identifier a 
+in P2, a is an up-level reference to the variable a declared in P1, and the 
+assignment statement in P2 changes its value.  Thus, this code sequence 
+produces the values 4 and 3.
+.pp
+Any variable declared as EXTERNAL is known to all blocks in which it is 
+declared as EXTERNAL and in all contained blocks unless redeclared without the 
+EXTERNAL attribute.  Two declarations of the same variable name denote 
+separate storage locations unless both specify the EXTERNAL attribute.
+.ix EXTERNAL attribute
+.bp
+.in 5
+.nf
+P1:                                                            
+   procedure;                                                  
+   declare                                                     
+   z fixed binary external;                                    
+            .                                                  
+            .                                                  
+            .                                                  
+   P2:                                                         
+      procedure;                                               
+      declare                                                  
+      z fixed binary external;                                 
+               .                                               
+               .                                               
+               .                                               
+      P3:                                                      
+         begin;                                                
+         declare                                               
+         z float binary; /* not external */                    
+                  .                                            
+                  .                                            
+         end;                                                  
+      end P3;                                                  
+   end P2;                                                     
+end P1;                                                                   
+.fi
+.in 0
+.sp 
+.pp
+In this code sequence, the variable z in P1 and P2 refers to the same 
+external variable, but variable z in P3 is a local variable and is distinct 
+from the external variable z.  
+.ix local variable
+.ix external variable
+.bp
+.nf
+.in 5
+P1:                                                    
+  procedure options(main);                             
+   declare x float binary;                             
+        .                                              
+        .                                              
+        .                                              
+    begin;                                             
+        declare x fixed;                               
+            .                                          
+            .                                          
+            .                                          
+            .                                          
+    end;                                               
+        .                                              
+        .                                              
+        .                                              
+  P2:                                                  
+    procedure;                                         
+    declare x character(10) varying;                   
+         .                                             
+         .                                             
+         .                                             
+  end P2;                                              
+                                               
+end P1;                                                
+.sp 
+.in 0
+.fi
+.pp
+In this code sequence, the scope of x is limited to each block in which it is 
+declared.  Although the name is identical in each declaration, the compiler
+treats each one as a completely different variable with its own data type, and
+stores them in different memory locations.
+.ix scope of a variable
+.ix compiler
+.sp 2
+.tc    2.5  Procedure Blocks
+.ix procedure blocks
+.ix subroutine
+.ix argument-list, for a procedure 
+.ix procedure invocation
+.ix invoking a procedure
+.sh
+2.5  Procedure Blocks
+.qs
+.he PL/I Reference Manual                       2.5  Procedure Blocks
+.pp 0
+In PL/I, there are two types of procedures:  subroutines and functions.  Both 
+types perform a specific task and are logically separate from the rest of the 
+program.  Both types can execute the same sequence of code one or more times 
+without duplicating the code at each occurrence.  
+.pp
+You invoke or call a subroutine and, optionally, pass data items to it in an 
+argument list.  The subroutine then manipulates the data and, optionally, 
+returns it to the invoking procedure.  Control resumes at the statement
+immediately following the invocation. 
+.ix function 
+.ix flow of control within a program
+.ix argument-list, for a function
+.pp
+A function is a procedure that manipulates data items and then returns a 
+single value.  You invoke a function by referencing its function name and 
+argument-list in an expression.  Control passes to the function that performs 
+its task and then returns a single value that replaces the function 
+reference.  Control then resumes at the point of reference.  
+.bp
+.sh
+2.6  The CALL Statement
+.qs
+.tc    2.6  The CALL Statement
+.he PL/I Reference Manual                     2.6  The CALL Statement
+.ix CALL statement
+.pp
+The CALL statement has the general form:
+.sp
+.ti 5
+CALL proc-name[(sub-1,...,sub-n)] [(argument-list)];
+.sp
+.mb 4
+.fm 1
+where sub-1 through sub-n are optional subscripts that are required only when
+proc-name is a subscripted entry variable (Section 3.3.2), and argument-list 
+represents the arguments passed to the procedure.  Figure 2-3 
+illustrates the invocation of subroutines and functions.
+.ix subscripted entry variable
+.ix arguments
+.ix argument-list, in a CALL statement
+.ix procedure invocation
+.ix subroutine invocation
+.ix invoking a procedure
+.ix invoking a subroutine
+.sp 3
+.nf
+.cp 14
+Subroutine invocation:               Function invocation:
+ 
+CALL name [argument-list];           name [argument-list] 
+
+
+Subroutine name   arguments          function name   arguments
+.sp 2
+.ce
+.sh
+Figure 2-3.  Subroutine and Function Invocation
+.sp 3
+example:                             example:
+
+call print_header;                   point = 3.14/sin(A);
+call compute(base_pay,overtime);     put list (sum(X,Y));
+.fi
+.sp 2
+.tc    2.7  The RETURN Statement
+.sh
+2.7  The RETURN Statement
+.qs
+.he PL/I Reference Manual                   2.7  The RETURN Statement
+.pp
+.ix RETURN statement
+.ix statements, RETURN
+The RETURN statement returns control to the point in the calling block 
+immediately following the procedure invocation.  It also returns a value if 
+the procedure is a function procedure.
+.pp
+.ix procedure invocation
+.ix function procedure
+The RETURN statement has the form:
+.sp 
+.ti 5
+RETURN [(return-exp)];
+.sp 
+where return-exp is the function value the procedure returns to the calling 
+point.  When necessary, PL/I converts the attributes of the returned value to 
+conform to the attributes specified in the RETURNS attribute of the procedure 
+statement.  (See Section 4.1.)
+.pp
+The RETURN statement ends the procedure block that contains it.  If the main 
+procedure has the RETURNS attribute, PL/I returns control to the operating 
+system.
+.pp
+.ix operating system
+.ix procedure block
+.ix RETURN statement
+.ix statements, RETURN
+.ix RETURNS attribute
+The following are some examples of RETURN statements: 
+.sp
+.nf
+.in 5
+return;
+return (X**2);
+return (F(A,(B)));
+.fi
+.in 0
+.bp
+.tc    2.8  Arguments and Parameters
+.he PL/I Reference Manual           2.8  Arguments and Parameters
+.sh
+2.8  Arguments and Parameters
+.qs
+.ix arguments, values passed to a procedure
+.ix parameters, values expected by a procedure
+.pp
+The data items you pass to a procedure are called the arguments,
+while the data items expected by a procedure and defined in the 
+PROCEDURE statement, are called the parameters.  Upon invocation of a 
+procedure block, PL/I pairs each argument with its corresponding 
+parameter.  Figure 2-4 illustrates this concept.
+.ix arguments
+.ix PROCEDURE statement
+.ix statements, PROCEDURE
+.ix parameters
+.mb 6
+.fm 3
+.sp 2
+.nf
+                                       argument list
+    call compute (a+(b+c),r/2,3.14);
+               .
+               .
+
+    compute: procedure (X,Y,Z);
+               .
+               .                       parameter-list
+               .
+    end compute;        
+.sp 2
+.ce
+.sh
+Figure 2-4.  Arguments and Parameters
+.qs
+.sp 2
+.fi
+.pp
+When you pass the argument by reference, the argument and 
+corresponding parameter share storage.  In this case, any changes made 
+to the parameter in the invoked procedure change the value of argument of the 
+invoking block.  
+.ix parameter passing, by reference
+.ix parameter passing, by value
+.pp
+When you pass the argument by value, the argument and parameter do not share 
+storage.  In this case, PL/I passes a copy of the argument to the invoked 
+procedure, so that any changes to the 
+parameter affect only the copy, not the argument's value.
+.ix procedure invocation
+.ix invoking a procedure
+.ix storage sharing
+.mb 4
+.fm 1
+.pp
+The following example program illustrates parameter passing.
+.sp 2
+.nf
+.in 5
+A:                               
+ procedure;                              
+ declare                                 
+    ACTUAL fixed binary,                 
+    DUMMY  fixed binary;                 
+                                         
+ call X(ACTUAL);                 
+ call X((DUMMY));                        
+                                         
+ X:                              
+  procedure (FORMAL);                    
+  declare FORMAL fixed binary;           
+  FORMAL = 3;                            
+ end X;                                  
+                                         
+end A;                            
+.in 0        
+.bp
+.fi
+.pp
+PL/I passes ACTUAL by reference.  Therefore, the assignment statement in 
+the procedure X changes the value of ACTUAL throughout the program.  PL/I
+passes DUMMY by value.  Thus the procedure only changes a copy of the value  
+inside the procedure.
+.pp
+PL/I passes arguments by reference when the data attributes of the 
+argument are the same as the data attributes of the parameter.  
+PL/I passes an argument by value when it is one of the following:
+.ix data type matching when passing parameters
+.sp 2
+.in 5
+.ti -2
+o a constant 
+.ti -2
+o an entry name
+.ti -2
+o an expression consisting of variable references and operators
+.ti -2
+o a variable reference enclosed in parentheses 
+.ti -2
+o a function invocation
+.ti -2
+o a variable reference whose data type does not match that of the parameter
+.sp 2
+.in 0
+In the latter case, PL/I converts the argument to the data type, precision, 
+and scale factor of the parameter.  The following program illustrates 
+this concept:
+.ix precision
+.ix scale factor
+.mb 4
+.fm 1
+.nf
+.sp 2
+.in 5
+A:                                   
+ procedure;                          
+ declare                             
+   X character(7),                  
+   (Y,Z) fixed binary;               
+                             
+ call p(X,(Y),Z);                    
+                             
+ p:                                  
+     procedure(A,B,C);               
+     declare                         
+       A character(7),              
+       B fixed binary,               
+       C float binary;               
+                                    
+     A = 'Digital';                  
+     B = 100;                        
+     C = 2.5E2;                      
+                                    
+ end p;                              
+                             
+end A;                               
+.in 0
+.sp 
+.fi
+.pp
+The CALL statement sends the procedure three arguments X, Y, and
+Z corresponding to the three parameters A, B, and C.  PL/I passes the 
+first argument by reference because it matches the parameter, 
+and the second argument by value because it occurs as an expression.  PL/I 
+converts the third argument to the FLOAT binary data type and passes it by 
+value.
+.ix CALL statement
+.ix statements, CALL
+.bp
+.tc    2.9  The PROCEDURE Statement
+.ix PROCEDURE statement
+.ix statements, PROCEDURE
+.ix readability of programs
+.ix main program
+.ix main procedure statement
+.he PL/I Reference Manual                2.9  The PROCEDURE Statement
+.sh
+2.9  The PROCEDURE Statement
+.qs
+.pp
+In PL/I, you can define a procedure with a PROCEDURE statement at any point in 
+a program.  However, for readability you should place all procedures together 
+in a single section at the beginning or the end of the main program.  The 
+main program is a single-procedure definition.  
+.pp
+The PROCEDURE statement identifies the entry point to the procedure, delimits 
+the beginning of the procedure block, defines the parameter list, and 
+gives the attributes of the returned value for functions.  The procedure can 
+consist of a sequence of one or more statements including the corresponding 
+END statement that ends the procedure definition.  The END statement can also 
+be the exit point of the procedure, although embedded RETURN statements can 
+appear within the procedure body.
+.ix END statement
+.ix statements, END
+.ix statements, RETURN
+.ix RETURN statement
+.ix procedure entry point
+.ix procedure exit point
+.pp
+The PROCEDURE statement has the general form:
+.sp
+.mb 6
+.fm 3
+.in 5 
+.nf
+proc-name: PROCEDURE[(parameter-list)]
+           [OPTIONS(option,...)] [RETURNS(attribute-list)] 
+           [RECURSIVE];
+.fi
+.in 0
+.sp
+where parameter-list are the parameters for the procedure which
+you must declare within the procedure body at the principle block level.  A 
+parameter can be any of the following:
+.ix parameter
+.ix parameter-list, in a PROCEDURE statement
+.sp
+.nf
+.in 3
+o a scalar variable
+o an array 
+o a major structure 
+.fi
+.in 0
+.sp 
+but cannot have the attributes:
+.sp
+.nf
+.in 3
+o STATIC   
+o AUTOMATIC   
+o BASED   
+o EXTERNAL
+.fi
+.in 0
+.pp
+OPTIONS(option,...) defines a list of one or more of the options MAIN,
+STACK(b), or EXTERNAL.  
+.sp 2
+.in 5
+.ti -2
+o The MAIN option identifies the procedure as the first procedure to receive 
+control when the program begins execution. 
+.ix MAIN option, in a PROCEDURE statement
+.sp
+.ti -2
+o The STACK(b) option sets the size of the run-time stack to the number of bytes 
+specified by b.  The default value is 512 bytes.  
+.ix STACK(b) option, in a PROCEDURE statement
+.ix run-time stack, default value
+.ix default value, of run-time stack
+.sp
+.ti -2
+o The EXTERNAL option identifies the procedure as an externally compiled
+procedure.  The EXTERNAL option in a procedure heading makes the procedure 
+accessible outside the module.  It is often useful to group separately 
+compiled procedures into a 
+single compilation, where the procedures reference the same global data.  
+According to the Subset G standard, you must compile each subroutine 
+separately, and duplicate the global data area in each compilation.  You can
+then combine the individual modules using the linkage editor to produce the 
+object module.
+.in 0
+.ix EXTERNAL option, in a PROCEDURE statement
+.ix global data in PL/I programs
+.ix Subset G standard
+.sp
+.pp
+The following procedure shows an example of using the EXTERNAL option:
+.sp 2
+.nf
+.in 5
+module:                                                      
+    procedure;                                               
+    declare                                                  
+       1 global_data static,                                 
+         2 a_field character(20) varying initial(''),        
+         2 b_field fixed initial(0),                         
+         2 c_field float initial(0);                         
+    set_a:                                                   
+      procedure (c) options(external);                       
+      declare c character(20) varying;                       
+      a_field = c;                                           
+    end set_a;                                               
+    set_b:                                                   
+      procedure (x) options(external);                       
+      declare x fixed;                                       
+      b_field = x;                                           
+    end set_b;                                               
+    set_c:                                                   
+      procedure (y) options(external);                       
+      declare y float;                                       
+      c_field = y;                                           
+    end set_c;                                               
+    sum:                                                     
+      procedure returns(float) options(external);            
+      return (b_field + c_field);                            
+    end sum;                                                 
+    display:                                                 
+      procedure options(external);                           
+      put skip list(a_field,b_field,c_field);                
+    end display;                                             
+end module;                                                  
+.in 0
+.bp
+.fi
+.pp
+This code defines five external procedures: set_a, set_b, set_c, sum, and
+display.  These procedures are then accessed in the following code sequence:
+.sp 2
+.in 5
+.nf
+call_ext:                                          
+   procedure options(main);                        
+   declare                                         
+      set_a entry (character(20) varying),         
+      set_b entry (fixed),                         
+      set_c entry (float),                         
+      sum returns(float),                          
+      display entry;                               
+   call set_a('Johnson,J');                        
+   call set_b(25);                                 
+   call set_c(5.50);                               
+   put skip list(sum());                           
+   call display();                                 
+end call_ext;                                      
+.fi
+.in 0
+.sp 
+.pp
+These two modules, when compiled separately and linked together, form a 
+single, runnable program.
+.sp 2
+.in 5
+.ti -2
+o The RETURNS attribute for a function procedure gives the attributes of the 
+value returned by the function.
+.ix RETURNS attribute
+.sp
+.ti -2
+o The RECURSIVE attribute indicates that the procedure can activate itself, 
+either directly or indirectly.
+.in 0
+.ix RECURSIVE attribute
+.nx twob.tex
+
+
+

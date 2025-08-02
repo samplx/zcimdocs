@@ -3,4 +3,8 @@
 /cpm22/originals/html/*     binary
 /cpm22/originals/ps/*       binary
 /cpm22/originals/tex/*      binary
-
+/cpm30/originals/*.ps       text eol=crlf
+/pascal/originals/*.ps      binary
+/pli80/originals/pl1lrm/*   text eol=crlf
+/sid/originals/*.txt        text eol=crlf
+/sid/originals/*.TXT        text eol=crlf

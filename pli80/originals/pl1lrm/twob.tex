@@ -1,0 +1,576 @@
+.he
+.cs 5
+.mt 5
+.mb 6
+.pl 66
+.ll 65
+.po 10
+.hm 2
+.fm 3
+.sp 2
+.sh
+2.10  Low-level Organization
+.qs
+.he PL/I Reference Manual                2.10  Low-level Organization
+.tc    2.10  Low-level Organization
+.pp 0
+.ix low-level organization of PL/I programs
+.ix PL/I character set
+.ix identifiers
+.ix keywords
+.ix declared names
+.ix operators
+.ix declared names
+.ix constants
+.ix delimiters
+.ix comments
+The low-level organization of PL/I source text includes a specification of 
+the character set and the rules for forming identifiers, both keywords and 
+declared names, operators, constants, delimiters, and comments.
+.pp
+PL/I is a free-format language.  The source program consists of a sequence 
+of ASCII characters that make up lines delimited by carriage return characters.
+You can enter the source text without regard for column position or specific 
+line format.  However, the source text is easier to read and comprehend if you 
+follow some basic formatting rules: 
+.ix free-format language
+.ix source program
+.ix ASCII characters
+.ix readability of programs
+.sp 
+.in 5
+.ti -2
+o Place only one statement on a line.
+.sp
+.ti -2
+o Use indentation to show the nesting level of blocks and DO-groups.
+.in 0
+.ix DO-group
+.ix nested blocks
+.bp
+.pp
+You can create the PL/I source program using any suitable text editor.  
+.sp
+.sh
+Note:\c
+.qs
+\  all PL/I source programs must have the filetype PLI.
+.sp 2
+.sh
+2.11  The Character Set 
+.qs
+.he PL/I Reference Manual                     2.11  The Character Set    
+.tc    2.11  The Character Set
+.pp 
+The PL/I character set consists of both upper- and lower-case letters, numeric 
+digits, and other symbols.  Table 2-1 shows the symbols recognized by PL/I and 
+briefly describes their use.
+.sp 2
+.ll 60
+.ce
+.sh
+Table 2-1.  PL/I Symbols
+.sp
+.nf
+    Symbol                     Meaning
+.in 15
+.ti -10
+.sp
+ =      equal sign (assignment)
+.ti -10
+ +      plus sign (addition)
+.ti -10
+ -      minus sign (subtraction)
+.ti -10
+ *      asterisk (multiplication) 
+.ti -10
+ /      slash (division) 
+.ti -10
+ (      left parenthesis (delimiter)
+.ti -10
+ )      right parenthesis (delimiter)
+.ti -10
+ ,      comma (separator)
+.ti -10
+ .      period (name qualifier)
+.ti -10
+ %      percent symbol (INCLUDE or REPLACE prefix)
+.ti -10
+ '      apostrophe (string delimiter)
+.ti -10
+ ;      semicolon (statement terminator)
+.ti -10
+ :      colon (separator for ENTRY or LABEL constant)
+.ti -10
+ ^      circumflex (logical Not symbol)
+.ti -10
+ ~      tilde (alternative Not symbol)
+.ti -10
+ &      ampersand (logical And symbol)
+.ti -10
+ |      vertical bar (logical Or symbol)       
+.ti -10
+ !      exclamation mark (alternative Or symbol)
+.ti -10
+ \\      backslash (alternative Or symbol)
+.ti -10
+ >      right angle bracket (greater than)
+.ti -10
+ <      left angle bracket (less than)
+.ti -10
+ _      break or underscore (for readablity in identifiers)
+.ti -10
+ $      dollar sign (valid character in identifiers) 
+.ti -10
+ ?      question mark (valid character in identifiers)
+.fi
+.in 0
+.ll 65
+.bp
+.cp 5
+.tc    2.12  Identifiers
+.sh
+2.12  Identifiers
+.qs
+.he PL/I Reference Manual                           2.12  Identifiers
+.pp
+An identifier is a string of from one to thirty-one characters that are either 
+letters, digits, or the underscore.  The first character must be a letter.  
+PL/I always represents letters internally in upper-case.  Therefore, two 
+identifiers that differ only in case represent the same identifier.
+.ix identifier, maximum length
+.ix identifier, formation of
+.pp
+PL/I allows the question mark character to be embedded in identifiers to allow 
+access to external system entry points.   
+.sp
+.sh
+Note:\c
+.qs
+\  you should avoid embedded question marks to maintain upward 
+compatibility with full language implementation.
+.ix external system entry points
+.pp
+Every identifier in the source text of a PL/I program must be either a keyword 
+or a declared name.  Keywords are those identifiers that have a special 
+meaning in PL/I when used in a specific context.  Examples of keywords are the 
+names of built-in functions, statements, and data attributes.  The following 
+is a list of all the keywords.  The \c
+.ul
+PL/I Language Command Summary\c
+.qu
+\ contains a complete list of keywords with brief explanations.  
+.ix PL/I keyword
+.ix declared name
+.sp 2
+.nf
+     A              ABS            ACOS              ADDR                
+     ALIGNED        ALLOCATE       ASCII             ASIN
+     ATAN           ATAND          AUTO              AUTOMATIC
+     B              B1             B2                B3
+     B4             BASED          BEGIN             BIN
+     BINARY         BIT            BOOL              BUILT-IN
+     BY             CALL           CEIL              CHAR
+     CHARACTER      CLOSE          COLLATE           COLUMN
+     COS            COSD           DCL               DEC               
+     DECIMAL        DECLARE        DIM               DIMENSION         
+     DIRECT         DIVIDE         DO                E              
+     EDIT           ELSE           END               ENDFILE        
+     ENDPAGE        ENTRY          ENV               ENVIRONMENT    
+     ERROR          EXP            EXT               EXTERNAL
+     F              FILE           FIXED             FIXEDOVERFLOW
+     FLOAT          FLOOR          FOFL              FORMAT
+     FREE           FROM           GET               GO TO             
+     GOTO           HBOUND         IF                INCLUDE           
+     INDEX          INIT           INITIAL           INTO
+     KEY            KEYED          KEYFROM           KEYTO
+     LABEL          LBOUND         LENGTH            LINE
+     LINENO         LINESIZE       LIST              LOG
+     LOG2           LOG10          MAIN              MAX
+     MIN            MOD            NULL              OFL
+     ON             ONCODE         ONFILE            ONKEY               
+     OPEN           OPTIONS        OUTPUT            OVERFLOW            
+     PAGENO         PAGESIZE       POINTER           PRINT
+     PROC           PROCEDURE      PTR               PUT
+.bp
+     R              RANK           READ              RECORD
+     RECURSIVE      REPEAT         REPLACE           RETURN
+     RETURNS        REVERT         ROUND             SEQUENTIAL
+     SET            SIGN           SIGNAL            SIN
+     SIND           SINH           SKIP              SQRT
+     STACK          STATIC         STOP              STREAM
+   ~  SUBSTR         SYSIN          SYSPRINT          TAB
+     TAN            TAND           TANH              THEN
+     TITLE          TO             TRANSLATE         TRUNC
+     UNDEFINEDFILE  UNDF           UNDERFLOW         UFL
+     UNSPEC         UPDATE         VAR               VARIABLE
+     VARYING        VERIFY         WHILE             WRITE
+     X              ZERODIVIDE     
+.sp 
+.fi
+.pp
+Declared names are identifiers whose use or meaning you define in a DECLARE 
+statement (Section 3.6).  A keyword can appear in a declaration as a 
+user-defined identifier.  The meaning of the identifier depends on how and 
+where it appears.  PL/I determines the meaning in context.  For example, INDEX 
+is a keyword because it is the name of a PL/I built-in function.  However, in 
+the context of the declaration,
+.ix context of a declaration
+.sp
+.in 5
+declare index fixed binary;
+.sp
+.in 0
+index is a declared name and not a keyword.
+.sp 2
+.sh
+2.13  Constants
+.qs
+.he PL/I Reference Manual                             2.13  Constants
+.tc    2.13  Constants
+.pp
+.ix constants
+Constants are text items that have a fixed literal meaning which can not 
+change when the program runs.  In PL/I, the basic constants are the following:
+.sp
+.nf
+.in 3 
+o arithmetic  (Example: 3674.799)
+o character string  (Example: 'Ada Lovelace')
+o bit string  (Example: '00010110'B)
+.fi
+.in 0
+.ix constant, arithmetic
+.ix constant, character string
+.ix constant, bit
+.sp 2
+.sh
+2.14  Delimiters and Separators
+.qs
+.he PL/I Reference Manual             2.14  Delimiters and Separators
+.tc    2.14  Delimiters and Separators
+.pp
+Separate items, such as identifiers, must be distinguishable.  PL/I recognizes 
+certain characters as delimiters and separators.  
+.ix delimiter 
+.ix separator
+.pp
+Usually, delimiters enclose one or more text items while separators mark the 
+end of one item and the beginning of another.  In PL/I, each identifier and
+arithmetic constant must be preceded and followed by one or more delimiters or 
+separators.  Delimiters can be either spaces, operators, or certain special 
+characters.
+.bp
+.sh
+2.14.1  Spaces
+.qs
+.tc         2.14.1  Spaces
+.ix spaces
+.ix blanks
+.ix tab characters, CRTL-I
+.pp
+In PL/I, a space can be either a blank, or a tab character (CTRL-I).  PL/I 
+ignores any carriage return, line-feed, or carriage return, line-feed sequence 
+that is embedded in a string constant.  For example, the assignment statement,
+.ix carriage return
+.ix line-feed
+.ix carriage return line-feed pair
+.sp
+string = 'WHEN YOU HAVE A VERY LONG STRING LIKE THIS, PL/I
+ALLOWS YOU TO PUT SOME OF IT ON ANOTHER LINE';
+.sp
+.in 0
+assigns the specified character string to the variable string.  Any blanks or 
+tabs that follow ALLOWS or precede YOU TO PUT are included in the string. 
+.sp 2
+.sh
+2.14.2  Operators
+.qs
+.tc         2.14.2  Operators
+.ix operator, symbol for a mathematical of logical operation 
+.pp
+An operator is a symbol for a mathematical or logical operation.  There are 
+four types of operators in PL/I as shown in Table 2-2.
+.sp
+.sh
+Note:\c
+.qs
+\  operators that consist of two characters, such as >=, are called composite 
+operators and must not be separated by blanks or tabs.
+.ix composite operator
+.bp
+.sh
+                  Table 2-2.  PL/I Operators
+.qs
+.sp
+.nf
+              Symbol              Meaning    
+.fi
+.in 0
+.sp
+.ll 60
+.in 25
+Arithmetic Operators
+.sp
+.in 25
+.ti -6
++     addition or prefix plus
+.ti -6
+-     subtraction or prefix minus
+.ti -6
+*     multiplication
+.ti -6
+/     division
+.ti -6
+**    exponentiation
+.sp 2
+.in 25
+Comparison Operators
+.sp
+.in 25
+.ti -6
+>     greater than
+.ti -12
+^> or ~>    not greater than
+.ti -6
+>=    greater than or equal to
+.ti -6
+=     equal to
+.ti -12
+^= or ~=    not equal to
+.ti -6
+<=    less than or equal to
+.ti -6
+<     less than
+.ti -12
+^< or ~<    not less than
+.sp 2
+.in 25
+Bit-string Operators 
+.sp
+.in 25
+.ti -11
+^ or ~     Logical Not
+.ti -6
+&     Logical And
+.ti -13
+| or ! or \\  Logical Or
+.sp 2
+.in 0
+.in 25
+The String Operator
+.sp
+.in 25
+.ti -16
+|| or !! or //  concatenate
+.ix concatenation of strings
+.ix concatenation operator
+.sp 3
+.ll 65
+.in 0
+.sh
+2.14.3  Special Characters 
+.qs
+.tc         2.14.3  Special Characters 
+.pp
+Table 2-3 shows the special characters that can also function as delimiters
+or separators in PL/I.  Subsequent sections of the manual contain examples
+of their use.  
+.ix special characters
+.bp
+.in 5
+.sh
+Table 2-3.  Special Character Delimiters and Separators
+.qs
+.sp
+.in 0
+.ll 60
+.nf
+   Character                       Function
+.fi
+.sp
+.in 19
+.ti -12 
+:           A colon follows ENTRY and LABEL constants.
+.sp
+.ti -12
+;           A semicolon terminates statements.
+.sp
+.ti -12
+,           A comma separates elements of a list.
+.sp
+.ti -12
+.cc *
+.           A period separates items in a qualified name.
+*cc .
+.sp
+.ti -12
+'           A single apostrophe is a delimiter for the specification of 
+character and bit-string constants.
+.sp
+.ti -12
+->          The arrow is a composite operator consisting of the minus sign and 
+the right angle bracket.  It is a separator in a pointer qualified reference.
+.sp
+.ti -12
+=           An equal sign is a separator in an assignment statement.
+.sp 
+.ti -12
+(           Left parenthesis.
+.sp
+.ti -12
+)           Right parenthesis.  A left parenthesis together with a right 
+parenthesis is used to enclose lists and extents, define the 
+order of evaluation of expressions, and separate keywords from 
+statements and option names.
+.in 0
+.ll 65
+.sp 3
+.sh
+2.14.4  Comments
+.qs
+.tc         2.14.4  Comments
+.pp
+Comments provide documentary text in a PL/I source program.  The compiler 
+ignores comments, so you can place them wherever a delimiter is appropriate.  
+Precede a comment by the composite pair /* and end the comment by the reverse 
+composite pair */.  For example,
+.ix comments
+.ix documentary text
+.ix source program
+.sp
+.in 5
+.nf
+   .                                            
+   .                                            
+   .                                            
+get list(name);  /* read the name */            
+   .                                            
+   .                                            
+   .                                            
+.in 0
+.fi
+.bp
+.sh
+2.15  Preprocessor Statements
+.he PL/I Reference Manual               2.15  Preprocessor Statements
+.tc    2.15  Preprocessor Statements
+.pp
+PL/I allows modification of the source program or inclusion of external source 
+files at compile time through the use of preprocessor statements.  
+Preprocessor statements are identified by a leading % symbol before the 
+keyword:
+.ix source program
+.ix preprocessor statements
+.ix statements, preprocessor
+.sp
+.in 5
+INCLUDE   or   REPLACE
+.in 0
+.sp 2
+.sh
+2.15.1  The %INCLUDE Statement
+.qs
+.tc         2.15.1  The %INCLUDE Statement
+.pp
+The %INCLUDE statement copies PL/I source text from an external file at 
+compile time.  The statement is useful for filling in a structure declaration 
+or format list.  The %INCLUDE statement has the form: 
+.ix %INCLUDE statement
+.ix statements, %INCLUDE
+.ix source text
+.sp
+.ti 5
+%INCLUDE 'filespec';
+.sp
+where filespec designates the file to copy into the source program.  Filespec 
+must be a standard file specification, [d:]filename[.typ], and must
+be enclosed in single apostrophes.  If there is no drive specification, PL/I 
+assumes the drive containing the source program.  When the compiler 
+encounters the %INCLUDE statement in the source file, it begins reading the 
+file specified by %INCLUDE.  When the compiler reaches the end of the 
+%INCLUDE file, it resumes reading the original source file.
+.ix file specification
+.pp
+The following code sequence is an example of the %INCLUDE statement: 
+.sp 2
+.in 5
+.nf
+f:                                       
+  procedure;                             
+  declare a fixed binary;                
+  %include 'struc.lib';                  
+  declare c float;                       
+    .                                    
+    .                                    
+    .                                    
+end f;                                   
+.sp 2
+.in 0
+.fi
+The compiler includes the source text from the file struc.lib at the point 
+of the %INCLUDE statement.
+.sp
+.sh
+Note:\c
+.qs
+\  PL/I does not allow nested %INCLUDE statements. 
+.ix nested %INCLUDE statements
+.sp 2
+.mb 4
+.fm 1
+.sh
+2.15.2  The %REPLACE Statement
+.qs
+.tc         2.15.2  The %REPLACE Statement
+.ix %REPLACE statement
+.ix statements, %REPLACE
+.pp
+The %REPLACE statement allows you to program with named constants.  The 
+%REPLACE statement has the form: 
+.sp
+.ti 5
+%REPLACE identifier BY constant;
+.sp
+The compiler replaces every occurrence of the given identifier in the source 
+text with the specified constant.  The constant can be a signed or unsigned 
+arithmetic constant, a bit string, or a character string.  You can write 
+multiple %REPLACE statements as a single %REPLACE statement, with the 
+elements separated by commas.
+.ix identifier
+.ix multiple %REPLACE statements
+.pp
+.mb 6
+.fm 3
+For example, the statement
+.sp
+.in 5
+%replace true by '1'b;
+.in 0
+.sp
+replaces all occurrences of true by the bit string constant '1'b, so that the 
+compiler interprets the statement,
+.sp
+.ti 5
+do while(true);
+.sp
+as: 
+.sp
+.ti 5
+do while('1'b);
+.pp
+PL/I requires that all %REPLACE statements occur at the outer block level 
+before any nested inner blocks.  
+.sp
+.sh
+Note:\c
+.qs
+\  to facilitate program maintenance and debugging, you should write all 
+%REPLACE statements directly following the procedure heading. 
+.ix nested blocks
+.sp 2
+.ce
+End of Section 2
+.nx three.tex
+
+

@@ -1,34 +1,21 @@
 // -------------------------------------------------------------------------------
 // START of COMMON
 // -------------------------------------------------------------------------------
+
+#import "/zcim-library.typ": *
+
 // define the page size
-#set page(paper: "us-letter")
-
-// by default, justify paragraphs
-#set par(justify: true)
-// old eyes like lots of leading
-#set par(leading: 0.95em)
+#set page(paper: page-size)
 // default font
-#set text(font: "EB Garamond", size: 12pt)
-
-// display well-known acronyms in smallcaps
-#show "BDOS" : smallcaps(all: true)[BDOS]
-#show "CBIOS" : smallcaps(all : true)[CBIOS]
-#show "CTRL-" : smallcaps(all : true)[CTRL-]
-#show "BIOS" : smallcaps(all : true)[BIOS]
-#show "CCP" : smallcaps(all : true)[CCP]
-//#show "FCB" : smallcaps(all : true)[FCB]
-#show "TPA" : smallcaps(all : true)[TPA]
-#show "ASCII" : smallcaps(all : true)[ASCII]
-#show "DMA" : smallcaps(all : true)[DMA]
-#show "IOBYTE" : smallcaps(all: true)[IOBYTE]
-#show "FDOS" : smallcaps(all: true)[FDOS]
-#show "BCD" : smallcaps(all: true)[BCD]
-#show "CPU" : smallcaps(all: true)[CPU]
+#set text(font: sans-font)
+// default font for raw text
+#show raw : set text(font: mono-font)
+// set default leading
+#set par(leading: leading-length)
 
 // make visible control characters a little more visible
-#show "␍" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␍]
-#show "␊" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␊]
+#show "␍" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␍]
+#show "␊" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␊]
 
 // don't split these at the slash
 #show "CP/M" : box([CP/M])
@@ -36,74 +23,65 @@
 #show "PL/M" : box([PL/M])
 #show "PL/I" : box([PL/I])
 
+#import "@preview/headcount:0.1.0": *
+
+#let document-version = [version 2025-07-31]
+
 // -------------------------------------------------------------------------------
 // END of COMMON
 // -------------------------------------------------------------------------------
+#title-page(
+  title-text: [
+*LINK-80* _Operator's Guide_
+  ],
+  version: document-version
+)
 
-#align(center)[
-
-#pad(y: 64pt)[#text(size: 18pt)[
-*LINK-80* Operator's Guide
-]]
-Copyright (c) 1980 \
-
-Digital Research \
-P.O. Box 579 \
-801 Lighthouse Avenue \
-Pacific Grove, CA 93950 \
-(408) 649-3896 \
-TWX 910 360 5001 \
-
-All Rights Reserved
-]
 #pagebreak()
-#align(center)[
-
-#pad(top: 2em)[*Copyright*]
-
-Copyright ©1980 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by anv means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
+#credits-page(
+  copyright: [
+Copyright ©1980 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
 #strike[Digital Research, Post Office Box  579, Pacific Grove, California 93950]. \
 #strike[http://www.lineo.com] \
-DRDOS, Inc [Bryan Sparks]
-
-This manual is, however, tutorial in nature. Thus, permission is granted to reproduce or abstract the example programs shown in the enclosed figures for the purposes of inclusion within the reader's programs.
-
-#pad(top: 2em)[*Disclaimer*]
-
+DRDOS, Inc [Bryan Sparks] \
+Copyright © 2025 by James Burlingame.
+   
+  ],
+  disclaimer: [
 Digital Research makes no representations or warranties with respect to  the
 contents hereof and specifically disclaims any implied warranties of
 merchantability or fitness for any particular purpose. Further, Digital
 Research reserves the right to revise this publication and to make changes  from
 time to time in the content hereof without obligation of Digital  Research to
-notify any person of such revision or changes.
+notify any person of such revision or changes.    
+  ],
+  trademarks: [
+CP/M is a registered trademark of Digital Research. PL/I-80, MP/M-80, RMAC, SID, ZSID and TEX are trademarks of Digital Research. \
 
-#pad(top: 2em)[*Trademarks*]
+  ],
+  printing: [
+The original "*LINK-80* _Operator's Guide_" *was* prepared \
+using the Digital Research `TEX` Text formatter.  \
+\
+Second Printing: December, 1980. \
 
-CP/M is a registered trademark of Digital Research. PL/I-80, MP/M-80, RMAC, SID, ZSID and TEX are trademarks of Digital Research.
-
-The original "LINK-80 Operator's Guide" *was* prepared using the Digital Research `TEX` Text formatter.
-
-
-#pad(top: 2em)[*Printing*]
-Second Printing: December, 1980.
-
-Typst Edition: 2025
-]
+    #zcim-project edition: #document-version
+  ]
+)
 #pagebreak()
 
 #set heading(numbering: "1.", supplement: [Section])
 #set page(numbering: "i")
-#set figure(numbering: "1.")
+#set figure(numbering: dependent-numbering("1-1"))
 #outline()
 #outline(
   title: [List of Tables],
   target: figure.where(kind: table),
 )
 #counter(page).update(0)
-#counter(figure).update(0)
 #pagebreak()
 #set page(numbering: "1")
-
+#set heading(numbering: "1.", supplement: [Section])
 = `LINK` Linkage Editor
 
 `LINK` is a utility used to combine relocatable object modules into an absolute file ready for execution under CP/M or MP/M. The relocatable object modules may be of two types. The first has a filetype of `REL`, and is produced by PL/I-80, `RMAC`, or any other language translator that produces relocatable object modules in the Microsoft format. The second has a filetype of `IRL`, and is generated by the CP/M librarian `LIB`. An `IRL` file contains the same information as a `REL` file, but includes an index which allows faster linking of large libraries.
@@ -321,7 +299,7 @@ CODE SIZE = 00F7
 DATA AREA = 004C
 ```
 
-`B>`#text(fill: purple)[`link grade[q]`↵]
+`B>`#text(fill: ui-fill)[`link grade[q]`↵]
 
 ```
 LINK 1.0
@@ -358,40 +336,40 @@ COMMON SIZE  00D4 (1B73-1C46)
 USE FACTOR     4F
 
 ```
-`A>`#text(fill: purple)[`b:grade`↵]
+`A>`#text(fill: ui-fill)[`b:grade`↵]
 
 ```
 Type a List of Grades, End with Ctl-Z
 ```
-#text(fill: purple)[`50, 75, 25`] \
-#text(fill: purple)[^Z] \
+#text(fill: ui-fill)[`50, 75, 25`] \
+#text(fill: ui-fill)[^Z] \
 ```
 Average is 50
 End of Execution
 ```
-`A>`#text(fill: purple)[`b:grade`↵]
+`A>`#text(fill: ui-fill)[`b:grade`↵]
 ```
 Type a List of Grades, End with Ctl-Z
 ```
-#text(fill: purple)[`50`↵]  \
-#text(fill: purple)[`75`↵]  \
-#text(fill: purple)[`zot,66`↵] \
+#text(fill: ui-fill)[`50`↵]  \
+#text(fill: ui-fill)[`75`↵]  \
+#text(fill: ui-fill)[`zot,66`↵] \
 
 ```
 Bad Value, Try Again.
 ```
-#text(fill: purple)[`25`↵] \
-#text(fill: purple)[^Z] \
+#text(fill: ui-fill)[`25`↵] \
+#text(fill: ui-fill)[^Z] \
 ```
 
 Average is 50
 End of Execution
 ```
-`A>`#text(fill: purple)[`b:grade`↵]
+`A>`#text(fill: ui-fill)[`b:grade`↵]
 ```
 Type a List of Grades, End with Ctl-Z
 ```
-#text(fill: purple)[^Z] \
+#text(fill: ui-fill)[^Z] \
 
 ```
 End of Execution
@@ -667,7 +645,7 @@ The form of the `EXTRN` statement is
 
 #pad(left: 5em)[`EXTRN` _label_ {, _label_, ..., _label_ }] \
 
-    EXTRN label{,label, ... ,label}
+    `EXTRN` label{,label, ... ,label}
 
 The labels appearing in an `EXTRN` statement may be referenced but must not be defined in the program being assembled. They refer to labels in other programs which have been declared `PUBLIC`.
 
@@ -1162,7 +1140,7 @@ END  COMPILATION
  002A                   end
 ```
 
-`A>`#text(fill: purple)[`b:dtest`↵] \
+`A>`#text(fill: ui-fill)[`b:dtest`↵] \
 ```
 100 / 2 **       0 =  1.000000E+02
 100 / 2 **       1 =  5.000000E+01
@@ -1584,7 +1562,7 @@ END  COMPILATION
 ```
 
 
-`A>`#text(fill: purple)[`b:alltst`] \
+`A>`#text(fill: ui-fill)[`b:alltst`] \
 ```
 
  25596 Total Words Available
@@ -1677,7 +1655,7 @@ DATA AREA = 0084
 END  COMPILATION
 ```
 
-`A>`#text(fill: purple)[`b:acktst`] \
+`A>`#text(fill: ui-fill)[`b:acktst`] \
 ```
 
 Type max m,n: 6,6
@@ -2295,8 +2273,8 @@ Note that the use of these entry points generally precludes the use of some PL/I
 #counter(heading).update(0)
 
 = Listing of `PLIDIO` Direct CP/M Call Entry Points
-\
-\
+
+#paged-listing[
 ```
 CP/M RMAC ASSEM 1.0     #001    DIRECT CP/M CALLS FROM PL/I-80
 
@@ -2356,7 +2334,10 @@ CP/M RMAC ASSEM 1.0     #001    DIRECT CP/M CALLS FROM PL/I-80
                         public  setrec  ;set random record pos (#36)
                         public  resdrv  ;reset drive (#37)
                         public  wrranz  ;write random, zero fill (#40)
+```]
 
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #002    DIRECT CP/M CALLS FROM PL/I-80
 
                 ;
@@ -2415,7 +2396,9 @@ CP/M RMAC ASSEM 1.0     #002    DIRECT CP/M CALLS FROM PL/I-80
  0024 =         setrcf  equ     36      ;set random record position
  0025 =         rsdrvf  equ     37      ;reset drive function
  0028 =         wrrnzf  equ     40      ;write random zero fill
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #003    DIRECT CP/M CALLS FROM PL/I-80
 
                 ;
@@ -2474,7 +2457,9 @@ CP/M RMAC ASSEM 1.0     #003    DIRECT CP/M CALLS FROM PL/I-80
  0054 2A0000            lhld    ?begin
  0057 C9                ret
                 ;
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #004    DIRECT CP/M CALLS FROM PL/I-80
 
                 ;***********************************************************
@@ -2533,7 +2518,9 @@ CP/M RMAC ASSEM 1.0     #004    DIRECT CP/M CALLS FROM PL/I-80
                 reboot: ;system reboot (#0)
  007D C30000            jmp     ?boot
                 ;
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #005    DIRECT CP/M CALLS FROM PL/I-80
 
                 ;***********************************************************
@@ -2592,7 +2579,9 @@ CP/M RMAC ASSEM 1.0     #005    DIRECT CP/M CALLS FROM PL/I-80
                 coninp: ;perform console input, char returned in stack
  00A2 21AE00            lxi     h,chrstr        ;return address
  00A5 E5                push    h               ;to stack for return
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #006    DIRECT CP/M CALLS FROM PL/I-80
 
  00A6 2A0100            lhld    ?boot+1         ;base of bios jmp vector
@@ -2651,7 +2640,9 @@ CP/M RMAC ASSEM 1.0     #006    DIRECT CP/M CALLS FROM PL/I-80
                 wrstr:  ;write string (#10)
                         ;1->addr(string)
  00D7 CD0600            call    getp2           ;get parameter value to DE
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #007    DIRECT CP/M CALLS FROM PL/I-80
 
  00DA 0E09              mvi     c,printf        ;print string function
@@ -2710,7 +2701,9 @@ CP/M RMAC ASSEM 1.0     #007    DIRECT CP/M CALLS FROM PL/I-80
  0106 0E0F              mvi     c,openf
  0108 C30000            jmp     ?bdos           ;return through bdos
                 ;
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #008    DIRECT CP/M CALLS FROM PL/I-80
 
                 ;***********************************************************
@@ -2769,7 +2762,9 @@ CP/M RMAC ASSEM 1.0     #008    DIRECT CP/M CALLS FROM PL/I-80
                 ;*                                                         *
                 ;***********************************************************
                 make:   ;create file (#22)
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #009    DIRECT CP/M CALLS FROM PL/I-80
 
                         ;1-> addr(fcb)
@@ -2828,7 +2823,9 @@ CP/M RMAC ASSEM 1.0     #009    DIRECT CP/M CALLS FROM PL/I-80
                 ;*                                                         *
                 ;***********************************************************
                 rovec:  ;return read/only vector (#29)
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #010    DIRECT CP/M CALLS FROM PL/I-80
 
  0167 CD1400            call    chkv20          ;must be 2.0 or greater
@@ -2887,7 +2884,9 @@ CP/M RMAC ASSEM 1.0     #010    DIRECT CP/M CALLS FROM PL/I-80
                 wrran:  ;write random (#34)
                         ;1-> addr(fcb)
  01A2 CD1400            call    chkv20          ;check for 2.0 or greater
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #011    DIRECT CP/M CALLS FROM PL/I-80
 
  01A5 CD0600            call    getp2i          ;.fcb to DE
@@ -2936,7 +2935,9 @@ CP/M RMAC ASSEM 1.0     #011    DIRECT CP/M CALLS FROM PL/I-80
                 ;*                                                         *
                 ;***********************************************************
  01D9                   end
-
+```]
+#paged-listing[
+```
 CP/M RMAC ASSEM 1.0     #012    DIRECT CP/M CALLS FROM PL/I-80
 
 015A ALLVEC     00E7 BREAK      0019 CDISKF     0014 CHKV20     001D CHKV22
@@ -2961,14 +2962,11 @@ CP/M RMAC ASSEM 1.0     #012    DIRECT CP/M CALLS FROM PL/I-80
 01A2 WRRAN      0022 WRRANF     01CE WRRANZ     0028 WRRNZF     0130 WRSEQ
 00D7 WRSTR      0000 ?BDOS      0000 ?BEGIN     0000 ?BOOT      0000 ?DBUFF
 0000 ?DFCB0     0000 ?DFCB1
-```
+```]
 
-#pagebreak()
 = Listing of `DIOCALLS` Showing the Basic CP/M Direct Interface
 
-\
-\
-```
+#source-listing[```
 PL/I-80 V1.0, COMPILATION OF: DIOCALLS
 
 L: List Source Program
@@ -3386,16 +3384,14 @@ PL/I-80 V1.0, COMPILATION OF: DIOCALLS
 CODE SIZE = 0958
 DATA AREA = 04BA
 END  COMPILATION
-```
+```]
 
 #pagebreak()
 
 
 = Listing of `DIOCOPY` Showing Direct CP/M File I/O Operations
 
-\
-\
-```
+#source-listing[```
 PL/I-80 V1.0, COMPILATION OF: DIOCOPY
 
 L: List Source Program
@@ -3656,14 +3652,13 @@ CODE SIZE = 02BD
 DATA AREA = 00EF
 END  COMPILATION
 
-```
+```]
 
 #pagebreak()
 
 = Listing of `DIORAND` Showing Extended Random Access Calls
-\
-\
-```
+
+#source-listing[```
 PL/I-80 V1.0, COMPILATION OF: DIORAND
 
 L: List Source Program
@@ -3886,8 +3881,7 @@ PL/I-80 V1.0, COMPILATION OF: DIORAND
 CODE SIZE = 04C7
 DATA AREA = 0183
 END  COMPILATION
-```
-
+```]
 #pagebreak()
 
 = Overlays and File Location Controls
@@ -4057,7 +4051,7 @@ Nesting of overlays is indicated in the command line by nesting parentheses. The
 
 In the following sample `LINK` operation, notice that `OV1` is flagged as an undefined symbol. `LINK` is simply indicating that `OV1` has not been defined in the current module, so it is assumed to be either the name of an overlay or a dummy entry point to an overlay. When linking overlays, each entry variable which refers to an overlay (by actual name or a dummy entry) will appear as an undefined symbol. No symbols other than these actual or dummy overlay entry points should be undefined.
 
-`A>`#text(fill: purple)[LINK ROOT(OV1)↵]
+`A>`#text(fill: ui-fill)[LINK ROOT(OV1)↵]
 ```
 LINK 1.3
 
@@ -4085,7 +4079,7 @@ USE FACTOR    09
 MODULE TOP  1EO0
 
 ```
-`A>`#text(fill: purple)[ROOT↵]
+`A>`#text(fill: ui-fill)[ROOT↵]
 ```
 
 root overlay 1
@@ -4293,22 +4287,24 @@ The last command form demonstrates that a number of replace and/or delete instru
 
 If a command does not fit on a single line (126 characters), the command may be extended by terminating the command line with an ampersand '`&`'. The ampersand may appear after any character of the command, and need not follow a file name. `LINK-80` responds with an asterisk ('`*`') on the next line. At this point the command line may be continued. Any number of lines ending with an ampersand may be entered. The last line of the command is terminated with a carriage return. Note that `XSUB` may be used to submit multi-line `LINK-80` commands.
 
+#block(
+  breakable: false
+)[
 *Example*:
 
 #pad(left: 5em)[
 
-    `A>`#text(fill: purple)[`link main, iomod1, iomod2, iomod3, iomod4, iomod5,&`↵] \
+    `A>`#text(fill: ui-fill)[`link main, iomod1, iomod2, iomod3, iomod4, iomod5,&`↵] \
     `LINK 1.3` \
-    `*`#text(fill: purple)[`lib1[s], lib2[s], lib3[s], lib4&`↵] \
-    `*`#text(fill: purple)[`[s], lastmod[p2000&`↵] \
-    `*`#text(fill: purple)[`,d200]`↵] \
+    `*`#text(fill: ui-fill)[`lib1[s], lib2[s], lib3[s], lib4&`↵] \
+    `*`#text(fill: ui-fill)[`[s], lastmod[p2000&`↵] \
+    `*`#text(fill: ui-fill)[`,d200]`↵] \
     ( . . . symbol table and memory map . . . ) \
 
 ]
+]
 
 #pagebreak()
-
-
 = Description of `XREF` Cross-Reference Utility
 
 `XREF` is an assembly-language cross reference utility that can be applied to print (`PRN`) files produced by `MAC` or `RMAC` in order to provide a summary of variable usage throughout the program. The purpose of this appendix is to provide the information necessary for operation of the `XREF` utility.
@@ -4354,10 +4350,14 @@ As an option, the "_filename_" specification can be prefaced with a drive code i
 
 #set heading(numbering: none)
 #pagebreak()
-= Notes on the Typst Edition
+= Notes on the #zcim-project Edition
 
-The _Typst_ edition of this manual was created by Jim Burlingame (_jb\@samplx.org_),
-for the site #link("https://www.z80cim.org")[z80cim.org].
+The #zcim-project goal is to improve the accessibility of legacy Z80 CP/M era content.
+As part of the project, Jim Burlingame (_jb\@samplx.org_) created a _Typst_ version of this manual.
+
+You can find out more about the project at its site #link("https://www.z80cim.org")[z80cim.org].
+The sources of this document are available on
+#link("https://github.com/samplx/zcimdocs")[GitHub].
 
 The source material is from the
 #link("http://cpm.z80.de/drilib.html")[_Tim Olmstead Memorial Digital Research CP/M Library_]
@@ -4381,15 +4381,11 @@ Additional documents are available from #link("https://bitsavers.org")[Bitsavers
 
 The contents of the manual were edited using the #link("https://Typst.app/")[Typst.app] site.
 
-The sources to the _Typst_ version of the document are available at
-#link("https://github.com/samplx/zcimdocs")[GitHub].
-
 == License
 
 The source documentation is under a license granted by the owner
 of the Digital Research intellectual property 
-in an email recreated at 
-#link("http://cpm.z80.de/license.html").
+in an email available at #link("http://cpm.z80.de/license.html").
 
-The _Typst_ version is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
+The #zcim-project edition is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
 

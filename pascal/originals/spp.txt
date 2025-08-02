@@ -1,0 +1,4672 @@
+@ME.FORMAT                                                             R
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		    SpeedProgramming PackageT.M.
+			     Release 5.2
+			    User's Guide
+
+			 Copyright (c) 1982
+
+			  Digital Research
+			    P.O. Box 579
+			 160 Central Avenue
+		       Pacific Grove, CA 93950
+			   (408) 649-3896
+			  TWX 910 360 5001
+
+			 All Rights Reserved
+
+
+
+
+
+			      COPYRIGHT
+
+Copyright (c) 1982 by Digital Research.  All rights reserved. No  part
+of  this  publication  may  be  reproduced,  transmitted, transcribed,
+stored  in  a  retrieval  system,  or  translated into any language or
+computer  language,  in  any  form   or  by  any  means,   electronic,
+mechanical, magnetic, optical, chemical, manual or otherwise,  without
+the  prior  written  permission  of  Digital Research, Post Office Box
+579, Pacific Grove, California, 93950.
+
+			     DISCLAIMER
+
+Digital  Research   makes  no   representations  or   warranties  with
+respect  to  the  contents  hereof   and  specifically  disclaims  any
+implied warranties  of merchantability or fitness  for any  particular
+purpose.   Further,   Digital Research  reserves the  right to  revise
+this publication and to make   changes from  time   to  time  in   the
+content hereof without  obligation of Digital  Research to notify  any
+person of such revision or changes.
+
+			     TRADEMARKS
+
+CP/M   is    a    registered   trademark    of    Digital    Research.
+Pascal/MT+ and SpeedProgramming  Package  are  trademarks  of  Digital
+Research. WordMaster and   WordStar  are   trademarks  of    MicroPro.
+UCSD   and   UCSD   Pascal   are  trademarks  of  the  University   of
+California, San Diego.
+
+The   "Pascal/MT+   SpeedProgramming   User's   Guide"   was  prepared
+using the Digital Research  TEX Text   Formatter and  printed in   the
+United States of America by Commercial Press/Monterey.
+
+
+
+
+
+		   Second Printing: February 1982
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				 ii
+
+
+
+
+			      FOREWORD
+
+      This  document  is  designed  as  an  introduction and reference
+manual for the SpeedProgramming  Package T.m. The suggested  order for
+reading  this  documentation  is  the  Foreword  (overview), Section 1
+(operation), the SpeedProgramming  Package Tutorial (Appendix  E), and
+then the remainder of this manual.
+
+      This document is not a  tutorial but rather a reference  manual.
+Please read the SpeedProgramming  Package Tutorial (Appendix E)  for a
+"pilot's-eye-view" of operating the SpeedProgramming Package from  the
+"cockpit".
+
+	      SpeedProgramming Package System Overview
+
+      The Digital Research SpeedProgramming  Package package is a  set
+of  development  tools  designed  to  improve  the productivity of the
+Pascal/MT+T.M  programmer.   The  SpeedProgramming   Package   package
+contains:
+
+	• Supervisory program (supplied in source code)
+	• Screen-oriented text editor
+	• Interactive, on-demand, syntax scanner
+	• On-demand source text reformat utility
+	• On-demand variable spelling check utility
+	• Disk based logging of all source code modifications
+	• Hard disk backup utility
+	• Complete  capability  for  users  to  adapt  the  package
+	  to any terminal
+	• Complete  capability  for  users  to  add their own tools
+	  to the SpeedProgramming Package environment
+
+Note:  on-demand  implies  that  this  feature  is  invoked  only upon
+operator command and not  automatically as found in  some interpretive
+BASIC environments.
+
+      The SpeedProgramming  Package package  helps the  user to remove
+all  "dumb"  errors  prior  to  compilation.   One  of  the  limits to
+productivity is the human frustration threshold.  One must  experience
+first-hand  reaching  the   end  of  a   four  thousand  line   source
+compilation only to find that  a semicolon (or period) was  missing to
+fully understand the  situation. One must  then re-edit and  recompile
+only to  find that  it may  be still  wrong, leading  to only more and
+more frustration. This tends  to lead programmers to  become extremely
+careful and spend much time simulating the compiler in their heads  to
+save time when the computer should  be able to make the production  of
+programs easier, not harder.
+
+
+
+
+
+
+
+
+
+				 iii
+
+
+
+      Because  no  compiler  can   make  totally  proper   assumptions
+regarding the programmer's  intent when an  error is encountered,  the
+SpeedProgramming Package is designed to provide the programmer with  a
+comfortable environment  in which  to interactively  find and  correct
+errors.
+
+      The  SpeedProgramming  Package  package  provides an interactive
+syntax scanner which works hand-in-hand with the screen editor.   When
+the user requests a  syntax scan and an  error is detected the  editor
+will place the  cursor at the  location of the  error, place an  error
+message at the bottom  of the screen, and  give the programmer a  full
+screen of context in which to examine and correct the error.
+
+      Similarly, the misspelled  variable check utility  will generate
+a frequency count of the identifiers in the user's text and allow  the
+user to easily detect misspellings (typically those identifiers  which
+are used only once).
+
+      The SpeedProgramming Package  also helps the  programmer control
+the source code in an easily maintainable fashion:
+
+	• An on-line log of source code modifications
+	  is generated by the supervisor program.
+
+	• A special function of the editor can automatically
+	  update a version number comment at the beginning of
+	  the user's source program files.
+
+	• A program reformatting utility can automatically
+	  readjust the indentations and margins to make
+	  a program which is much easier to read.
+
+	• A semi-automatic selective backup facility for
+	  large capacity disk users.
+
+      The logging facilities automatically record the filename,  disk,
+version number and date of modification whenever a file is written  to
+the disk  by the  editor. The  user can  place a  comment at  the very
+beginning of the source code in the following form:
+
+	(*  VERSION xxxx *)
+
+      Note:  the  TWO  blanks  between  the  '*'  and VERSION and that
+VERSION  must  be  upper-case.   The  editor  updates the 'xxxx' field
+(assuming it  is ASCII  digits) every  time the  file is  edited.  The
+logging facilities  provide a  capability that  programmers often want
+in a  CP/M environment  (i.e. answering  the question:   "What copy of
+this file is the most recent?"). This is the version number which,  if
+present is written  to the log  file when the  file is written  to the
+disk. See Section 7 for a description of MTLOG and BACKUP.
+
+      Programmers, particularly those  who have just  recently started
+using Pascal, tend to feel it  is a tedious waste of time  to properly
+indent the  source code  to improve  readability.   This is admittedly
+quite difficult when using line oriented editors such as ED  (supplied
+with CP/M). The SpeedProgramming Package provides an
+
+				 iv
+
+
+
+on-demand reformatting utility which  has two main functions.   First,
+it can reformat  the source program  so that the  source code reflects
+the flow of control  through the program at  execution time.  This  is
+done  by  following  a  few  indenting  rules.   Second,  unlike other
+reformatter  programs  the  SpeedProgramming  Package reformatter does
+not  require  a  syntactically  correct  program.   This  allows   the
+reformatter utility  to be  used to  find such  typical problems  as a
+missing  END  statement.   After  a  program  is  transformed  by  the
+reformatter such problems  become amazingly clear  as the source  code
+is indented in a obviously strange fashion caused by the missing END.
+
+      The  SpeedProgramming  Package  also  is  designed  to   provide
+convienent backup capability  for users who  are using large  capacity
+disks  with  floppy  disks  for  backup.  The  backup  utility has the
+capability  to  scan  the  modification  log  and create a submit file
+which can  be processed  by the  SUBMIT program  (or the  @ command in
+CDOS) to transfer only those  files which have been changed  since the
+last backup.  In this way current backups of modified software may  be
+maintained  without  requiring  the  entire  large capacity disk to be
+copied onto floppies.
+
+      On  top  all  of  these  facilities the SpeedProgramming Package
+supervisor is  supplied in  source code  form and  the other tools are
+supplied in relocatable form.   The source code supplied contains  the
+character-in,   character-out,   cursor   positioning,   and   erasing
+routines.  Users  can  edit  the  supervisor  source code to adapt the
+SpeedProg  ramming  Package   to  a  wide   variety  of   keyboard/CRT
+environments including memory mapped and non-CP/M supported devices.
+
+      Once these modifications have  been made, the user  compiles the
+supplied source  code and  then executes  a submit  file to relink the
+supplied  tools.   Using  this  method  the  user  can  configure  the
+SpeedProgramming Package for various  environments and not suffer  the
+inefficiencies of  table driven  packages.   In addition  the user can
+translate the  incoming characters  to match  those currently  used by
+the user's current editor (such as WordMaster T.M. or WordStar  T.M.).
+In  this  way  the  user  may  utilize  the powerful facilities of the
+SpeedProgramming Package without significant retraining.
+
+      The remainder of this manual describes how to install,  operate,
+and maintain the SpeedProgramming Package.  If this is the first  time
+that the reader  has read this  manual then the  suggested path is  to
+skip  Section  2  (SpeedProgramming  Package  Installation)  and  then
+return  and  read  Section  2  after  becoming  more familiar with the
+contents of this manual.
+
+
+
+
+
+
+
+
+
+
+
+
+				  v
+
+
+
+	SpeedProgramming Package System Requirements
+	--------------------------------------------
+
+	* 24 x 80 CRT		(may be larger)
+	* ASCII Keyboard	(7-bit data)
+	* 56K CP/M system	(or equivalent)
+	* Pascal/MT+ compiler	(Version 5.2 or later)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				   vi
+
+
+			    TABLE OF CONTENTS
+
+1   SpeedProgramming Package Operation  . . . . . . . . . . . .	.	1
+1.1 SpeedProgramming Package Concepts . . . . . . . . . . . . . .	1
+1.2 SpeedProgramming Package Operational Overview . . . . . . . .	3
+
+2   SpeedProgramming Package Installation . . . . . . . . . . . . 	5
+2.1 Installing Your Modified Package  . . . . . . . . . . . . . .	10
+
+3   SPEED Editor  . . . . . . . . . . . . . . . . . . . . . . . .	13
+3.1 Editor Organization . . . . . . . . . . . . . . . . . . . . .	13
+3.2 Text Buffer Handling  . . . . . . . . . . . . . . . . . . . .	14
+3.3 External File Handling  . . . . . . . . . . . . . . . . . . .	15
+3.4 Required Control Character Commands . . . . . . . . . . . . .	15
+
+4   SYNCHECK Syntax Checker . . . . . . . . . . . . . . . . . . .	21
+
+5   VARCHECK Variable Identifier Checker  . . . . . . . . . . . .	23
+
+6   REFORMAT Pascal Text Reformatter  . . . . . . . . . . . . . .	25
+
+7   NTLOG Source Code Control Logger/BACKUP Program . . . . . . .	27
+7.1 BACKUP Program Operation  . . . . . . . . . . . . . . . . . .	27
+
+8   Miscellaneous Utilities . . . . . . . . . . . . . . . . . . .	29
+8.1 Directory Display . . . . . . . . . . . . . . . . . . . . . .	29
+8.2 Fast Compiler . . . . . . . . . . . . . . . . . . . . . . . .	29
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				   vii
+
+
+
+APPENDIXES
+
+A   Standard Control Characters . . . . . . . . . . . . . . . . .	31
+
+B   Source Code Listing of NSB.SRC  . . . . . . . . . . . . . . .	33
+
+C   Sample Installation Routines  . . . . . . . . . . . . . . . .	41
+C.1 Televideo/Soroc . . . . . . . . . . . . . . . . . . . . . . .	41
+C.2 ADM-3A  . . . . . . . . . . . . . . . . . . . . . . . . . . .	43
+
+D   SPEED Editor Tutorial . . . . . . .	. . . . . . . . . . . . .	45
+D.1 Cursor Movement . .	. . . . . . . . . . . . . . . . . . . . .	46
+D.2 Roaming Around the Text in the Buffer . . . . . . . . . . . .	50
+D.3 Exchange  . . . . . . . . . . . . . . . . . . . . . . . . . .	50
+D.4 Insertions	. . . .	. . . . . . . .	. . . . . . . . . . . . .	51
+D.5 Deletions .	. . . .	. . . . . . . . . . . . . . . . . . . . .	53
+D.6 Search and Replace	. . . . . . . . . . . . . . . . . . . . .	55
+D.7 Super Command . . .	. . . . . . . . . . . . . . . . . . . . .	58
+D.8 Miscellaneous . . .	. . . . . . . . . . . . . . . . . . . . .	61
+
+E   SpeedProgramming Package Tutorial . . . . . . . . . . . . . .	65
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				viii
+
+
+				SECTION 1
+
+		   SPEEDPROGRAMMING PACKAGE OPERATION
+
+The SpeedProgramming Package  is driven from  a screen oriented  menu.
+User's can  change this  menu as  well as  control characters used for
+the SPEED editor.  This documentation describes the SpeedProg  ramming
+Package as it is supplied assuming no user modifications.
+
+      To invoke the SpeedProgramming Package the user enters the  CP/M
+command (user input in lower-case, < means type carriage return):
+
+			       A>spp<
+
+      Figure 1-1  shows the  menu which  the SpeedProgramming  Package
+will then display:
+
+	SpeedProgramming Package V5.x
+	Options:	E)dit
+			R)eformat
+			S)yntax check
+			V)ariable check
+			X)eq
+			D)ir
+			L)ink
+			F)ast compile
+			Q)uit
+	Command?
+
+		Figure 1-1. SpeedProgramming Package Menu
+
+      At the outermost level of the SpeedProgramming Package the  user
+enters a single letter (for example:  'E', it can be either upper-  or
+lower-case) and the SpeedProgramming Package begins operation.
+
+      Before  describing  each  command  some  basic  concepts must be
+covered.
+
+1.1 SpeedProgramming Package Concepts
+
+      In the SpeedProgramming Package  the supervisor "owns" a  set of
+resources  that  can   be  used  by   the  tools  supported   by   the
+SpeedProgramming Package.  These resources are created and  maintained
+by  the   supervisor  and   are  accessed   by  the   tools  on    the
+SpeedProgramming Package. All the tools on the SpeedProgramming
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  1
+
+
+SPP User's Guide	1.1 SpeedProgramming Package Concepts
+
+Package are implemented as overlays and access the resources owned  by
+the supervisor by name.
+
+      The major resource owned by  the supervisor is the text  buffer.
+This buffer contains the  file being edited, syntax  scanned, variable
+checked, etc.  The buffer  varies in  size from  7K (in  a 52K minimum
+system) to  approximately 19K  in a  64K CP/M  2.2 (minimum size BIOS)
+system. The supervisor also owns additional information regarding  the
+text buffer:  the size of  the buffer, the status of the  buffer (i.e.
+empty or  occupied), the  number of  the last  line, the  end of  text
+location, the name of file which  the text was loaded from, etc.   The
+supervisor also knows  the current date  and the location  and name of
+the log file.
+
+      A  simple  memory  map  (Figure  1-2)  helps  to  illustrate the
+SpeedProgramming Package environment in which the user works:
+
+	+-------------------------------------------------------+
+	+ Speed	      |	Overlay	| Supervisor | T e x t		+
+	+ Programming |	Area	| Resource   | B u f f e r	+
+	+ Package     |		| Management | 16K bytes in a	+
+	+ Supervisor  |		| Area	     | 61K CP/M system	+
+	+-------------------------------------------------------+
+
+	     Figure 1-2. SpeedProgramming Package Memory Map
+
+      Since  the  supervisor  owns  the  text  buffer  it  can  detect
+operations  which  would  destroy  text  that  had  been  modified  by
+editing, reformatting, etc. It can  also determine that the buffer  is
+empty. If the user asks for  a tool which requires text in  the buffer
+and there is none, the supervisor will ask:
+
+	Filename <ret> to abort?
+
+      The user  may then  type in  the desired  filename. If  the file
+does  not  exist,  then  the  supervisor  allows the user to abort the
+operation by asking:
+
+	xxxxxx.xxx is new, Continue (Y/N)?
+
+      If the user enters anything  other than Y (or y)  the supervisor
+returns to the menu  and the user can  request invocation of the  tool
+again at which time the supervisor again asks for a filename.
+
+      Once  text  has  been  entered  into  the  buffer the supervisor
+remembers  this  and  asks  the  following  question  if  a  tool that
+requires text (or the Q)uit command) is requested:
+
+	Buffer occupied, F)lush, U)pdate, W)rite & Flush, L)eave:
+
+      When the user requests, for example, to E)dit a file when  there
+is already a file in the buffer, the supervisor allows the user to:
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  2
+
+
+SPP User's Guide	1.1	SpeedProgramming Package Concepts
+
+	1) F)lush: throw away the text in the buffer.
+
+	2) U)pdate: write the text in the buffer to the disk under the
+	   appropriate filename and then leave it in the buffer and
+	   call the requested tool.
+
+	3) W)rite & F)lush: write the text in the buffer to the disk
+	   under the appropriate name and then throw it away by asking
+	   the user to type in the name of the f ile the user wants to
+	   process.
+
+	4) L)eave: leave the current text in the buffer and simply
+	   call the requested tool. This case is often used in
+	   operations displaying a directory when editing a file (see
+	   Section 1.2).
+
+1.2 SpeedProgramming Package Operational Overview
+
+      This  section  describes  a  sample  operational  session of the
+SpeedProgramming Package.  Once the  user has  properly installed  the
+package (see Section 2) the user  can return here to actually "sit  in
+the cockpit" and operate the system, but for now continue reading  and
+become acquainted with the basic operation of the system.
+
+      Once the SpeedProg ramming Package is loaded (see Section 1)  it
+displays the menu shown  in Figure 1-1 (also  in Section 1) .  At this
+level the system responds to  each keystroke instantly (for example  ,
+typing the RETURN  key is not  necessary) . Upper-case  and lower-case
+are interchangeable throughout all the SpeedProgramming Package.
+
+      The most  simple operation  is to  display the  directory on the
+currently logged-in  disk. The  user would  type D,  the system  would
+load in the directory display overlay. This overlay then asks:
+
+	Which Disk? <return> to abort
+
+      The user would then type either  the letter of the disk or  '@',
+to indicate  the current  disk, or  just the  RETURN key  to abort the
+directory display. At this level  the user is required to  depress the
+RETURN key after entering the disk  letter as the reading of the  disk
+letter is done via a read  string which allows editing as provided  by
+CP/M (CTRL-R, CTRL-U, CTRL-H, CTRL-X, etc.). After the user  depresses
+the  RETURN  key  the  directory  display  overlay  will  display  the
+directory in four columns as shown below.
+
+	Listing of directory for disk B:
+
+	FILE1	.COM | FILE2	.BAK | FILE3	.TEX | DDT 	.COM
+	.
+	.(and so on, four files per line until end of the directory)
+	.
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  3
+
+
+SPP User's Guide	1.2		SPP Operational Overview
+
+      If there is more than  one full screen of directory  information
+the directory display overlay displays:
+
+	Type <return> for more ...
+
+The  user  should  depress  RETURN,  the  screen clears and additional
+directory entries display.
+
+      At the end of the directory the overlay displays:
+
+		End of directory, Type <return> to exit to menu
+
+      The user should depress RETURN and the SpeedProgramming  Package
+menu will reappear.  If the user  repeats the operation  the user will
+note that the  supervisor recognizes that  the appropriate overlay  is
+in memory and does not reload it from the disk each time.
+
+Note:  overlays  such  as  the  the  directory display program, syntax
+checker,  variable  checker,  and  reformatter  do  not  destroy   the
+contents of the text buffer and therefore can be used while editing  a
+file. (Section 6 details what the reformatter does to the buffer).
+
+      All of  the SpeedProgramming  Package tools  provided by Digital
+Research  operate  similarly  to  the  directory  display overlay just
+described.   They use  a combination  of single  character and  string
+input and  use the  CRT as  a two  dimensional screen  and not  just a
+teletypewriter replacement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Diqital Research
+
+				  4
+
+
+			      SECTION 2
+
+		SPEEDPROGRAMMING PACKAGE INSTALLATION
+
+      This section  describes the  contents of  the distribution disks
+and the procedures necessary for installation of the  SpeedProgramming
+Package on the user's computer system. It is assumed that the user  is
+familiar  with  the  manual,  and  operation of the Pascal/MT+ system.
+Prerequisite information includes knowledge of:
+
+	o Pascal/MT+ compiler operation
+	o Link/MT+ operation
+	o Link/MT+ switches
+	o The CP/M SUBMIT program
+	o The user's current text editor
+	o DETAILED information regarding the CTRL/ESC sequences
+	  necessary to operate the user's terminal.
+
+      Before you  install the  SpeedProgramming Package  be sure  that
+you:
+
+		   +-----------------------------------+
+		   | COPY THE DISTRIBUTION DISKETTES!! |
+		   +-----------------------------------+
+
+NOTE:  DO   NOT  INSTALL   THE  SPEEDPROGRAMMING   PACKAGE  ON    YOUR
+DISTRIBUTION DISKETTES!
+
+      Once  you  have  copied  your  disks,  you  can  now display the
+directory on  each disk.   You should  find the  following files (note
+that the disk #1 and disk  #2 designations apply to 8" single  density
+format  only,  other  formats  require  more  diskettes  and   special
+instructions, see  any addendum  sheets that  accompany this document,
+these are supplied by distributors, not by Digital Research):
+
+	Name 		Contents
+	----		--------
+
+	Located on SPP Disk 1:
+	----------------------
+
+	NSB.SRC		Source code for supervisor program
+			which contains cursor and keyboard
+			control routines (this is what you
+			will be modifying)
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  5
+
+
+	SPP User's Guide		2	SPP Installation
+
+	EDGLBLS.SRC
+	EDTYPES.SRC
+	SBIFDEF.LIB	These are "include" files for NSB.SRC
+	LINKSPP.SUB	CP/M submit file for linking the
+			package together (you	will use this later)
+	.CMD files	Link/MT+ command files used by LINKSPP.SUB
+	.ERL files	Relocatable object code files for the
+			package
+	SMALLERR.TXT	A shortened form of MTERRS.TXT for use
+			with the syntax scanner
+
+	Located on SPP Disk 2:
+	--------------------
+
+	L.COM		The 5.25 version of Link/MT+
+	MTPLUS.COM
+	MT180.OVL
+	MT380.OVL
+	MT480.OVL	Upgrade modules for the Pascal/MT+ 5.2
+			compiler to supports the overlay system
+	PROG.SRC
+	MOD1.SRC
+	MOD2.SRC	Sample text files used in the overlay
+			system explanation
+
+	Before you begin installation you must:
+
+	1) SYSGEN a system onto SPP disk #2.
+
+	2) Put a copy of SUBMIT.COM on SPP disk #2.
+
+	3) Copy the MT185.OVL and MT280.OVL files from the PASCAL/MT+
+	   disk set to make disk SPP#2 a complete PASCAL/MT+ compiler
+	   disk.
+
+      Installation  of  the  SpeedProgramming  Package  is   partially
+manual  (you  modify   the  source  code)   and  partially   automatic
+(submitting LINKSPP.SUB) . Unless you have a Televideo 9xx or a  Soroc
+IQ120 you must modify the provided source code (NSB.SRC) to adapt  the
+SpeedProgramming Package to your terminal.  We have provided the  code
+for the  Soroc in  Appendix C.1  and for  ADM-3A in  Appendix C.2. The
+SpeedProgramming  Package  has  been  provided  in  this  way to allow
+complete  flexibility  of  adaptation  without  requiring any software
+other than  that supplied  in this  package by  Digital Research.   NO
+ASSEMBLER or tools  from other manufacturers  are needed. In  addition
+this package is built using the new overlay
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  6
+
+
+	SPP User's Guide	2	SPP Installation
+
+scheme supplied with the 5.25  compiler and gives the user  first hand
+experience  with  the  operation  of  that  aspect  of  the Pascal/MT+
+package.
+
+      If  you  do  not  have  a  Televideo  or  a  Soroc then read the
+following paragraphs otherwise start reading at Section 2.1.
+
+      Presuming you  do not  have a  Televideo or  Soroc you must have
+certain  information  about  your  CRT  terminal/display before we can
+begin. You must  know how to  make your terminal  perform (or simulate
+in software) the following operations:
+
+	o Move Cursor Home and Clear Screen
+	o Position Cursor given coordinates in binary
+	o Erase to End-of-Line
+	o Erase to End-of-Screen
+
+      As we said above you need not have all these functions but  must
+be  able  to  simulate  those  that  are  not present. For example, an
+ADM-3A can  Home/Clear and  Position the  cursor but  not perform  the
+erase  operations.  These   must  be  simulated   by  output  of   the
+appropriate number  of blanks.   As a  side note,  we do  not use  the
+lower rightmost  character on  the screen  so that  software simulated
+erase operations will not accidentally scroll the screen up one  line,
+if you  have adapted  your terminal  to other  editors you  might have
+experienced this in the past.
+
+      Appendix B shows  the source code  for the NSB.SRC  program that
+you must modify.
+
+Note:  This  is  only  an  approximate  listing.  Be  sure  to use the
+NSB.SRC supplied on your distribution diskettes.
+
+      Before  we  get  into  specifics  let's  look  at the program as
+supplied. It includes EDTYPES.SRC and EDGLBLS.SRC, defines some  local
+types,  some   globals  variables,   declarations  for   the   overlay
+procedures,  the  procedures  you  must  change  and some you must not
+change.
+
+      Now for  the specifics.  There are  8 routines  that can  be (or
+must be) changed to adapt to your terminal:
+
+	• LINESZ returns the size (minus 1) of a line on your terminal
+
+	• SCREENSZ returns the number of lines (minus 2) on your
+	  terminal.
+
+	• STATUSROW returns the bottom line of the screen (typically
+	  SCREENSZ+l) .
+
+	• SB_OUT_CH causes the character passed to be output without
+	  modification.
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  7
+
+	SPP User's Guide	2		SPP Installation
+
+	• SB_GETCH gets a character from the keyboard (nonecho).
+
+	• XYGOTO positions the cursor on the screen at the supplied
+	  coordinates.
+
+	• SB_CLR_SCRN erases the entire screen and positions the
+	  cursor to the home (0,0) position.
+
+	• SB_CLR_EOS erases the remainder of the screen and returns
+	  the cursor to its original position.
+
+	• SB_CLR_LINE erases the remainder of the current line and
+	  returns the cursor to its original position.
+
+      We will  now discuss  these routines  in detail,  but first some
+notes on  constants already  defined for  you in  the source provided.
+The supplied declarations already  declare:  CR (carriage  return), LF
+(hex OA), ESC (hex 1B), and  CNTRLZ (hex 1A) as integer constants  and
+these must not be  re-declared by the user.  To use the for  output to
+the screen use the CHR function (e.g. CHR(CR)).
+
+      The LINESZ  function returns  the size  of the  line on your CRT
+screen. The SPEED editor assumes  that the first position on  the line
+is  column  0  so  for  a  typical  80 column CRT this function should
+return 79.
+
+      The SCREENSZ function returns the height of the screen in  lines
+(minus 2).  The reason  for minus  2 is  that the  bottom line  of the
+screen is used for  special messages in the  editor. The lines on  the
+terminal  are  assumed  to  begin  with  line  0  and  end  with  line
+SCREENSZ+l. The SPEED editor assumes that the terminal will scroll  if
+a  linefeed  character  is  transmitted  when  the  cursor  is on line
+"SCREENSZ+1" (for example:  line 23 for a 24 line CRT).
+
+      The STATUSROW function returns the line which the editor  should
+use  for  special  status  messages.  This is almost always SCREENSZ+1
+unless your terminal has  some "magic" line which  is not part of  the
+scrolling mechanism and can be addressed by cursor positioning.
+
+      The SB_OUT_CH  procedure that  is passed  output for  the CRT  a
+character at a  time.  The  routine supplied calls  the CP/M BIOS  but
+can be  modified to  call the  BDOS for  MP/M systems.   This  routine
+should not  interpret the  characters as  no context  is implied  on a
+character-by-character basis.
+
+      The SB_GETCH function must read  the console in a nonecho  mode.
+The currenC routine  calls the CP/M  BIOS but as  in SB_OUT_CH can  be
+modified to call the BDOS  (but make sure the BDOS  does-not interpret
+any of your incoming characters).  If any translation is desired  (for
+example, to translate keyboard  characters used for WordStar  into the
+required characters  for the  SPEED editor)  it must  be done  at this
+level. A CASE statement is sufficiently fast to do this operation  and
+does not  take up  too much  space. If  you run  out of  space, use an
+assembly language module.
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  8
+
+
+	SPP User's Guide	2	SPP Installation
+
+      XYGOTO is  a procedure  which is  passed the  desired new cursor
+position. These are  passed assuming that  the top leftmost  character
+position on the screen is X=O,  Y=O. X is the horizontal position  and
+Y is the  vertical position. If  you are using  a video memory  mapped
+board you  should remove  the cursor  flag from  the current character
+position and place it at the  new position as well as updating  your X
+and Y position counters. If  you do not have the  Erase-to-end-of-line
+and/or  Erase-to-end-of-screen  sequences  in  your terminal, you must
+save the  X and  Y values  in SB_LAST_X  and SB_LAST_Y  so that when a
+call is  made to  either erase  routine you  know where  the cursor is
+located. See Appendix C.2 for an example of how this was done for  the
+ADM-3A.  The  SPEED  editor  always  makes  a  XYGOTO call immediately
+before issuing any call to either erase routine.
+
+      SB_CLR_SCRN is a  procedure whose job  it is to  move the cursor
+home and clear the screen to  all blanks. The cursor should remain  in
+the home position and the current X and Y position will be assumed  to
+be X=O  and Y=O.  No explicit  call to  XYGOTO is  made to reset these
+values for memory mapped video boards.
+
+      SB_CLR_EOS is  a procedure  which should  output the appropriate
+characters to clear  the screen from  the cursor position  to the last
+character  on  the  screen.  The  cursor  should  be  returned  to its
+original position following  the display of  blanks. This is  normally
+the operation  of most  terminals but  you should  check your terminal
+manual.
+
+Note: The  SpeedProgrammingPackage does  not use  the lower, rightmost
+character  position  on  the  screen  (X=79,  Y=23 for a 24x8O screen)
+because routines that must implement this (and CLR_LINE) on  terminals
+such as  the ADM-3A  would cause  the text  on the  terminal to scroll
+upward if this character is written.
+
+      Therefore,  on  terminals  that  implement  these  functions  in
+software the user should take care  not to write too many blanks  when
+on the  last line  of the  screen. The  SpeedProgramming Package  will
+always position the cursor with XYGOTO (thereby setting SB_LAST_X  and
+SB_LAST_Y) before calling SB_CLR_EOS  or SB_CLR_LINE. This allows  you
+to use these values to calculate the number of blanks to display.
+
+Note: The  fieldwidth parameter  on a  WRITE statement  has a  maximum
+value of 255.
+
+      Therefore calculating the total number of blanks and then  using
+WRITE(' ':numblanks-1) will not always work. Use the code below:
+
+	FOR I := 1 TO NUMBLANKS DIV 255 DO
+	  WRITE([ADDR(OUTCH)],' ':254);
+	WRITE([ADDR(OUTCH)],' ':(NUMBLANKS MOD 255)-l);
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				  9
+
+
+	SPP User's Guide	2		SPP Installation
+
+      SB_CLR_LINE is a procedure  which should output the  appropriate
+characters Co clear the remainder  of the current line and  return the
+cursor to its original position.  If your terminal does not  have such
+a function you must then  program this in software. See  the preceding
+paragraph for  a discussion  of the  variables involved.  Again, as in
+SB_CLR_EOS, be  careful when  implementing this  function in  software
+that  you  do  not  display  a  blank in the lower rightmost character
+position as this will cause most terminals to scroll.
+
+2.1 Installing Your Modified Package
+
+      Once you have made any necessary changes to the NSB.SRC file  to
+adapt  the  program  to  your  CRT  terminal  the installation process
+becomes  semi-automatic.   You  must  compile  NSB  and  then   submit
+LINKSPP.SUB. The following discussion  assumes that you have  placed a
+system on your SPP  disk #2 and also  a copy of SUBMIT.COM  (from your
+CP/M master and/or work disk), and then booted the disk from SPP  disk
+#2 and placed SPP disk #1 in drive B. Then type command line:
+
+	MTPLUS B:NSB
+
+The Pascal/MT+ compiler should  then compile NSB.SRC into  NSB.ERL. If
+you have any syntax or semantic errors, re-edit and compile until  you
+get a clean compilation.
+
+      Once you  have a  clean compilation  you can  then determine  if
+your installation job is easy or moderate.
+
+Note: before attempting any  linking operation, erase any  unnecessary
+files from your drive B  as the following process requires  almost all
+the available space. Use ERA SPP.* if you are relinking a new copy  of
+the system and an old copy exists).
+
+      The strings in braces  {} below are comments  and are not to  be
+typed by the user. Type the commands:
+
+	B:			{log-in to drive B}
+	A:LINKMT SPPMAIN/F	{execute the linker from A using}
+				{SPPMAIN.CMD as input}
+
+      When the  link is  complete look  at the  message: 'Total  Code:
+xxxxH  bytes'.  If  xxxx  is  <=  14FFH  then your job is easy: simply
+reboot
+
+Note: this value can change in future releases.
+
+Check the SPPMAIN.CMD file for the current value, then:
+
+	SUBMIT B:LINKSPP
+
+and the entire system will be linked.
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 10
+
+
+SPP User's Guide	2.1	Installing Your Modified Package
+
+      If the  number xxxx  was >  14FFH (see  preceding note) then you
+must edit all of the CMD files to change the currently supplied  value
+of 1600  to accomodate  your larger  main program.  To find  the value
+required take the xxxx  value, add 100H (for  example, 1523H + 100H  =
+1623H) and then round up to the next even page boundary (for  example,
+for 1623H the  value is 1700).  In any case:  DO NOT EXCEED  1780H FOR
+THE BEGINNING OF THE OVERLAY AREA (see preceding note). Then edit  all
+of the CMD files  changing the 1600 to  your new value. Once  you have
+edited your CMD files you can use the LINKSPP submit file.
+
+      If  you  had  enough  disk  space,  you  had  no  undefined   or
+duplicately defined  labels, and  no conflicts  for memory  space (you
+can tell by looking at the  output from the linker), you are  ready to
+try out your installed SpeedProgramming Package. Log-in to drive B  by
+typing B:, then  type SPP followed  by a carriage  return. If you  get
+the menu at the right spots  (see Section 1) on the screen  this means
+that your home/clear logic is  working and your cursor positioning  is
+functional. Type E (to call the editor) and give the name  SBIFDEF.LIB
+(one of  the NSB  include files)  followed by  a carriage  return.  It
+should  display  Reading...  and  some  other messages followed by the
+text on  the screen.  To test  your erase  functions type  the key for
+InsertMode (normally CTRL-F) and the top line of the screen should  be
+erased.  Then type <return> and the remainder of the screen should  be
+erased. If all  of this works  then you are  in business and  can read
+the  SpeedProgramming  Package  tutorial  and  the  remainder  of this
+manual  for  further  information.   If  not,  go  back,  fix  up your
+cursor/erase routines and try it all over again!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 12
+
+
+
+			      SECTION 3
+
+			    SPEED EDITOR
+
+      The SPEED  Editor is  an interactive,  screen oriented,  control
+key driven,  text editor.   It is  designed to  work specifically with
+the SpeedProgramming Package  and uses the  resources provided by  the
+SpeedProgramming Package supervisor for managing text, files, etc
+
+      This section of the SpeedProgramming Package manual is  intended
+as  a  reference  guide  to  the  SPEED  editor.  First time users are
+referred to  the SpeedProgramming  Package tutorial  (Appendix E) that
+gives a "from the cockpit" introduction to the SPEED editor.
+
+      The four  parts of  this section  include, a  description of the
+organization of  the editor,  how text  buffer handling  works, how to
+manage external files, and the default control character commands
+
+3.1 Editor Organization
+
+      The editor  is written  entirely in  Pascal/MT+ and communicates
+with the "outside  world" via run-time  calls (such as  RESET, ASSIGN,
+etc.)  and  via  the   SpeedProgramming  Package  supervisor   (cursor
+positioning,  console   input/output,  etc.).   The   SpeedProgramming
+Package overlays  SPP.008 (INIT),  SPP.002 (SPEED  editor) and SPP.009
+(EDITWRITE) comprise  the SpeedProgramming  Package. The  INIT overlay
+is responsible for  loading files into  the text buffer  and is called
+by the  SpeedProgramming Package  supervisor as  necessary. The  SPEED
+editor  overlay  asks  for  characters  from  the  keyboard, moves the
+cursor and manipulates the text  in the buffer. The EDITWRITE  overlay
+is  responsible  for  updating  the  file  from the buffer back to the
+disk, renaming the old file to  BAK, and preparing the buffer for  the
+next INIT.  The logic  internal to  the editor  expects the characters
+transmitted by the SB_GETCH routine to be the characters described  in
+Section 3.4.  The user  is free  to translate  the characters actually
+received by the SB_GETCH routine  from an arbitrary input sequence  to
+the characters required.  This means that  the user can  translate the
+input of some terminals which  generate escape sequences on input,  or
+built-in function keys, or WordStar control characters into the  SPEED
+editor  characters.  This  can  be  done  very efficiently with a CASE
+statement  in  the  SB_GETCH  routine  (see Section 2 for installation
+procedures).
+
+      The SPEED  editor is  a cross,  in philosophical  terms, between
+WordMaster/WordStar  and  the  UCSD  Pasca1  T.M.  screen  editor. The
+WordMaster  style  of  using  single  control  character commands with
+instant action is  retained by the  editor. There are,  however, a few
+commands in WordMaster  that are far  too unforgiving and  there are a
+few features in the UCSD  Pascal editor that are highly  desirable for
+editing structured languages such as Pascal/MT+.
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 13
+
+
+SPP User's Guide	3.1		Editor Organization
+
+      The  WordMaster-style  command  for  delete  line  is  far   too
+dangerous for  the casual  user. Once  a line  has been  deleted it is
+gone forever. If your keyboard  bounces, you might lose two  lines and
+have to start  editing all over  again.  The  SPEED editor (like  UCSD
+T.M.) offers a better solution to the line delete environment in  that
+lines are not actually deleted  until a special "accept" character  is
+typed. If too many lines or  the wrong lines are deleted the  user can
+type "escape"  and the  SPEED editor  will restore  the screen  to its
+original condition and leave the lines unmodified.
+
+      The SPEED  editor (like  UCSD) provides  a mechanism  for easily
+creating nicely indented, structured  source code. When in  the insert
+mode and  a <return>  is typed  the cursor  is aligned  with the first
+non-blank  character  of  the  previous  line  (instead  of  the  left
+margin). The user can indent further by typing spaces or un-indent  by
+typing  the  backspace  key  to  line  up  the  cursor  at the desired
+position.  Anyone  who   has  used  a   non-auto-indent  editor   will
+appreciate this feature a great deal.
+
+      The SPEED  editor insert  mode is  like that  found in  the UCSD
+editor. Insert  mode is  entered via  a control  character and is left
+via  an  "accept"  character.  The  SPEED  editor  (unlike  UCSD) also
+provides a double check on  aborting from the insert mode.  When using
+the UCSD editor  the user can  type a large  portion of text  and then
+accidentally  throw  it  away  by  hitting  the  escape key. The SPEED
+editor asks  "Ok to  abort?" in  this case  and allows  the user to be
+save from this catastrophic situation. Imagine typing for three  hours
+only to accidentally throw it all away!
+
+3.2 Text Buffer Handling
+
+      The SPEED  editor is  a screen  based, LINE  oriented editor  as
+opposed to ED, WordMaster, WordStar, etc. that are CHARACTER  oriented
+editors. This means  that lines cannot  exceed the size  of the screen
+and  such  control  keys  as  delete  character to the left and delete
+character  to  the  right  do  not  delete  the  line  separators   as
+WordMaster/WordStar do. The first line  of the file is called  line 0.
+The variable LASTLINE contains the total number (minus 1) of lines  in
+the text buffer.
+
+      When text  is read  into memory  (by INIT)  it is  moved to  the
+upper end of the text buffer  and any imbedded tabs are expanded.  The
+SPEED editor expands tabs  so that the position  of the cursor on  the
+screen always corresponds to a  character in the buffer. It  was noted
+that  tabs  saved  little  space  on indented structured programs. The
+de-tabbed text is finally located from the beginning of the buffer  to
+the index into BUF denoted by the value of ENDFILE.
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 14
+
+SPP User's Guide	3.3	External File Handling
+
+3.3 External File Handling
+
+      The SPEED  editor has  essentially two  modes: text modification
+mode  and  SuperCommand  mode.  In  the  SuperCommand mode the user is
+shown  the  status  of  the  current  text  in  the  buffer  (used and
+available space, number of lines,  current line and the currently  set
+markers). Some of this information will be used for handling  external
+files. The  editor has  the capability  to read  text from an external
+file  into  the  middle  of  an  existing  text  buffer  and  also the
+capability  to  write  a  section  of  the  existing text buffer to an
+external file.
+
+      To read text from an external file the user should position  the
+cursor on the line after which  the text is to be inserted  (note that
+this is  different than  WordMaster). Then  entering the  SuperCommand
+mode using the appropriate control character the user selects  command
+'Y'. The  editor asks  for the  name of  the file  to be read and then
+reads this text into  the buffer (expanding tabs  along the way).   If
+the text  would overflow  the buffer  the file  is only partially read
+into the buffer.
+
+      To  write  text  from  the  buffer  to an external file the user
+should position the cursor to the first line to be written, enter  the
+SuperCommand mode  and note  the current  line number.  Then the  user
+should exit the SuperCommand mode  (by typing space) and position  the
+cursor  to  the  last  line  to   be  written  and  again  enter   the
+SuperCommand mode  and note  the current  line number.   Now enter the
+set marker  command (M)  and answer  the questions  with the first and
+second number which were noted  above.  The user should  terminate the
+input of each number with a space. Then enter the write lines  command
+(W) and give an output filename.  The lines marked are written to  the
+desired  file  but  left  in  the  buffer unmodified. Since Pascal/MT+
+supports device names as well as filenames the user can enter LST:  to
+write a section of the text buffer directly to the printer during  the
+editing  process.  It  is  often  handy  to  have  a  listing  of  the
+declaration section of  a source module  while entering the  body of a
+procedure/program directly  at the  terminal. If  CON: is  entered the
+screen is garbaged and then restored.
+
+3.4 Required Control Character Commands
+
+      The  following  table  lists  the  control  characters  that are
+required as input for the SPEED editor. As has been mentioned  several
+times throughout this manual the user can translate any arbitrary  set
+of desired  input control  characters, or  sequences, into  the set of
+characters listed  below. The  code to  do this  translation should be
+located in the SB  GETCH routine (see Section  2 for a description  of
+the installation process).
+
+      The input characters must be  7-bit ASCII with a high-order  bit
+of 0. The state of  any shift lock key has  no effect on the value  of
+the  control  character  received  by  the computer from the terminal.
+Table 3-1 provides brief descriptions of the function of each  control
+character.
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 15
+
+
+SPP User's Guide	3.4	Required Control Character Commands
+
+Table 3-1. SPEED Editor Command Control Characters
+
+CTRL-A	Cursor Left Word
+	----------------
+	The cursor is positioned to the beginning of the
+	previous word. A word is defined as starting
+	with a letter or a digit.
+
+CTRL-B	Cursor to Beginning/End of line
+	-------------------------------
+	The cursor is positioned alternately to the beginning
+	and end of the current line. Initial entry will force
+	the cursor to the beginning of the line and subsequent
+	entry will alternate the cursor position between the
+	beginning and end of the current line.
+
+CTRL-C	Cursor Forward page
+	-------------------
+	The cursor is positioned one screen size distance from
+	the current line at the top of the screen.
+
+CTRL-D	Cursor Right Word
+	-----------------
+	The cursor is positioned at the beginning of the
+	next word. All nonword starting characters are
+	skipped.
+
+CTRL-E	Search for last item
+	--------------------
+	Once a search command has been entered (see CTRL-S)
+	the user can search for the last search string
+	again with a single key stroke by using CTRL-E.
+
+CTRL-F	Begin Insert Mode (use CTRL-V to end, <ESC> to abort)
+	-----------------------------------------------------
+	Enter the insert Mode by blanking the remainder of the
+	current line on the screen and then accepting new
+	input text. If the user enters a <return> key the
+	remainder of the screen is blanked. To complete the
+	insertion type CTRL-V. To abort the insertion type
+	escape. For escape you will be asked to verify that
+	you really mean it. Type Y or y to abort any other
+	character means continue inserting. In insert mode
+	only CTRL-H/Rubout (backspace) and Tab are valid control
+	characters. All others (other than ESC/CTRL-V) are ignore
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 16
+
+
+SPP User's Guide	3.4	Required Control Character Commands
+
+CTRL-G	Delete Character right
+	----------------------
+	Delete the character under the cursor and move the
+	remainder of the line to the left.
+
+CTRL-H	Backspace
+	---------
+	Move the cursor one column to the left. If at
+	the beginning of the line move it to the last
+	nonblank character on the previous line. The screen
+	will scroll down as necessary.
+
+CTRL-I	Nondestructive forward space (tab)
+	-----------------------------------
+	If not in insert mode, move the cursor to the
+	next column evenly divisible by 8 (assuming that
+	the left margin is column 0). If in insert
+	mode perform the same motion by inserting blanks.
+
+CTRL-J	Cursor Down
+	-----------
+	Move the cursor down one line in the same column.
+	The screen will scroll up as necessary.
+
+CTRL-K	Cursor Up
+	---------
+	Move the cursor up one line in the same column.
+	The screen will scroll down as necessary.
+
+CTRL-L	Cursor Right
+	------------
+	Move the cursor right one column. If at the
+	rightmost column then move to the first column
+	of the next line.
+
+CTRL-M	Carriage Return (nondestructive)
+	--------------------------------
+	If not in insert mode move the cursor to the
+	next line at the left margin (equivalent to
+	cursor down followed by beginning of line).
+	If in insert mode, insert a new line into the
+	text and position the cursor underneath the
+	last nonblank character of the previous line.
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 17
+
+
+SPP User's Guide	3.4	Required Control Character Commands
+
+CTRL-N	Insert a blank line after current line
+	--------------------------------------
+	This command is equivalent to beginning of line,
+	end of line, insert mode, carriage return,
+	followed by accept (CTRL-V) but operates much faster.
+	Note: Unlike WordMaster this will not split a line
+	in two, use Insert Mode to do this.
+
+CTRL-O	Delete Word Right
+	-----------------
+	Starting with the current cursor position delete
+	all characters to the right that fall into the
+	set [A..Z, a..z, 0-9] until a character
+	not in the set is encountered.
+
+CTRL-P	Delete Line Right
+	----------------
+	Delete the remainder of the current line including
+	the character under the cursor.
+
+CTRL-Q	SUPER COMMAND
+	------------
+	Enter the SuperCommand mode that give a display
+	of extended status information and also allows
+	execution of less frequently used commands:
+
+		B - Goto the beginning of the text.
+		E - Goto the end of the text.
+		Y - Yank (read) another file into the
+	    	    middle of the current text.
+		J - Goto a specific line by line number.
+		Q - Quit (exit to the supervisor).
+		W - Write a block of the current file
+	    	    to another file.
+		M - Set the markers (boundaries) for
+	    	    the W command (above).
+		S - Call for a syntax scan.
+		V - View (read) another file and display
+	    	    it on the screen without leaving the
+	    	    editor
+
+CTRL-R	Cursor Backward Page
+	--------------------
+	Move the cursor backward one screen size number
+	of lines from the line at the top of the current
+	screen.
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 18
+
+
+SPP User's Guide	3.4	Required Control Character Commands
+
+CTRL-S	Search
+	------
+	Prompt the user for a search string (terminate
+	with escape that is echoed as $, then prompt
+	for a direction and number of times (e.g.
+	-1 for backwards once or 2 for forwards twice).
+	The special character # means 32767 times.
+
+CTRL-T	Cursor to Top/Bottom of screen
+	------------------------------
+	Like beginning/end of line this is a "toggle"
+	command. The first time executed the cursor moves
+	to the top of the current screen Subsequent
+	input of this key moves the cursor alternately
+	to the bottom and top of the current screen.
+
+CTRL-U	Enter Adjust Mode (<ESC> to leave)
+	----------------------------------
+	The adjust mode is like insert and delete and must
+	be entered with a special character. Once in this
+	mode the user should move the current line to the
+	right or left using the cursor moving keys. Subsequent
+	cursor down keys will then adjust the following lines
+	to the left or right by the same number of characters
+	as the first line by inserting or deleting blanks.
+	An attempt to adjust too far to the right will result
+	IN TRUNCATION. Attempting to adjust to the left too
+	far will result in text being adjusted only to the
+	left margin and no further. Cursor up commands after
+	cursor down will cause the text to be unadjusted.
+	If the text was truncated or left margin aligned
+	the unadjustment might not totally restore the text
+	to its original form. To end adjust mode use escape.
+
+CTRL-V	End and accept Insert,Adjust / Accept Delete Line
+	-------------------------------------------------
+	The insert and delete line modes require positive
+	acknowledgement from the user for action to become
+	permanent. The CTRL-V key is used for this purpose.
+	See the description of these commands for more
+	information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 19
+
+
+SPP User's Guide	3.4	Required Control Character Commands
+
+CTRL-W	Copy text from copy buffer
+	--------------------------
+	When text is deleted or inserted it is not totally
+	lost but placed in the "copy buffer" that is really
+	the remaining empty space at the end of the text.
+	Using the CTRL-W key the user can insert this text
+	following the line on which the cursor is located.
+	This allows the delete line and copy buffer commands
+	to operate as an easy to use text movement mechanism.
+	The user simply deletes the lines desired to move,
+	positions the cursor to their desired new location
+	and executes a copy buffer command that moves
+	the text into its new location. This can also be
+	used after an insertion to duplicate the last insertion
+	as many times as desired.
+
+CTRL-X	Search and Replace
+	------------------
+	This command allows the user to enter a search
+	string (terminated with escape that is echoed by
+	$) followed by a replacement string (terminated
+	by an escape) and then a direction/count that
+	is the same as search. In addition the user can
+	place an upper-case V before the direction/count
+	that causes the editor to ask before making
+	any substitutions. The user is given the option
+	to enter R to signal that the replacement should
+	take place, a blank that signals that the search
+	replace cycle should continue but that in this
+	location the replacement should not be done, or
+	escape which aborts the entire cycle altogether.
+
+CTRL-Y	Delete Line (use CTRL-V to end, <ESC> to abort)
+	-----------------------------------------------
+	When delete line mode is entered the current line is
+	deleted and subsequent entry of CTRL-Y, <return> or
+	CTRL-J will cause subsequent lines to be deleted. The
+	lines are not actually deleted until the CTRL-V
+	(accept) key is entered and the user can abort at
+	any time before that by typing escape. If the bottom
+	line of the screen is deleted the next 1/2 screen full
+	of text is displayed to give the user context from
+	which to work.
+
+CTRL-Z	Insert blank at cursor position
+	-------------------------------
+	This is a fast method of inserting a single blank
+	before the current cursor position. This is equivalent
+	to insert mode, typing a blank and exiting insert mode
+	but is much faster.
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 20
+
+
+			      SECTION 4
+
+		       SYNCHECK SYNTAX CHECKER
+
+      The  SYNCHECK  syntax  checker  is  a  SpeedProgramming  Package
+program  that  works  interactively  with  the SPEED editor to provide
+almost instantaneous identification of syntax errors. Operating up  to
+five times faster than the Pascal/MT+ compiler and providing the  user
+with  the  ability  to  interactively  fix  the  errors,  the SYNCHECK
+program  saves  enormous  amounts  of  time  and  reduces  frustration
+associated with locating and correcting syntax errors.
+
+      The user  must ask  explicitly for  a syntax  check, as compared
+to  some  interpretive  languages  where  this  is  done on input. The
+syntax checker is loaded by  the supervisor and scans the  source code
+in the text buffer.  If no errors are  detected then the SPEED  editor
+will display the first  screen of data from  the file with the  cursor
+at  the  first  character  of  the  file.  Only one error at a time is
+detected but since  the SPEED editor  and SYNCHECK work  interactively
+this has been found to be quite satisfactory.
+
+      If an  error is  located the  syntax checker  makes note  of the
+location  and  type  of  the  error  and transfers control back to the
+SPEED  editor.  The  SPEED  editor  then displays the appropriate text
+with the error located approximately  in the center of the  screen and
+in addition it  displays the error  number (corresponding to  those in
+the Pascal/MT+ manual) and a  short summary of the error  message. The
+cursor is positioned  as close to  the error as  possible. Most errors
+leave the cursor on  top of the exact  position but some errors  (such
+as error 6 (invalid symbol))  can position the cursor slightly  beyond
+the location of the error.
+
+      The error messages are retrieved from the new SMALLERR.TXT  file
+that  has  been  specially  prepared  for  use  by  the  SPEED editor.
+SMALLERR.TXT contains only syntax  error messages. Also, if  the error
+is in the form " ...  expected" the word expected has been  dropped to
+provide  fast  access  to  the  errors.  Therefore,  if the programmer
+forgot  the  colon  in  assignment  statement  (for  example  A=B) the
+message will be  simply ":=" informing  the user that  := was expected
+but not found.
+
+      The syntax  checker can  be invoked  from either  the supervisor
+level or the SuperCommand level of the SPEED editor. If called at  the
+supervisor level the scanner scans  the text currently in the  buffer,
+or asks for a file to be  loaded if the buffer is currently empty.  If
+called from  the SuperCommand  mode the  scanner scans  the file being
+edited.  In  either  case  the  scanner  places  the user in the SPEED
+editor at the completion of the syntax scan.
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 21
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 22
+
+
+
+			      SECTION 5
+
+		VARCHECK VARIABLE IDENTIFIER CHECKER
+
+      The VARCHECK identifier  checker, is a  SpeedProgramming Package
+program that  scans the  file currently  being edited  and presents to
+the user a  list of possibly  mispelled and/or undefined  identifiers.
+Scanning  the  program  and  creating  the file NAMES.$$$ the VARCHECK
+program  builds  a  binary  tree  and  counts  the  occurences of each
+identifier. Once  the tree  is built  the VARCHECK  program writes the
+NAMES.$$$ file with the names of all the variables that occurred  only
+once. The  user is  then instructed  to use  the V)iew  command of the
+SuperCommand mode  of the  SPEED editor  to display  the list of names
+found by VARCHECK.
+
+      As with  all SpeedProgramming  Package programs,  the supervisor
+asks  for  the  name  of  a  file  to  be loaded if the text buffer is
+unoccupied.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 23
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 24
+
+
+
+			      SECTION 6
+
+		  REFORMAT PASCAL TEXT REFORMATTER
+
+      The REFORMAT program transforms the text in the SpeedProgramming
+Package  text  buffer  from  "ugly"  to  "beautiful".   The  text   is
+rearranged  and  indented  in  an  attempt  to  make  the program more
+readable. The syntax  of the text  in the buffer  does not need  to be
+correct as  the reformatter  performs its  operation on  the basis  of
+keyword recognition and not syntatic  analysis.  The text is  moved to
+the high end of the text buffer and reformatted "in-place" to the  low
+end of the buffer. The possibility  of overflow exists so the user  is
+encouraged to  save the  file before  attempting to  reformat. If  the
+available  space  is  less  than  512 bytes the reformatter explicitly
+suggests this to the user.
+
+Note: if overflow occurs, the text is typically unrecoverable.
+
+      As  with  all  SpeedProgramming  Package programs the supervisor
+asks  for  the  name  of  a  file  to  be loaded if the text buffer is
+unoccupied.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 26
+
+
+			      SECTION 7
+
+	   MTLOG SOURCE CODE CONTROL LOGGER/BACKUP PROGRAM
+
+      The SpeedProgramming Package writes a log entry (into LOG.DAT  &
+LOG.IDX) every time a source file is written to the disk. This log  is
+a text  file that  can be  typed but  not edited  (because it contains
+fixed length records). It contains  the name, size and version  number
+of the file as written.
+
+      The purpose of the log facility  is to allow the user to  keep a
+record of which files have  been changed and to provide  for automatic
+backup capability for large capacity disk environments (hard disks) .
+
+      The user can  disable the log  facility (and therefore  suppress
+the  generation  of  LOG.DAT  and  LOG.IDX) by deleting (or commenting
+out)  the  calls  to  the  LOGWRITER  procedure  in  the  SB_FLUS9_BUF
+procedure (in NSB.SRC).
+
+7.1 BACKUP Program Operation
+
+      The  BACKUP.COM  program  is  a  separate,  stand-alone, program
+which  reads  the  LOG.DAT  file  and  creates a CP/M submit file. The
+files  modified  since  the  last  run  of  BACKUP are scanned and the
+submit  file  is  created.  This  provides  a  convienent  method  for
+protecting  changes  to  files  on  a  large  capacity  disk   without
+requiring the user to copy all files, a rather tedious process.
+
+      As supplied  it assumes  that you  wish to  backup your  "large"
+disk onto drive B. The BACKUP program is also supplied in source  code
+form (BACKUP.SRC)  so that  this can  be modified  if desired. To keep
+the log file  manageable, the BACKUP  program deletes the  oldest list
+of files  (between the  beginning of  the file  and the first backup).
+If there was no oldest list (for example, BACKUP is being run for  the
+first time)  then nothing  is deleted.  The user  is prompted  for the
+current date so that this can  be written to the log file  to indicate
+when the BACKUP program was last executed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 27
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 28
+
+
+
+			      SECTION 8
+
+		       MISCELLANEOUS UTILITIES
+
+8.1 Directory Display
+
+      The SpeedProgramming Package supervisor provides the  capability
+to  display  the  directory  on  any  disk.   It  is displayed in four
+columns across the screen.
+
+Note: be careful not to give it  a "BAD" disk (such a U) as  CP/M will
+bomb out with  a "Select error  disk:" and you  will lose any  data in
+the text buffer.
+
+      If the display  requires more than  one screen, it  displays the
+data a screenful at a time.
+
+8.2 Fast Compiler
+
+      The  "fast  compiler"  is  simply  a  modified  version  of  the
+MTPLUS.COM  program.  It  reads  its  text  from  the SpeedProgramming
+Package  text  buffer  (thereby  saving  disk  accesses).  It  has one
+restriction: it cannot produce  a listing.  From  the SpeedProgramming
+Package supervisor level it is executed with the F command.  The  user
+must respond to the "buffer occupied" question before proceeding.   If
+the "Leave" option is  used the text in  the buffer is not  updated on
+the disk. If  any changes have  been made they  are lost.   When asked
+for "Options", respond  with the options  described in the  Pascal/MT+
+User's  Guide  (but  without  the  $  or  #  used with CP/M). When the
+compilaFloncompletes it will return to CP/M.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 29
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 30
+
+
+			     APPENDIX A
+
+		     STANDARD CONTROL CHARACTERS
+
+	Char	Function
+	----	-------
+	CTRL-A	Cursor Left Word
+	CTRL-B	Cursor to Beginning/End of line
+	CTRL-C	Cursor Forward page
+	CTRL-D	Cursor Right Word
+	CTRL-E	Search for last item
+	CTRL-F	Begin Insert Mode (use CTRL-V to end, <ESC> to abort)
+	CTRL-G	Delete character right
+	CTRL-H	Backspace
+	CTRL-I	Nondestructive foward space
+	CTRL-J	Cursor Down
+	CTRL-K	Cursor Up
+	CTRL-L	Cursor Right
+	CTRL-M	Carriage Return (nondestructive)
+	CTRL-N	Insert a blank line after current line
+	CTRL-0	Delete Word Right
+	CTRL-P	Delete Line Right
+	CTRL-Q	SUPER COMMAND
+	CTRL-R	Cursor Backward Page
+	CTRL-S	Search
+	CTRL-T	Cursor to Top/Bottom of page
+	CTRL-U	Enter Adjust Mode
+		(in adjust legal: up/down, on first line left/right)
+	CTRL-V	End and accept Insert/End Adjust/Accept Delete Line
+	CTRL-W	Copy text from copy buffer
+	CTRL-X	Search and Replace
+	CTRL-Y	Delete Line (use CTRL-V to end, <ESC> to abort)
+	CTRL-Z	Insert blank at cursor position
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 31
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 32
+
+
+			     APPENDIX B
+
+		   SOURCE CODE LISTING OF NSB.SRC
+
+NOTE: THIS LISTING IS ONLY FOR REFERENCE.  PLEASE
+LOOK AT THE NSB.SRC SUPPLIED ON YOUR DISTRIBUTION
+DISKS FOR THE EXACT CODE WHICH YOU MUST MODIFY.
+
+(*  VERSION 0051 *)
+
+PROGRAM TOOLBUS;
+
+(*$I EDTYPES*)
+(*$I EDGLBLS*)
+
+TYPE
+  CPMOPERATION = (COLDBOOT,WARMBOOT,CONSTAT,CONIN,CONOUT,LIST,
+		  PUNOUT,RDRIN,HOME,SELDSK,SETTRK,SETSEC,SETDMA,
+		  DSKREAD,DSKWRITE);
+
+  FNAME	= ARRAY [1..8] OF CHAR;		(* CP/M FILENAME *)
+
+  EXTENSION = ARRAY [l..3] OF CHAR;	(* EXTENSION TO NAME *)
+
+  FCB = RECORD
+	  DSK : BYTE;
+	  FN  : FNAME;
+	  EXT : EXTENSION;
+	  OTHER: ARRAY [12..36] OF BYTE
+	END;
+
+DIRENT = RECORD
+	   ET	: BYTE;
+	   FN	: FNAME;
+	   EXT	: EXTENSION;
+	   OTHR : ARRAY [12..31] OF BYTE
+	END;
+
+(*$I SBIFDEF.LIB*)
+
+VAR
+  DIRFILE:	FCB;	(* FOR DISPLAYING DIRECTORIES *)
+  DIRBUF:	ARRAY [0..3] OF DIRENT;
+  FSTRING:	STRING;
+  MEMORY:	ABSOLUTE [$0000] ARRAY[O..O] OF BYTE;
+  CMDCH:	CHAR;
+  @SFP:		EXTERNAL INTEGER;
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 33
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+  BUFSTAT:	STATREC;
+  INTRFACE:	SB_INTERFACE; (* USED TO COMMUNICATE BETWEEN PROGRAMS
+  SB_LAST_X,
+  SB_LAST_Y:	INTEGER; (* FOR SOFTWARE CLR TO EOL/CLR TO EOS ROUTINE
+
+EXTERNAL FUNCTION @BDOS(PARM,FUNC:INTEGER):INTEGER;
+
+EXTERNAL [1] PROCEDURE LOGWRITER; (* LOG WRITER OVERLAY *)
+EXTERNAL [2] PROCEDURE SPEED;	  (* EDITOR OVERLAY *)
+EXTERNAL [3] PROCEDURE SYNCHECK;  (* SYNTAX CHECKER OVERLAY *)
+EXTERNAL [4] PROCEDURE VARCHECK;  (* UNDEF VAR CHECKER OVERLAY *)
+EXTERNAL [5] PROCEDURE MTBACKUP;  (* HARD DISK BACKUP OVERLAY *)
+EXTERNAL [6] PROCEDURE MTRUN;	  (* RUN PROGRAM OVERLAY *)
+EXTERNAL [7] PROCEDURE DISP_DIR;  (* DIRECTORY DISPLAY OVERLAY *)
+EXTERNAL [8] FUNCTION  GETFILE:BOOLEAN; (* GET EDITOR FILENAME, ETC.*)
+EXTERNAL [8] PROCEDURE INIT;	  (* EDITOR INIT *)
+EXTERNAL [9] PROCEDURE EDITWRITE; (* EDITOR WRITE BUFFER OVERLAY *)
+EXTERNAL[10] PROCEDURE PRETTY;	  (* PROGRAM REFORMATER *)
+
+(* -------------------------------------------------------------- *)
+(* User modification area BEGINS here:                            *)
+(* -------------------------------------------------------------- *)
+
+FUNCTION LINESZ	: INTEGER;	(* SO USER CAN SET SIZE OF A LINE *)
+BEGIN
+  LINESZ := 79		(* 80 - 1 *)
+END;
+
+FUNCTION SCREENSZ: INTEGER;
+BEGIN
+  SCREENSZ := 22	(* NUMBER OF LINES ON PHYSICAL SCREEN - 2 *)
+END;
+
+FUNCTION STATUSROW : INTEGER;
+BEGIN
+  STATUSROW := SCREENSZ + 1
+END;
+
+PROCEDURE SB_OUT_CH(CH:CHAR);
+BEGIN
+  SB_BIOS_CALL(CONOUT,ORD(CH))
+END;
+
+FUNCTION SB_GETCH : CHAR;
+VAR
+  CH : CHAR;
+BEGIN
+  SB_BIOS_CALL (CONIN,0)
+  INLINE ("STA / CH);
+  SB_GETCH := CH
+END;
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 34
+
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+PROCEDURE XYGOTO(X,Y : INTEGER);
+BEGIN
+  SB_OUT_CH(CHR(ESC));
+  SB_OUT_CH('=');
+  SB_OUT_CH(CHR(Y+32));
+  SB_OUT_CH (CHR (X+32));
+  SB_LAST_X := X;
+  SB_LAST_Y := Y;    (* THESE ARE USED ONLY BY USER SOFTWARE  *)
+		     (* ROUTINES WHICH PERFORM CLR TO EOS AND *)
+		     (* CLR TO EOL                            *)
+END;
+
+PROCEDURE SB_CLR_SCRN;
+BEGIN
+  SB_OUT_CH(CHR(ESC)); sb_out_ch('*')
+END;
+
+PROCEDURE SB_CLR_EOS;
+BEGIN
+  SB_OUT_CH(CHR(ESC));
+  SB_OUT_CH('Y');
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+END;
+
+PROCEDURE SB_CLR_LINE;
+BEGIN
+  SB_OUT_CH(CHR (ESC));
+  SB_OUT_CH('T');
+END;
+
+(* -------------------------------------------------------------- *)
+(* 	User modification area ENDS WITH SB_CLR_LINE		  *)
+(* -------------------------------------------------------------- *)
+
+PROCEDURE SB_FLUSH_BUF;
+VAR
+  CH : CHAR;
+BEGIN
+  IF NOT BUFSTAT.OCCUPIED THEN
+    EXIT;
+
+  REPEAT
+    PRNT_AT(20,1,'Buffer occupied');
+    PRNT_AT(21,1,'F)lush, U)pdate, W)rite & Flush, L)eave:');
+    CH := SB_UP_CASE(SB_GETCH);
+    SB_OUT_CH(CH);
+    IF CH = 'L' THEN
+      EXIT;
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 35
+
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+    IF CH = 'F' THEN
+      BEGIN
+	IF NEWFILE THEN
+	  PURGE(F);
+	BUFSTAT.OCCUPIED := FALSE;
+	EXIT
+      END;
+
+    IF CH = 'W' THEN
+      BEGIN
+	EDITWRITE;
+	LOGWRITER;
+	BUFSTAT.OCCUPIED := FALSE
+      END;
+
+    IF CH = 'U' THEN
+      BEGIN
+	EDITWRITE;	(* BUT LEAVE IT OCCUPIED *)
+	LOGWRITER
+      END
+  UNTIL (CH='U') or (CH='F') OR (CH='W');
+END;
+
+PROCEDURE SB_BIOS_CALL(FUNC:CPMOPERATION; PARM:INTEGER);
+VAR
+  DISPATCH_LOC : INTEGER;
+BEGIN
+  DISPATCH_LOC := (MEMORY[l] + SWAP(MEMORY[2])) + (ORD(FUNC)*3)	- 3;
+  INLINE("LHLD / PARM /
+  	 "MOV C,L /
+  	 "MOV B,H /
+	 "LHLD / DISPATCH_LOC /
+	 "PCHL);
+END;
+
+PROCEDURE PRNT_AT(ROW,COL : INTEGER; S : STRING);
+BEGIN
+  XYGOTO(COL,ROW);
+  WRITE([ADDR(SB-OUT-CH)],S)
+END;
+PROCEDURE MENU;
+BEGIN
+  SB_CLR_SCRN;
+  PRKT_AT(1, 1, 'ToolBus 5.2');
+  PRNT_AT(3, 1, 'Options:		E)dit');
+  prnt_at(4,20,			       'R)eformat');
+  prnt_at(5,20,			       'S)yntax check');
+  prnt_at(6,20,			       'V)ariable check');
+  prnt_at(7,20,			       'X)eq');
+  prnt_at(8,20,			       'D)ir');
+  prnt_at(9,20,			       'L)ink');
+  prnt_at(10,20,		       'F)ast compile');
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 36
+
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+  prnt_at(11,20,		       'Q)uit');
+  prnt_at(22, 1, 'Command?
+END;
+
+FUNCTION SB_UP_CASE(CH : CHAR) : CHAR;
+BEGIN
+  IF (CH >= 'a') AND (CH <= 'z') THEN
+    SB_UP_CASE := CHR(CH & $DF)
+  ELSE
+    SB_UP_CASE := CH
+END;
+
+(*$E-*)
+FUNCTION GET_FILE_INTO_BUF : BOOLEAN;
+BEGIN
+  IF NOT BUFSTAT.OCCUPIED THEN
+    IF GETFILE THEN	(* GET FILE INTO BUFFER *)
+      INIT;
+  GET_FILE_INTO_BUF := BUFSTAT.OCCUPIED
+END;
+(*$E+*)
+
+
+BEGIN
+  BUFSZ := (@SFP - ADDR(BUF))-$100;    (* SET UP EDITOR BUFFER SIZE *)
+  BUFSTAT.OCCUPIED := FALSE;
+  NEWFILE := FALSE;
+  REPEAT
+    MENU;
+    INTRFACE.NEXT_CMD := ' ';		(* DEFAULT NO NEXT PROGRAM *)
+    INTRFACE.END_STAT := OK;
+    CMDCH := SB_UP_CASE(SB_GETCH);
+    SB_OUT_CH(CMDCH);			(* ECHO IT *)
+    REPEAT
+      FSTRING := '';			(* DEFAULT IS NO PROGRAM *)
+      CASE CMDCH OF
+	  'D' : DISP_DIR;
+	  'E' : BEGIN
+		  IF (BUFSTAT.OCCUPIED) AND ((INTRFACE.PREV_CMD = 'S')
+		     		OR (INTRFACE.PREV_CMD = 'R'))THEN
+		    (* DO NOTHING *)
+		  ELSE
+		    SB_FLUSH_BUF;  (* MAKE SURE USER WANTS TO DO THIS *)
+
+		  IF NOT BUFSTAT.OCCUPIED THEN	(* BUFFER IS EMPTY *)
+		    BEGIN
+		      IF GETFILE THEN	(* SEE IF HE WANTS A FILE *)
+		        BEGIN
+			  INIT;		(* CALL EDITOR *)
+			  IF BUFSTAT.OCCUPIED THEN
+			    SPEED
+		        END
+		    END
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 37
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+		  ELSE
+		    SPEED;	(* BUFFER OCCUPIED, EDIT OLD *)
+		  INTRFACE.PREV_CMD := ' ';
+		  IF INTRFACE.NEXT_CMD = 'E' THEN
+		    INTRFACE.NEXT_CMD := ' ';
+		END;
+	  'S' : BEGIN
+		  IF GET_FILE_INTO_BUF THEN
+		    BEGIN
+		      INTRFACE.PREV_CMD := ' ';
+		      SYNCHECK;
+		      IF INTRFACE.END_STAT = SYNERR THEN
+		        INTRFACE.NEXT_CMD := 'E';
+		    END
+		END;
+	  'V' : IF GET_FILE_INTO_BUF THEN
+		  VARCHECK;
+	  'B' : MTBACKUP;
+	  'R' : BEGIN
+		  IF GET_FILE_INTO_BUF THEN
+		    BEGIN
+		      INTRFACE.PREV_CMD	:= 'R';
+		      PRETTY;
+		      INTRFACE.NEXT_CMD	:= 'E';
+		      SB_CLR_SCRN
+		    END
+		END;
+	  'Q' : BEGIN
+		  INTRFACE.PREV_CMD := ' ';
+		  SB_FLUSH_BUF;
+		  IF BUFSTAT.OCCUPIED THEN
+		    CMDCH := '@'
+		  ELSE
+		    EXIT
+		END;
+	  'L' :	BEGIN
+		  SB_FLUSH_BUF;
+		  FSTRING := 'LINKMT';
+		  MTRUN
+		END;
+	  'X' : BEGIN
+		  SB_FLUSH_BUF;
+		  FSTRING
+		  MTRUN
+		END;
+	  'F' : BEGIN
+		  IF GET_FILE_INTO_BUF THEN
+		    BEGIN
+		      SB_FLUSH_BUF;
+		      FSTRING := 'FASTCOMP'
+		      MOVE(ENDFILE,MEMORY[ADDR(BUF)-2],2);(* SET UP INTEGER *)
+		      MOVE(NAME,MEMORY[ADDR(BUF)-83],8]);(* SET UP FILENAME *)
+		      MTRUN
+		    END
+		END
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 38
+
+
+SPP User's Guide	Appendix B	Source Code Listing of NSB.SRC
+
+      END;
+      CMDCH := INTRFACE.NEXT_CMD;
+    UNTIL (CMDCH = ' ') OR (CMDCH = INTRFACE.PREV_CMD);
+  UNTIL FALSE
+END.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 39
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 40
+
+
+			     APPENDIX C
+
+		    SAMPLE INSTALLATION ROUTINES
+
+C.1 Televideo/Soroc
+
+(* -------------------------------------------------------------- *)
+(*	Terminal Interface routines for Televideo/Soroc		  *)
+(* -------------------------------------------------------------- *)
+
+FUNCTION LINESZ	: INTEGER;	(* SO USER CAN SET SIZE OF A LINE *)
+BEGIN
+  LINESZ := 79		(* 80 - 1 *)
+END;
+
+FUNCTION SCREENSZ : INTEGER;
+BEGIN
+  SCREENSZ := 22	(* NUMBER OF LINES ON PHYSICAL SCREEN - 2 *)
+END;
+
+FUNCTION STATUSROW : INTEGER;
+BEGIN
+  STATUSROW := SCREENSZ + 1
+END;
+
+PROCEDURE SB_OUT_CH(CH:CHAR);
+BEGIN
+  SB_BIOS_CALL(CONOUT,ORD(CH))
+END;
+
+FUNCTION SB_GETCH : CHAR;
+VAR
+  CH : CHAR;
+BEGIN
+  SB_BIOS_CALL(CONIN,O);
+  INLINE("STA / CH);
+  SB_GETCH := CH
+END;
+
+PROCEDURE XYGOTO(X,Y:INTEGER);
+BEGIN
+  SB_OUT_CH (CHR (ESC));
+  SB_OUT_CH('=');
+  SB_OUT_CH (CHR(Y+32));
+  SB_OUT_CH (CHR(X+32));
+  SB_LAST_X := X;
+  SB_LAST_Y := Y;    (* THESE ARE USED ONLY BY USER SOFTWARE  *)
+		     (* ROUTINES WHICH PERFORM CLR TO EOS AND *)
+		     (* CLR TO EOL                            *)
+END;
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 41
+
+
+SPP User's Guide	C.1 		Televideo/Soroc
+
+PROCEDURE SB_CLR_SCRN;
+BEGIN
+  SB_OUT_CH(CHR(esc)); sb_out_ch('*')
+END;
+
+PROCEDURE SB_CLR_EOS;
+BEGIN
+  SB_OUT_CH(CHR(ESC));
+  SB_OUT_CH('Y');
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(O));	(* GIVE IT TIME TO WORK *)
+  SB_OUT_CH(CHR(0));	(* GIVE IT TIME TO WORK *)
+END;
+
+PROCEDURE SB_CLR_LINE;
+BEGIN
+  SB_OUT_CH(CHR(ESC));
+  SB_OUT_CH ('T')
+END;
+
+(*--------------------------------------------------------------*)
+(*	End of Televideo/Soroc terminal interface routines	*)
+(*--------------------------------------------------------------*)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 42
+
+
+SPP User's Guide	C.2 	ADM-3A
+
+C.2 ADM-3A
+
+(*--------------------------------------------------------------*)
+(*	Terminal Interface routines for L.S.I.	ADM-3A		*)
+(*--------------------------------------------------------------*)
+
+FUNCTION LINESZ	: INTEGER;	(* SO USER CAN SET SIZE OF A LINE *)
+BEGIN
+  LINESZ := 79 	(* 80 - 1 *)
+END;
+
+FUNCTION SCREENSZ : INTEGER;
+BEGIN
+  SCREENSZ := 22	(* NUMBER OF LINES ON PHYSICAL SCREEN - 2 *)
+END;
+
+FUNCTION STATUSROW : INTEGER;
+BEGIN
+  STATUSROW := SCREENSZ + 1
+END;
+
+PROCEDURE SB_OUT_CH(CH : CHAR);
+BEGIN
+  SB_BIOS_CALL(CONOUT, ORD(CH))
+END;
+
+FUNCTION SB_GETCH : CHAR;
+VAR
+  CH : CHAR;
+BEGIN
+  SB_BIOS_CALL(CONIN, O);
+  INLINE("STA / CH);
+  SB_GETCH := CH
+END;
+
+PROCEDURE XYGOTO(X,Y:INTEGER);
+BEGIN
+  SB_OUT_CH(CHR(ESC));
+  SB_OUT_CH('=');
+  SB_OUT_CH(CHR(Y+32));
+  SB_OUT_CH(CHR(X+32));
+  SB_LAST_X := X;
+  SB_LAST_Y := Y;    (* THESE ARE USED ONLY BY USER SOFTWARE  *)
+		     (* ROUTINES WHICH PERFORM CLR TO EOS AND *)
+		     (* CLR TO EOL			      *)
+END;
+
+PROCEDURE SB_CLR_SCRN;
+BEGIN
+  SB_OUT_CH(CHR($lA));
+END,
+
+
+
+  All Information Presented Here is Proprietary to Diqital Research
+
+				 43
+
+
+SPP User's Guide	C.2 		ADM-3A
+
+PROCEDURE SB_CLR_EOS;
+VAR
+  I,NUMX,NUMLINES,NUMBLANKS : INTEGER;
+BEGIN
+  IF (SB_LAST_X = 0) AND (SB_LAST_Y = 0) THEN
+    SB_CLR_SCRN
+  ELSE
+    BEGIN
+      NUMX := (LINESZ - SB_LAST_X)-l;
+      NUMLINES := (SCREENSZ - SB_LAST_Y) - 1;
+      NUMBLANKS	:= ((NUMLINES * LINESZ) + NUMX) - 1;
+
+      FOR I := 1 TO NUMBLANKS DIV 255 DO
+	WRITE([ADDR(SB_OUT_CH)],' ':254);
+      WRITE([ADDR(SB_OUT_CH)],' ':(NUMBLANKS MOD 255) - 1);
+
+      XYGOTO(SB_LAST_X, SB_LAST_Y);
+    END;
+END;
+
+PROCEDURE SB_CLR_LINE;
+BEGIN
+  IF SB_LAST_Y = SCREENSZ + 1 THEN
+    WRIYE([ADDR(SB_OUT_CH)],' ':LINESZ - SB_LAST_X - 1)
+  ELSE
+    WRITE([ADDR(SB_OUT_CH)],' ':LINESZ - SB_LAST_X);
+  XYGOTO(SB_LAST_X, SB_LAST_Y);
+END;
+(* -------------------------------------------------------------- *)
+(*	End of Televideo/Soroc terminal interface routines	  *)
+(* -------------------------------------------------------------- *)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 44
+
+
+			     APPENDIX D
+
+			SPEED EDITOR TUTORIAL
+
+      The following  pages present  a  step  by step  and command   by
+command  description  of  the  features  and  use of the SPEED editor.
+Examples  of  each  command  are  presented  with sample data from the
+screen.  It  is  designed  to  be  used with your terminal on actually
+editing the sample  text file SPEED.DEM  provided on the  distribution
+disk.  If  you  are  familiar  with  WordMaster  or WordStar you might
+want to  skip this  section and  forge ahead  to the  summary found in
+section 3.4.  It is  assumed that  your SPP  package is  installed and
+properly  working.  Please  read  Section  2  if  you  have  not   yet
+installed SPP.
+
+      First, you must enter the SPEED editor via the  SpeedProgramming
+supervisor.  Type   SPP  now   and   the   menu  is   displayed.   The
+SpeedProgramming menu option for editing a file is the letter 'E'  (or
+'e'). Type the letter 'E'. You will see the prompt:
+
+	Filename? <ret to exit>
+
+Respond to  this with  SPEED.DEM. SPP  reads in  the file and displays
+it  on  your  screen  as  below  (line  and  column  numbers  are  for
+reference and do not appear on the screen):
+
+	  000000000011111111112
+	  012345678901234567890
+	0 *AA AAA
+	1 BBB BBB
+	2 CCC CCC
+
+The cursor, represented by the '*', is placed on the first 'A' at 0,0.
+The editing commands  available to you  are explored and  described in
+detail  on  the  following  pages.  See  Appendix  A  for  the default
+control characters expected by the editor for each command.
+
+	1. cursor movement on screen
+	2. roaming around the text in the buffer
+	3. exchange
+	4. insertions
+	5. deletions
+	6. search for and/or replace a string
+	7. super command (a group of less frequently used commands)
+	8. miscellaneous commands
+	9. creating a new file
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 45
+
+
+SPP User's Guide	D.1		Cursor Right
+
+			 D.1 Cursor Movement
+
+CURSOR RIGHT
+
+      Type ^L,  the command  for cursor  right. The  cursor moves from
+the 0,0 location  to the 0,1  location and be  placed over the  second
+'A'.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 A*A AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+      Continue typing  CTRL-L and  note that  the cursor  continues to
+move to  the right  past the  end of  the non-blank  characters on the
+first  line.  The  cursor  dives  off  the  end  of  the  line (at the
+eightieth  character)  to  the  beginning  of  the  next  line  as you
+continue to  enter CTRL-L.  The text  is treated  as if  each line  is
+padded  out  to  position  80  with  blanks  even  though there are no
+blanks in  the file.  This makes  it easy  to insert  comments etc. at
+the  end  of  a  line.  To  position  the  cursor  at  the  end of the
+non-blank text  see the  CURSOR LEFT  and BEGIN/END  of LINE commands.
+Typing  CTRL-L  at  the  end  of  the  text  buffer  causes nothing to
+happen.
+
+CURSOR LEFT
+
+      Type CTRL-H  to move  the cursor  left one  space. In the sample
+below this causes the cursor to move from 0,1 to 0,0.
+
+	BEFORE COMMAND			AFTER COMMAND
+   000000000011111111112	  000000000011111111112
+   012345678901234567890	  012345678901234567890
+0  A*A AAA			0 *AA AAA
+1  BBB BBB			1 BBB BBB
+2  CCC CCC			2 CCC CCC
+
+When the cursor  is at location  0,0 but not  at the beginning  of the
+text file  typing CTRL-H  causes the  screen to  scroll. If the cursor
+is at  1,0 and  cursor left  is typed  the cursor  will move to 0,7 at
+the end of the previous line.
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 46
+
+
+SPP User's Guide	D.1	Cursor Right
+	BEFORE COMMAND			AFTER COMMAND
+   000000000011111111112	  000000000011111111112
+   012345678901234567890	  012345678901234567890
+0  AAA AAA			0	AAA AAA*
+1  *BB BBB			1	BBB BBB
+2  CCC CCC			2	CCC CCC
+
+Place the cursor at 0,0.
+
+CURSOR DOWN
+
+	Now type CTRL-J, the cursor down command key and note that the
+cursor moves from 0,0 to 1,0 as below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 AAA AAA
+1 BBB BBB			1 *BB BBB
+2 CCC CCC			2 CCC CCC
+
+      To explore  one more  feature of  the SPEED  editor screen, type
+cursor  right  CTRL-L  until  the  cursor  is  positioned at 1,9. Next
+type  cursor  down,  CTRL-J,  and  note  that  the cursor moves to 2,9
+which  is  the  location  directly  below  its  original location even
+though no  character actually  exists there  in the  text buffer. This
+feature allows easy insertion of comments at the end of a statement.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 AAA AAA			0 AAA AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+      To position the cursor  at the end of  a line, Note that  CURSOR
+LEFT and  BEGIN/END of  LINE can  be used.  Typing cursor  down at the
+bottom of the  screen causes the  screen to scroll  up. If at  the end
+of the text, CTRL-J has no effect. Leave the cursor at 2,9.
+
+CURSOR UP
+
+      Type CTRL-K,  the cursor  up commmand  key. The  cursor moves to
+the  location  in  the  line  directly  above  its  original  position
+regardless of whether there are any nonblank characters at that
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 47
+
+
+SPP User's Guide	D.1		Cursor Right
+
+location. In this case it moves to 1,9.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 AAA AAA			0 AAA AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+      To position the cursor at the end of a line see CURSOR LEFT  and
+BEGIN/END of LINE  commands. If the  cursor starts at  the top of  the
+screen, CTRL-K  causes the  screen to  scroll down  one line.  Nothing
+occurs if  the cursor  is on  the first  line of  the file.  Leave the
+cursor at 1,9.
+
+BEGIN/END of LINE
+
+      This is  a toggle  command key.  Typing this  command the  first
+time causes the cursor to jump  to the beginning of the line  on which
+it lies.  Type CTRL-B  once and  note that  the cursor  jumps to  1,0.
+Repeat the command and the cursor is positioned at 1,7.
+
+	BEFORE COMMAND
+
+  000000000011111111112
+  012345678901234567890
+0 AAA AAA
+1 BBB BBB  *
+2 CCC CCC
+
+	FIRST COMMAND			SECOND COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 AAA AAA			0 AAA AAA
+1 *BB BBB			1 BBB BBB*
+2 CCC CCC			2 CCC CCC
+
+Subsequent  CTRL-B's  entered  have  a  toggling  effect so the cursor
+bounces back and  forth on the  line. The end  of the line  is defined
+as the non-blank last character.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 48
+
+
+	SPP User's Guide	D.1		Cursor Right
+
+TOP/BOTTOM of SCREEN
+
+      This  is  a  toggle  command  like  BEGIN/END of LINE. The first
+CTRL-T puts the cursor  at the top of  the screen and the  second CTRL
+T puts the  cursor at the  bottom of the  screen (or at  the bottom of
+the file if the  screen is not full).  Type several CTRL-T's and  note
+the toggling behavior of the cursor.
+
+	BEFORE COMMAND
+
+  000000000011111111112
+  012345678901234567890
+0 AAA AAA
+1 BBB BBB*
+2 CCC CCC
+
+	FIRST COMMAND			SECOND COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 AAA AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+				3 *
+
+FORWARD/BACKWARD by WORD
+
+      Typing  CTRL-D  causes  the  cursor  to  advance  to  the  first
+character of  the next  word in  the text.  A word  is defined  as any
+sequence of characters in the set ['@', 'A'..'Z', 'a'..'z', '0'..'9'].
+Position the cursor  at 0,0 if  it is not  already there. Type  CTRL-D
+now and note that the cursor leaps from 0,0 to 0,4.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 AAA *AA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+The effect of typing this command at  the end of a line is to  put the
+cursor on  the first  word of  the next  line. Typing  this command at
+the end of a file causes nothing to occur.
+
+      Type CTRL-A,  the command  to leap  backward by  a word and note
+that the cursor returns to position 0,0:
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Diqital Research
+
+				 49
+
+
+SPP User's Guide	D.1		Cursor Right
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 AAA *AA			0 *AA AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+The effect of  typing this command  at the beginning  of a line  is to
+put the cursor on the last word of the previous line.
+
+      If the cursor is required to  move off the top or the  bottom of
+the  screen  then  the  screen  is  updated  so  that  the  cursor  is
+positioned  in  the  middle  of  the  screen  at  the beginning of the
+appropriate word of text.
+
+	      D.2 Roaming Around the Text in the Buffer
+
+PAGE FORWARD and BACKWARD
+
+      Page forward, CTRL-C, causes the next logical page of text  from
+the buffer  to be  displayed on  your screen.  Page backward,  CTRL-R,
+causes  the  previous  logical  page  of  text to be displayed on your
+screen.  The  cursor  is  positioned  at  the  top  of the new page of
+text. You cannot page beyond the limits of the text in the buffer.
+
+      To  page  by  keyword  use  the  SEARCH  and  SEARCH LAST STRING
+commands  discussed  later  in   this  tutorial.  Enter  the   desired
+keyword such as  PROCEDURE or FUNCTION  and let the  computer hunt for
+the next keyword for you.
+
+JUMP TO BEGINNING OR END OF FILE
+
+      To position the cursor at location 0,0 of the screen and at  the
+beginning  of  the  file  you  must  use  a  two stroke sequence. Type
+CTRL-Q  to  enter  the  SuperCommand  mode.  The commands available at
+this  level  are  not  frequently  used  and  are grouped together for
+convenience.  A  discussion  of  the  SuperCommand  is  found later in
+this tutorial.  Now that  you are  in SuperCommand  type B  to jump to
+the beginning  of the  file. Typing  E while  in SuperCommand puts the
+cursor at the end of the text file being edited.
+
+			    D.3 Exchange
+
+      Now that you  know how to  move around in  the file its  time to
+put  some  new  characters  into  the  demo  text  file.  You  are  in
+exchange mode  by default  as you  enter the  SPEED editor  so that if
+you  enter  a  printable  ASCII  character  from  the  keyboard   that
+character replaces the character in  the text file that the  cursor is
+over on the screen. The change made to the file is echoed to the
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Diqital Research
+
+				 50
+
+
+SPP User's Guide	D.3 	Exchange
+
+screen.  Using  our  sample,  position  the  cursor  at 0,0. Enter the
+letter K.  The first  A is  replaced by  K on  the screen  and in  the
+file as noted below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 K*A AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+      Now move the cursor to  the right, CTRL-L, to position  0,12 and
+enter the sequence 'HELLO'. The  text file in the buffer  actually has
+5 blanks  added before  the 'H'  plus the  word HELLO  and the  screen
+appears as below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA AAA			0 KAA AAA     HELLO*
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+Exchange works on  a line by  line basis. You  cannot enter characters
+past  the  last  available  position  on  a line. Also, you cannot use
+exchange  mode  to  insert  a  carriage return/line-feed sequence on a
+line. Type carriage  return now and  note that this  merely causes the
+cursor to move the the beginning of line 1:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA AAA     HELLO*		0 KAA AAA     HELLO
+1 BBB BBB			1 *BB BBB
+2 CCC CCC			2 CCC CCC
+
+See  the  command  INSERT  BLANK  LINE  (CTRL-N)  to insert a carriage
+return/line-feed at the end of line 0.
+
+			   D.4 Insertions
+
+      Inserting a  sequence of  characters into  the text  file at the
+location  preceding  the  position  of  the  cursor  in  the  file  is
+accomplished by  the insert  commmand, CTRL-F.  Every ASCII  character
+that you type while in insert mode is inserted into the text before
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Diqital Research
+
+				 51
+
+
+SPP User's Guide	D.4 		Insertions
+
+the  character  on  which  the  cursor  rests  at  the  start  of this
+command. Position  the cursor  at 0,4  and type  CTRL-F. The remainder
+of the  line including  the character  beneath the  cursor is  blanked
+and the buffer  in memory is  made ready for  insertion. To accomplish
+the insertions as  quickly as possible  the entire file  following the
+location of  the insertion  is moved  up to  the high  end of the text
+buffer.  You  are  then  able  to  enter  your characters into an open
+buffer. See the  sample below for  the appearance of  the screen after
+typing CTRL-F:
+
+	BEFORE INSERT COMMAND		AFTER INSERT COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA *AA     HELLO		0 KAA *
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+      Enter the  sequence 'INSERTED'  followed by  a carriage  return.
+The  carriage  return  causes  the  remainder  of  the  screen  to  be
+blanked.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA *				0 KAA INSERTED
+1 BBB BBB			1 *
+2 CCC CCC			2
+
+To  understand  what  the  automatic  indentaion  feature  can  do for
+you, enter 4  blanks followed by  the sequence 'HERE'  and finish with
+a carriage  return. The  cursor lines  up beneath  the first non-blank
+character of the previous line (in this case the 'H' in 'HERE').  Your
+screen should change as below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA INSERTED			0 KAA INSERTED
+1 *				1     HERE
+2				2     *
+
+The  valid  commands  when  in  insert  mode  are rubout, cursor left,
+tab,  accept  insertion  (CTRL-V),  and  throw  away  insertion (ESC).
+Rubout  and  cursor  left  both  have  the effect of deleting the last
+character entered. You  cannot rub out  characters past the  beginning
+of the newly inserted text. Tab inserts blanks to the next tab stop
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 52
+
+
+SPP User's Guide	D.4 	Insertions
+
+(every 8  positions) You  exit from  insert mode  in one  of two ways.
+You can  type CTRL-V  to accept  the insertions.  This causes  the new
+text to be saved in the file where  you put it and also, a copy to  be
+made of  the new  text for  use by  the COPY  BUFFER command. The copy
+is placed into the "copy buffer"  which is the area of memory  between
+the end  of the  text being  edited and  the end  of the  text buffer.
+You  can  also  exit  by  typing  ESC  to  throw away the new text and
+return to the state  of the text before  you entered insert mode.  You
+are asked  in this  case if  you are  sure you  want to throw away the
+new text. In this  case the text is  not placed into the  copy buffer.
+Other  commands  including  cursor  moving  commands are ignored. Type
+CTRL-V to accept the insertions just made.
+
+	BEFORE ACCEPT			AFTER ACCEPT
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 KAA INSERTED			0 KAA INSERTED
+1     HERE			1     HERE
+2 				2 *AA	   HELLO
+				3 BBB BBB
+				4 CCC CCC
+
+      Other insertion commands are  discussed in Section 8.  These are
+a command  to insert  a carriage  return line-feed  sequence while  in
+exchange mode,  a command  to insert  a blank  while in exchange mode,
+and the copy buffer command.
+
+			  D.5	Deletions
+
+DELETE CHARACTER RIGHT
+
+      Position the  cursor at  0,0 and  type CTRL-G.  This deletes the
+character (K)  beneath the  cursor. The  remainder of  the line  moves
+to the left by one position.
+
+	BEFORE					AFTER
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA INSERTED			0 *A INSERTED
+1     HERE			1     HERE
+2 AAA	   HELLO		2 AAA	   HELLO
+3 BBB BBB			3 BBB BBB
+4 CCC CCC			4 CCC CCC
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 53
+
+
+SPP User's Guide	D.5 		Deletions
+
+DELETE CHARACTER LEFT (RUBOUT)
+
+      If  you  type  rubout  with  the  cursor at 0,0 nothing happens.
+Position the cursor  at 0,1 and  type rubout. The  character preceding
+the cursor (A) is  deleted and the remainder  of the line is  moved to
+the left by one position.
+
+	BEFORE				AFTER
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 A* INSERTED			0 * INSERTED
+1     HERE			1     HERE
+2 AAA      HELLO		2 AAA      HELLO
+3 BBB BBB			3 BBB BBB
+4 CCC CCC			4 CCC CCC
+
+DELETE TO END OF LINE
+
+      This command  allows you  to delete  the characters  on the line
+containing  the  cursor  from  the  cursor  position to the end of the
+line. Position  at 0,2  and type  CTRL-P. The  remainder of  line 0 is
+deleted from the  screen and the  text buffer. It  is not copied  into
+the  copy  buffer  as  is  the  case  with  the  DELETE  LINE  command
+described below.
+
+	BEFORE				AFTER
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 A *NSERTED			0 A *
+1     HERE			1     HERE
+2 AAA	   HELLO		2 AAA	   HELLO
+3 BBB BBB			3 BBB BBB
+4 CCC CCC			4 CCC CCC
+
+DELETE LINE
+
+      Deleting an  entire line  works in  a manner  similar to  INSERT
+because a buffer is used and  the deletion must either be accepted  or
+aborted.  Before  deleting  any  lines,  enter  the  SuperCommand   by
+typing CTRL-Q  and note  the number  of bytes  used and  the number of
+bytes  in  the  copy  buffer  and  the  last  line  number.  Leave the
+SuperCommand  by  typing  <space>.  Position  the  cursor  anywhere on
+line  1  and  type  CTRL-Y.  This  causes  line  1 to be deleted. Type
+CTRL-Y  again  and  line  2  is  deleted.  After entering delete mode,
+cursor  down  and  carriage  return  also  cause the line on which the
+cursor  rests  to  be  deleted.  No  other  commands are valid (except
+escape  and  accept)  while  in  delete  mode.  Your  screen should go
+through the following changes after deleting two lines:
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 54
+
+
+SPP User's Guide	D.5	Deletions
+	BEFORE				AFTER
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 A				0 A
+1   * HERE			1
+2 AAA	   HELLO		2
+3 BBB BBB			3 *BB BBB
+4 CCC CCC			4 CCC CCC
+
+      You can  either accept  (CTRL-V) or  abort (ESC)  this deletion.
+Accept  causes  the  lines  to  be  deleted from the buffer and copied
+into the  scratch buffer  for the  COPY BUFFER  command to use. Escape
+causes no deletion to  occur but the lines  are still copied into  the
+scratch  buffer.  Type  CTRL-V  to  accept  this deletion. Your screen
+should look like this:
+
+	BEFORE				AFTER
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 A				0 A
+1				1 *BB BBB
+2				2 CCC CCC
+3 *BB BBB
+4 CCC CCC
+
+The lines are  actually deleted from  the text buffer  and copied into
+the copy  buffer. Again  enter the  SuperCommand by  typing CTRL-Q and
+note the  changes in  the status  of the  text file  and copy  buffer.
+Leave the SuperCommand by typing <space>.
+
+		       D.6 Search and Replace
+
+SEARCH and SEARCH LAST STRING
+
+      You  are  asked   to  enter  the   string  (maximum  length   30
+characters)  that  you  want  to  be  found  and  a  command  sequence
+indicating  the  direction  in  which  you  want  to  search  and  the
+occurrence of the  string that you  want. Position your  cursor at 0,0
+and type CTRL-S, the search command.   You should see a prompt '>'  at
+the bottom of  your screen. Respond  with the string,  'CCC', that you
+want to be found.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 55
+
+
+SPP User's Guide	D.6 Search and Replace
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 *BB BBB
+2 CCC CCC
+
+>CCC
+
+The ESC key is used as the  delimiter and is echoed as 'S'. Type  ESC.
+The  SPEED  editor  then  outputs  two  spaces  and  a  question  mark
+prompting  you  for  your  command  string.  A valid command string in
+the case of  SEARCH is either  empty (just the  ESC key is  typed), or
+contains a  number. The  number is  either a  digit or  '#' that means
+32,768  or  find  the  last  occurrence  of  the string. The number is
+assumed  to  be  positive  unless  the  -  sign  is entered before the
+number.  If  the  number  is  negative  the  search  will proceed in a
+backward direction  from the  cursor location,  otherwise it  proceeds
+in  a  forward  direction.  The  '+'  character  is  also allowed. The
+command string is also  delimited by the ESC  key. Enter just the  ESC
+so you can find the first  occurrence of 'CCC' . The screen  will look
+like this after you enter ESC:
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 BBB BBB
+2 CCC*CCC
+
+The cursor  is placed  after the  first occurrence  of the  string CCC
+in the text.
+
+      Now type CTRL-E, the command  that finds the next occurrence  of
+the  previously  entered  search  string.  In  our case this string is
+'CCC' and the cursor is placed  after the next occurrence of 'CCC'  in
+the buffer.
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 BBB BBB
+2 CCC CCC*
+
+If the  string is  not found  in the  buffer, the  message "not found"
+appears at  the bottom  of the  screen and  the cursor  is returned to
+its starting position.
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 56
+
+
+SPP User's Guide	D.6	Search and Replace
+
+REPLACE
+
+      The  REPLACE  command  allows  you  to  search  for  a string of
+maximum  length  30  and  replace  it  with  another string of maximum
+length 30  characters. As  in SEARCH,  you can  enter a command string
+to  tell  the  routine  how  many  occurrences  of the string you wish
+replaced and  what direction  in which  to search.  However, there  is
+one extra feature implemented in  the REPLACE command string which  is
+the  VERIFY  feature.  Using  the  verify  command  you  can  tell the
+routine  to  skip  the  replacement  on  any occurrence of the string.
+See the example below for further explanations of this feature.
+
+      Before  proceeding,  read  the  previous  section describing the
+SEARCH command  that discusses  how to  enter the  strings and command
+sequences in  detail. Position  your cursor  at 0,0  and type  CTRL-X.
+As in  SEARCH you  see the  '>' prompt  to which  you respond with the
+string you  want replaced.  Type 'B'  followed by  ESC (the  delimiter
+described in SEARCH). You will  see another prompt '>' for  the string
+that is to  replace the first  string. Type 'GO'  followed by ESC.  At
+this point you  will the '?'  prompt for entering  the command string.
+Your screen looks like this:
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 BBB BBB
+2 CCC CCC
+
+>B$	>GO$ 	?*
+
+      You are now ready to enter  the command string. If you want  the
+REPLACE routine  to VERIFY  (ask you  at each  occurrence of the first
+string whether you want it  replaced with the second string)  you must
+type the letter 'V'  (or 'v') as the  f irst character in  the command
+string. After the  Verify (which is  optional) you can  enter a number
+or #  as described  in the  SEARCH section.  Entering no  number (just
+ESC) causes  one replacement  to be  performed. Entering  # causes all
+occurrences of  the string  to be  searched and  replaced if  desired.
+If  you  did  not  ask  for  the  verify  mode  all  replacements  are
+performed without  pause. In  this case,  type V3<ESC>  that is echoed
+on your screen as follows:
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 BBB BBB
+2 CCC CCC
+
+>B$	>GO$ 	?V3$
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 57
+
+
+SPP User's Guide	D.6		Search and Replace
+
+      The  command  you  have  entered  causes  the REPLACE routine to
+search for the first occurrence of 'B', ask you if you want to replace
+it with the string 'GO', and either replace it or continue to look for
+the next  'B' depending  on your  response to  the verify  prompt. The
+REPLACE  routine  repeats  this  sequence  two  more times. The verify
+prompt appears  in the  lower right  hand corner  of your  screen. You
+must respond with an 'R' to cause the replacement to occur, or a blank
+that causes  this occurrence  of the  string not  to be  replaced. You
+can  respond  with  ESC  to  abort  the  remainder of the command. The
+state of  the screen  after responding  to each  of the  three prompts
+with 'R' follows:
+
+  000000000011111111112
+  012345678901234567890
+0 A
+1 GOGO*O BBB
+2 CCC CCC
+
+			  D.7 Super Comnand
+
+      Type CTRL-Q to enter the  super command mode. Because the  SPEED
+editor implements  more commands  than existing  control keys  several
+seldomly  used  commands  have  been  collected in this command. Also,
+you  can  see  the  status  of  the  text  in this command mode. After
+typing CTRL-Q, the screen displays:
+
+	USED		XXXX
+	AVAILABLE	XXXX
+	COPY BUFFER	XXXX
+	CURRENT LINE	XXXX
+	LAST LINE	XXXX
+	MARKERS AT	   X		Y
+
+	<space> to ret		V - View a file
+	Y - Yank a file		Q - Quit
+	S - Syntax scan		B - Jump to beginning
+	E - Jump to end		W - Write block
+	M - Set markers		J - Jump to line
+
+    option?
+
+A description of  each command is  found in the  following pages under
+their individual headings.
+
+      The status section displays how many bytes are USED,  AVAILABLE,
+and  occupy  the  COPY  BUFFER.  Also  the  CURRENT  LINE on which the
+cursor is located,  the LAST LINE  of the text,  and the line  numbers
+for  the  MARKERS  (set  by  the  M  command) are displayed. The first
+line is numbered 0 and the last  line is the total number of lines  in
+the file minus one.
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 58
+
+
+SPP User's Guide	D.7	Super Command
+
+JUMP TO BEGIN OR END OF FILE OR LINE NUMBER
+
+      Jumping to  the beginning  and end  of the  file is discussed in
+Section 2.
+
+      To jump to a given line number you must enter the super  command
+and type  'J'. You  are then  asked to  which line  you want  to jump.
+This  is  useful  if  you  know  a  certain line you want to reference
+several times.  To note  the line  number in  the first  place put the
+cursor on that line and then  enter SuperCommand to note the value  of
+CURRENT LINE.
+
+YANK A FILE
+
+      This command  allows you  to copy  an entire  file from disk and
+copy it  into the  text buffer  at the  cursor position.  The file  is
+copied  into  the  buffer  before  the  character  that is beneath the
+cursor  on  the  screen  and  the  cursor  is  placed on the character
+following the  insertion. If  the file  being yanked  into the  buffer
+is too large only the bytes that fit will be included.
+
+      You can test this feature  by getting a clean copy  of SPEED.DEM
+(see the SPP  tutorial (Appendix E)  for the manner  in which this  is
+done),  positioning  the  cursor  on  1,0,  and  entering SuperCommand
+(CTRL-Q)  and  typing  'Y'.  Yank  in  another  copy  of  SPEED.DEM by
+responding  to  the  prompt  with  its  filename.  Your  screen should
+change as below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 AAA AAA			0 AAA AAA
+1 *BB BBB			1 AAA AAA
+2 CCC CCC			2 BBB BBB
+				3 CCC CCC
+				4 *BB BBB
+				5 CCC CCC
+
+WRITE A FILE/SET LINE NUMBER MARKERS
+
+      These two commands  work together. The  write to file  procedure
+uses  the  line  number  markers  as  delimiters  for  the  text to be
+written.
+
+      To position the  cursor on the  line desired to  be marked leave
+the  SuperCommand  mode  and  use  the  cursor  positioning   routines
+discussed previously in  this tutorial. To  set line markers  position
+your  cursor  on  the  first  line  you  want  to  be  marked,   enter
+SuperCommand and note the line number  of CURRENT LINE (1) . Using  an
+original copy  of SPEED.DEM  use this  method to  mark line  #1 as the
+first line. Leave SuperCommand by typing <space>. Next, position
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 59
+
+
+SPP User's Guide	D.7		Super Command
+
+the cursor at the  last line you want  written. In our sample  this is
+line  #2.  Enter  SuperCommand  and  note  the  line number of CURRENT
+LINE (2).  Type 'M'  to activate  the Marker  routine. At  the top  of
+your screen you will see the following prompt:
+
+First Line:
+
+Respond with  the line  number of  the first  line in  your block  (1)
+followed  by  a  carriage  return.  You  will then be prompted for the
+second line number to  which you respond with  the number of the  last
+line  in  the  block  you  wish  to  mark  (2)  followed by a carriage
+return.  Now  your  f  ile  is  marked.  The  MARKERS  AT  display has
+changed to show the  line numbers you have  marked. You can only  mark
+two lines at a time.
+
+      Now, you can choose to write the block of text delimited by  the
+line  markers  to  a  file.  Type  W  and  the  following  prompt will
+appear at the top of the screen:
+
+Output filename, <ret> to exit?
+
+Respond with the filename  to which you wish  the text to be  written.
+In  our  example  enter  SP2.DEM.  This  causes  lines  1  and 2 to be
+written  to  the  logged  in  disk  and  given  the  filename SP2.DEM.
+Typing  <ret>  aborts  the  write  command  and  returns  you  to  the
+SuperCommand.  The  written  block  is  not  destroyed  in the buffer.
+You can  respond with  LST: to  write to  the printer.  This is  handy
+for writing the  variable declaration section  to the printer  so that
+it can be examined when writing code.
+
+SYNTAX SCAN
+
+      To invoke the syntax scanning routines from the SPEED editor  is
+of immense benefit as you are  able to find all of your  "dumb" errors
+before  compiling  your   program.   Type   'S'  after  entering   the
+SuperCommand  and  the  scanner  will  scan  your  program  for syntax
+errors  such  as  missina  semicolons.  To  get an idea of what errors
+can  be  found  by  the  scanner  read  SMALLERRS.TXT,  containing the
+syntax  error  messages.  After  each  error  it finds, it will return
+you to  the editor  and put  the cursor  as close  as possible  to the
+error. See  Section 4  for more  details on  how to  use this feature.
+Once you have  a successful syntax  scan you might  want to return  to
+SPP and run the VARCHECK  program that, by giving frequency  counts of
+variables, aids you in finding undefined and misspelled identifiers.
+
+QUIT
+
+      When  you  have  completed  your  editing  session you enter the
+SuperCommand and type 'Q' for quit.  You will be asked if you want  to
+return to the SPP or to return to the editor because you typed 'Q'  by
+accident. Once you return to SPP you can save or abandon your file-
+
+See Section 1.1 and Appendix E on updating files from the SPP
+
+  All Information Presented Here is Proprietarv to Diaital Research
+
+				 60
+
+SPP User's Guide	D.8 Miscellaneous
+
+			  D.8 Miscellaneous
+
+ADJUST
+
+      Adjust is  useful in  editing structured  languages like Pascal.
+Adjust allows  you to  move a  line of  text to  the left or right and
+t1jen to adjust any  number of lines following  the first line by  the
+same amount.  This helps  you to  produce readable  programs that show
+scoping  of  variables  and  nesting  of  procedures  and  blocks   of
+statements.  Use  the  original  DEMO.SRC  program  to  explore   this
+command.  We  will  indent  all  of  the  lines  by  four spaces. Type
+CTRL-U to enter adjust  mode. The line on  which the cursor rests  can
+now  be  adjusted  left  or  right  using the cursor control keys. The
+placement of the cursor on the line is not important.
+
+Note:  since  this  is  a  line  oriented  editor  any  adjusting that
+causes  more  than  80  characters  to  appear  on  a  line results in
+truncation  of  the  line  at  the  overflow position. Now type cursor
+right four times and  the entire line of  AAA AAA will be  indented by
+four spaces, as follows:
+
+	BEFORE COMMAND			AFTER COMMAND
+
+  000000000011111111112	   	  000000000011111111112
+  012345678901234567890	   	  012345678901234567890
+0 AA* AAA			0 AAA AAA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+To indent the remaining lines type  cursor down twice and lines 1  and
+2 will be indented by four spaces as shown below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *   AAA AAA			0     AAA AAA
+1 BBB BBB			1     BBB BBB
+2 CCC CCC			2 *   CCC CCC
+
+You can  un-adjust these  lines by  typing cursor  up, but  you cannot
+proceed  beyond  the  first  line  adjusted.  To leave adjust mode you
+can type  CTRL-V or  ESC: both  commands have  the same  effect. There
+is no escape option in this mode.
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 61
+
+
+SPP User's Guide	D.8 Miscellaneous
+
+COPY BUFFER
+
+      When the copy buffer contains  text that you want to  place into
+your file  at a  certain location  you use  this command.  The text is
+placed into  the buffer  by deleting  complete lines  into the  buffer
+using the  CTRL-Y command,  or by  accepting newly  inserted text. The
+text in the copy  buffer is copied into  the main part of  the file at
+the  location  of  the  cursor.  It  is  inserted before the character
+beneath the  cursor. You  can learn  how many  bytes are  in the  copy
+buffer by entering the SuperCommand  mode and reading the Copy  buffer
+status.
+
+      For example, let us use DEMO.SRC and delete the first two  lines
+into the  copy buffer  using CTRL-Y.  The screen  should look like the
+sample below after deleting the lines:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 *CC CCC
+1 BBB BBB
+2 CCC CCC
+
+Now type  CTRL-W and  your lines  will come  back. Type another CTRL-W
+for another copy  of the first  two lines. Your  screen will now  show
+what is below:
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *CC CCC			0 AAA AAA
+				1 BBB BBB
+				2 AAA AAA
+				3 BBB BBB
+				4 *CC CCC
+
+      The  copy  buffer  will  not  change  its contents until another
+insert  commmand  is  accepted  or  another  delete  line  command  is
+executed.   This   command   is   useful   for   moving  text  around,
+duplicating repeated lines, and saving  deleted text that you did  not
+mean to delete.
+
+INSERT BLANK
+
+      Should you  wish to  insert a  blank or  one character,  use the
+insert  blank  command.  It  inserts  a  blank  where  the  cursor  is
+positioned. The  cursor is  left over  the newly  inserted blank. This
+saves the time required to go into insert mode via CTRL-F, type a
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 62
+
+
+SPP User's Guide	D.8 Miscellaneous
+
+<space>, and accept the insertion.
+
+INSERT BLANK LINE
+
+      To insert  a carriage  return/line-feed sequence  while still in
+exchange mode,  type CTRL-N.   This saves  the several  steps required
+by using the insert command.
+
+DELETE WORD RIGHT
+
+      This command allows you to delete  the word to the right of  the
+cursor. Using  a new  copy of  SPEED.DEM, position  the cursor  at 0,0
+and type  CTRL-O. The  first three  'A's and  the blank  following the
+'A's are deleted. These are not saved in the copy buffer.
+
+	BEFORE COMMAND			AFTER COMMAND
+  000000000011111111112		  000000000011111111112
+  012345678901234567890		  012345678901234567890
+0 *AA AAA			0 *AA
+1 BBB BBB			1 BBB BBB
+2 CCC CCC			2 CCC CCC
+
+If the cursor is between words  on a blank the blank only  is deleted.
+If  it  is  in  the  middle  of  a  word  the remainder of the word is
+deleted including the character beneath the cursor.
+
+CREATING A NEW FILE
+
+      You must enter  insert mode when  starting with a  new file. The
+message "New  file, In  exchange mode"  is displayed  at the bottom of
+the screen when the  editor is entered. You  should be aware that  the
+editor  is  automatically  in  exchange  mode  that  does  not  insert
+carriage  return  line-feed  sequences.  However,  if you desire a one
+line program, exhange mode is adequate.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 63
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 64
+
+
+			     APPENDIX E
+
+SPP TUTORIAL
+
+      The objective of this tutorial  is to familiarize you with  some
+of  the  SPP  tools  using  the  program  DEMO.SRC  supplied  on   the
+distribution disk.  You will use the reformatter, the syntax  checker,
+and the editor to make  DEMO.SRC a working program before  leaving the
+SPP. You will be shown how to update and throw away a file and how  to
+get a new file.
+
+      We assume that  you have read  the introductory sections  on the
+SpeedProgramming Package.   These describe  terminal  characteristics,
+memory requirements, and how to read a file into the buffer from  disk
+via  the  SpeedProgramming  Package.  We  also  assume  that  you have
+configured the SPP to work with  your terminal.  If you have  not done
+this, please go to Section 2 and do so now.
+
+      This section is designed to be read with your computer on,  your
+terminal on, and your SpeedProgramming  Package disk in the drive.  So
+turn on your computer, get the SpeedProgramming Package menu in  front
+of you on your terminal, and let's explore the SPP.
+
+      The menu  shows that  E is  the command  to call  the editor. We
+will do so now to examine the file DEMO.SRC that is the  demonstration
+program. Type  'E' for  Editing a  program. The  SUPER checks the text
+buffer and notes that it contains  no text file at this time.  It then
+prompts you for the file that you want to edit as follows:
+
+		Filename? <ret to exit>
+
+Respond to this with the filename DEMO.SRC (preceeded by a drive  name
+if it is  not on the  logged in disk)  followed by a  carriage return.
+SUPER reads the file from  disk, expands any tabs, displays  the first
+page on  your screen,  and places  the cursor  at location  0,0 on the
+screen. Below  is the  text of  DEMO.SRC that  you should  see on your
+screen (the line numbers are for reference only):
+
+1   #PROGRAM DEMO_SOFTBUS;
+2   TYPE
+3   REC = RECORD
+4   I : INTEGER;
+5   B : BOOLEAN
+6   END
+7   VAR
+8   REC1 : REC;
+9   BEGIN
+10  WITH REC2 DO
+11  BEGIN
+12  I = 2;
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 65
+
+
+SPP User's Guide	Appendix E		SPP Tutorial
+
+13  B := TRUE;
+14  END;
+15  IF REC1.B THEN
+16  WRITELN ('TRUE')
+17  ELSE
+18  WRITELN('FALSE')
+19  END.
+
+Figure 1:  DEMO.SRC as  distributed on  disk. The  '#' represents  the
+cursor which is over the 'P'.
+
+      Note that  if the  filename given  is not  present on  your disk
+SUPER will prompt with:
+
+		XXXXXXX.XXX is new. Continue? <Y/N>
+
+Typing 'Y'  causes a  new file  to be  created on  disk with  the name
+XXXXXXX.XXX and the SPEED  editor to be prepared  to edit a new  file.
+Typing  'N'  in  response  to  this  prompt  returns  you  to  the SPP
+immediately.
+
+      Clearly,  DS  is,  not  an  easily  readable program and it does
+contain  several  syntactic  errors.  We  first will attack the syntax
+errors. The errors are listed below by line number.
+
+	1.  Line 6 is missing a semicolon.
+	2.  Line 12 is missing a colon.
+
+The SC program can easily and quickly find each syntax error, put  the
+cursor as  close as  possible to  the error,  and inform  you what  is
+wrong or  what was  expected. The  SC can  be invoked  from within the
+editor  or  from  the  SPP  menu.  Because  you are still in the SPEED
+editor invoke SuperCommand. To enter SuperCommand type CTRL-Q. One  of
+the options  under SuperCommand  is 'S'  for SC.  Type 'S'  now. SC is
+loaded in and begins  scanning DS in the  text buffer. A +  is put out
+for  every  16  lines  scanned.  As  soon  as  it  detects the missing
+semicolon it returns to the SPEED editor, placing the cursor as  close
+to  the  error  as  possible.  The  error  number  and a brief textual
+description of the  error message is  then displayed at  the bottom of
+the screen. Figure 2  shows what is displayed  on the screen after  SC
+has found the missing semicolon in line 6.
+
+1   PROGRAM DEMO_SOFTBUS;
+2   TYPE
+3   REC = RECORD
+4   I : INTEGER;
+5   B : BOOLEAN
+6   END
+7   VAR #
+8   REC1 : REC;
+9   BEGIN
+10  WITH REC1 DO
+11  BEGIN
+
+All Information Presented Here is Proprietary to Digital Research
+
+				 66
+
+
+SPP User's Guide	Appendix E		SPP Tutorial
+
+12  I := 2;
+13  B := TRUE;
+14  END;
+15  IF REC1.B THEN
+16  WRITELN ('TRUE')
+17  ELSE
+18  WRITELN('FALSE')
+19  END.
+
+Error #14	';'
+
+Figure  2.  Screen  after  first  syntax  scan.  The  # represents the
+location of the cursor.
+
+Correct the error by moving the  cursor up (CTRL-K) and to the  end of
+line 6 (CTRL-L) and typing ';'.
+
+      Next, enter  SuperCommand, call  SC, and  the next  syntax error
+will be found. Figure  3 shows the screen  after SC finds the  missing
+colon in line 12.
+
+1   PROGRAM DEMO_SOFTBUS;
+2   TYPE
+3   REC = RECORD
+4   I : INTEGER;
+5   B : BOOLEAN
+6   END;
+7   VAR
+8   REC1 : REC;
+9   BEGIN
+10  WITH REC2 DO
+11  BEGIN
+12  I #= 2;
+13  B := TRUE;
+14  END;
+15  IF REC1.B THEN
+16  WRITELN('TRUE')
+17  ELSE
+18  WRITELN('FALSE')
+19  END.
+
+Error #51	':='
+
+Figure 3.  After finding  missing colon.  Cursor is  placed on  top of
+the = sign.
+
+      Running SC one more  time will indicate a  syntactically correct
+program by returning without an  error message and placing the  cursor
+at the 0,0 position of the screen at the beginning of the text.
+
+      To improve the  clarity and reading  style of DS  you can invoke
+the  REFORMATTER  program.  You  must  leave  the editor to go back to
+the SPP to execute REFORMATTER. To leave the SPEED editor type 'Q'
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 67
+
+
+SPP User's Guide	Appendix E			SPP Tutorial
+
+from within the  SuperCommand. You are  next asked whether  to Exit to
+the SPP or Return to the editor. Type 'E' to exit to the SPP. Now  the
+SPP menu  should be  displayed. Note  that the  REFORMATTER program is
+called by typing the letter 'R'.  Type 'R' now. SUPER does not  prompt
+you for the name of the  file to be formatted because its  text buffer
+is occupied by  DS so the  SUPER assumes that  this is the  text to be
+formatted.  The  REFORMATTER  moves  DS  to  the end of the buffer and
+moves it  back to  the beginning  of the  buffer as  it reformats  the
+text. If  the reformatted  text expands  enough it  begins overwriting
+the unformatted text at the end  of the buffer. For this reason  it is
+very wise to save a file  before executing REFORMATTER on it to  avoid
+losing any changes  made during the  last edit session.  Finishing its
+task, REFORMATTER  adjusts the  size of  DS, the  End of Text pointer,
+the line  pointers, and  returns control  to the  editor that displays
+the first page of  the text. Below is  the text after the  REFORMATTER
+has completed its task.
+
+1   PROGRAM DEMO_SOFTBUS;
+2   TYPE
+3	  REC = RECORD
+4		  I : INTEGER;
+5		  B : BOOLEAN
+6		END;
+7   VAR
+8	REC1 : REC;
+9   BEGIN
+10    WITH REC1 DO
+11  	BEGIN
+12	  I := 2;
+13	  B := TRUE;
+14	END;
+15	IF REC1.B THEN
+16	  WRITELN('TRUE')
+17 	ELSE
+18	  WRITELN('FALSE')
+19  END.
+
+Figure 4. DEMO.SRC after REFORMATTING.
+
+      To save a program  that you are done  editing you must exit  the
+SPEED editor by  entering the SuperCommand  (CTRL-Q) and typing  Q for
+quit. Next  type 'E'  to exit  to the  SPP. You  will see the SPP menu
+displayed. Now you are ready  to compile DS. Because you  just scanned
+it you  know that  it is  syntactically correct.  Notice that  you can
+call the compiler in two ways.  The regular compiler can be called  by
+typing 'C'. In this  case the compiler reads  its input from the  disk
+and upon completion returns to the operating system. You want to  call
+the fast compiler because  it assumes that the  text in the buffer  is
+syntacticaly correct and does not  bother with a syntax scan.  It also
+reads its source  from memory rather  than disk, saving  time. So type
+'F'  to  invoke  the  fast  compiler.  Any command given at this point
+causes the  following prompt  to appear  presenting the  options as to
+what to do with the text in the buffer:
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 68
+
+
+SPP User's Guide	Appendix E 	SPP Tutorial
+
+	Buffer occupied, F)lush, U)pdate, W)rite & Flush, L)eave:
+
+Entering 'F' causes the file in  the buffer to be thrown away  and the
+prompt for a new file to be presented to you. Entering 'U' causes  the
+old version of  the file on  disk to be  made into a  BAK file and the
+contents  of  the  text  buffer  to  be  written to the disk under the
+current filename. The text in the  buffer is then used by the  routine
+requested. Entering 'W' again causes a BAK file to be created and  the
+contents  of  the  buffer  to  be  written  to  the disk. However, the
+contents of the text buffer is  destroyed and a new file is  requested
+for the command  to operate on.  Entering 'L' leaves  the text in  the
+buffer untouched and the requested command uses the file as it is.  If
+the 'Q' option had been selected,  F) throws away the editing done  in
+this session and  return you to  the operating system.  L) returns you
+the  SPP.  U)  and  W)  have  the  same  effect of saving the file and
+exiting  to  the  operating  system.  After  all  of the above, in our
+example type 'U'  for U)pdate. This  saves a copy  of the edited  file
+and the fast compiler then compiles the text in the buffer. It  should
+find no  errors and  execute to  completion, completing  a ERL file on
+your disk.  When the  fast compiler  completes it  returns you  to the
+operating system, not the SPP. Now you can link the program by  typing
+LINKMT DS,PASLIB/S. Run DS. It should print TRUE.
+
+      Suppose you want to abandon the editing you have just  completed
+and begin over  again on the  original text file.  You would exit  the
+editor and  type 'E'  at the  SPP menu  level to  reenter the  editor.
+However, since the buffer  is occupied, you will  be asked what to  do
+with the  contents. Type  'F' to  flush the  buffer and the supervisor
+will ask you  for a new  filename. Respond with  the name of  the file
+you had been editing and the  unchanged copy from disk is loaded  into
+memory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  All Information Presented Here is Proprietary to Digital Research
+
+				 69

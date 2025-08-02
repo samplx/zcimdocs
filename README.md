@@ -2,7 +2,8 @@
 
 > These aren't the sources you're looking for...
 >
->   -- Retro computing purist
+>                       -- Retro Computing Purist
+>
 
 
 This is a collection of documents from Digital Research related to 8-bit computer

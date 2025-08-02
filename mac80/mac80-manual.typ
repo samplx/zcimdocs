@@ -1,34 +1,21 @@
 // -------------------------------------------------------------------------------
 // START of COMMON
 // -------------------------------------------------------------------------------
+
+#import "/zcim-library.typ": *
+
 // define the page size
-#set page(paper: "us-letter")
-
-// by default, justify paragraphs
-#set par(justify: true)
-// old eyes like lots of leading
-#set par(leading: 0.95em)
+#set page(paper: page-size)
 // default font
-#set text(font: "EB Garamond", size: 12pt)
-
-// display well-known acronyms in smallcaps
-#show "BDOS" : smallcaps(all: true)[BDOS]
-#show "CBIOS" : smallcaps(all : true)[CBIOS]
-#show "CTRL-" : smallcaps(all : true)[CTRL-]
-#show "BIOS" : smallcaps(all : true)[BIOS]
-#show "CCP" : smallcaps(all : true)[CCP]
-//#show "FCB" : smallcaps(all : true)[FCB]
-#show "TPA" : smallcaps(all : true)[TPA]
-#show "ASCII" : smallcaps(all : true)[ASCII]
-#show "DMA" : smallcaps(all : true)[DMA]
-#show "IOBYTE" : smallcaps(all: true)[IOBYTE]
-#show "FDOS" : smallcaps(all: true)[FDOS]
-#show "BCD" : smallcaps(all: true)[BCD]
-#show "CPU" : smallcaps(all: true)[CPU]
+#set text(font: sans-font)
+// default font for raw text
+#show raw : set text(font: mono-font)
+// set default leading
+#set par(leading: leading-length)
 
 // make visible control characters a little more visible
-#show "␍" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␍]
-#show "␊" : text(font: "Libertinus Keyboard", size: 1.8em, baseline: 2pt)[␊]
+#show "␍" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␍]
+#show "␊" : text(font: mono-font, size: 1.8em, baseline: 2pt)[␊]
 
 // don't split these at the slash
 #show "CP/M" : box([CP/M])
@@ -36,6 +23,9 @@
 #show "PL/M" : box([PL/M])
 #show "PL/I" : box([PL/I])
 
+#import "@preview/headcount:0.1.0": *
+
+#let document-version = [version 2025-07-31]
 // -------------------------------------------------------------------------------
 // END of COMMON
 // -------------------------------------------------------------------------------
@@ -43,61 +33,45 @@
 #show "e3" : emph[e3]
 #show "e8" : emph[e8]
 #show "e16" : emph[e16]
-
-#align(center)[
-
-#pad(y: 64pt)[#text(size: 18pt)[
-CP/M `MAC` Macro Assembler
-
+#title-page(
+  title-text: [
+CP/M® `MAC` Macro Assembler \
 _Language Manual and Applications Guide_
-]]
-Copyright © 1977, 1978, 1979, 1980 \
-
-Digital Research \
-P.O. Box 579 \
-160 Central Avenue \
-Pacific Grove, CA 93950 \
-(408) 649-3896 \
-TWX 910 360 5001 \
-
-All Rights Reserved 
-]
+  ],
+  version: document-version
+)
 #pagebreak()
-#align(center)[
-
-#pad(top: 2em)[*Copyright*]
-
-Copyright ©1977, 1978, 1979, 1980 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by anv means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
+#credits-page(
+  copyright: [
+Copyright ©1977, 1978, 1979, 1980 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
 #strike[Digital Research, Post Office Box  579, Pacific Grove, California 93950]. \
-#strike[http://www.lineo.com] \
-DRDOS, Inc [Bryan Sparks]
-
+DRDOS, Inc [Bryan Sparks] \
+Copyright © 2025 by James Burlingame. \ \
 This manual is, however, tutorial in nature. Thus, permission is granted to reproduce or abstract the example programs shown in the enclosed figures for the purposes of inclusion within the reader's programs.
-
-#pad(top: 2em)[*Disclaimer*]
-
+  ],
+  disclaimer: [
 Digital Research makes no representations or warranties with respect to  the
-contents hereof and specifically disclaims any implied warranties of 
-merchantability or fitness for any particular purpose. Further, Digital 
+contents hereof and specifically disclaims any implied warranties of
+merchantability or fitness for any particular purpose. Further, Digital
 Research reserves the right to revise this publication and to make changes  from
 time to time in the content hereof without obligation of Digital  Research to
-notify any person of such revision or changes.
-
-#pad(top: 2em)[*Trademarks*]
-
+notify any person of such revision or changes.    
+  ],
+  trademarks: [
 CP/M is a registered trademark of Digital Research. \
 MAC is a trademark of Digital Research.
 
-
-#pad(top: 2em)[*Printing*]
-Revision of November 1980
-
-Typst Edition: 2025
-]
+  ],
+  printing: [
+    Revision of November 1980 \
+    #zcim-project edition: #document-version
+  ]
+)
 #pagebreak()
 
+#set heading(numbering: "1.", supplement: [Section])
 #set page(numbering: "i")
-#set figure(numbering: "1.")
+#set figure(numbering: dependent-numbering("1-1"))
 #outline()
 #outline(
   title: [Program Listings],
@@ -108,9 +82,9 @@ Typst Edition: 2025
   target: figure.where(kind: table),
 )
 #counter(page).update(0)
-#counter(figure).update(0)
 #pagebreak()
 #set page(numbering: "1")
+#set heading(numbering: "1.", supplement: [Section])
 
 = Forward
 The CP/M macro assembler, called `MAC`, reads assembly language statements
@@ -203,9 +177,9 @@ to avoid confusion with machine code addresses. In all cases, output files conta
 characters (ASCII CTRL-I) wherever possible in order to conserve diskette space. Tab
 positions are assumed to be placed at every eight columns of the output line.
 
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
-  #set raw(tab-size: 8)
+
+#figure(
+  rect-listing[
 ```
 	org	100h	;transient program area
 bdos	equ	0005h	;bdos entry point
@@ -222,10 +196,8 @@ wchar	equ	2	;write character function
 caption: [*Source Program*: `SAMPLE.ASM`]
 ) <Fig1>
 
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
-  #set text(size: 0.70em)
-  #set raw(tab-size: 8)
+#figure(
+  rect-print-listing[
 ```
 
  0100                   ORG     100H    ;TRANSIENT PROGRAM AREA
@@ -244,8 +216,8 @@ caption: [*Source Program*: `SAMPLE.ASM`]
 caption: [*Assembly Listing*: `SAMPLE.PRN`]
 ) <SamplePRN>
 
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
+#figure(
+  rect-listing[
 ```
 0005 BDOS       0002 WCHAR
 ```
@@ -253,8 +225,8 @@ caption: [*Assembly Listing*: `SAMPLE.PRN`]
 caption: [*Assembly Sorted Symbols*: `SAMPLE.SYM`]
 ) <SampleSYM>
 
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
+#figure(
+  rect-listing[
 ```
 :080100000E021E3FCD0500C9EF
 :00010000FF
@@ -888,9 +860,7 @@ ECHO:	IN	CONIN	;READ CONSOLE CHARACTER
 	END
 ```
 */
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
-  #set text(size: 0.70em)
+#figure(rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    Teletype Echo Program
 
@@ -919,9 +889,7 @@ CP/M MACRO ASSEM 2.0    #001    Teletype Echo Program
 caption: [*Conditional Assembly*: with `TTY`="`TRUE`"]
 ) <Fig2a>
 
-#figure(rect(width: 100%, inset: 2em)[
-      #set align(left)
-  #set text(size: 0.70em)
+#figure(rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    CRT Echo Program
 
@@ -975,9 +943,7 @@ the conditional assembly shown in @Fig2b could be rewritten as shown in @Fig3a.
 
 
 #figure(
-  rect(width: 100%, inset: 2em)[
-        #set align(left)
-        #set text(size: 0.70em)
+  rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    CRT Echo Program
 
@@ -1045,9 +1011,7 @@ nesting level restriction also holds, however, for pending `IF`'s and `ELSE`'s d
 evaluation. Nesting level overflow will produce an error during assembly.
 
 #figure(
-  rect(width: 100%, inset: 3em)[
-      #set align(left)
-      #set text(size: 0.70em)
+  rect-print-listing[
 ```
  FFFF =         TRUE    EQU 0FFFFH      ;DEFINE "TRUE"
  0000 =         FALSE   EQU NOT TRUE    ;DEFAULT "FALSE"
@@ -1250,9 +1214,7 @@ within the `typer` program.
 #show figure: set block(breakable: true)
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    Typer Program
 
@@ -1289,10 +1251,8 @@ CP/M MACRO ASSEM 2.0    #001    Typer Program
  0122 D20000            JNC     BOOT            ;REBOOT IF NOT VALID
                 ;
                 ;       COMPUTE INDEX INTO ADDRESS TABLE BASED ON A'S VALUE
-```],
-   #pad(top: 8em)[#rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+```]
+   #rect-print-listing[
 ```
 
 CP/M MACRO ASSEM 2.0    #002    Typer Program
@@ -1324,7 +1284,7 @@ CP/M MACRO ASSEM 2.0    #002    Typer Program
                 ;
  01A1                   DS      STKSIZ*2        ;RESERVES AREA FOR STACK
                 STACK:
-```]]],
+```]],
 caption: [*Sample Program*: `typer`]
 ) <Fig4>
 
@@ -1412,9 +1372,7 @@ comment on each line which describes the function of the instruction.
  
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
         TITLE   '8080 JUMPS, CALLS, AND RETURNS'
 ;
@@ -1529,9 +1487,7 @@ language program, along with a short comment describing the use of each instruct
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    IMMEDIATE OPERAND INSTRUCTIONS
 
@@ -1583,9 +1539,7 @@ register. e3 produces one of `A`, `B`, `C`, `D`, `E`, `H`, `L`, or `M` (memory)]
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    INCREMENT AND DECREMENT INSTRUCTIONS
 
@@ -1706,9 +1660,7 @@ Double-precision store from `H` and `L` to memory.],
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set text(size: 0.70em)
-      #set align(left)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    DATA/MEMORY/REGISTER MOVE OPERATIONS
 
@@ -1798,9 +1750,7 @@ placed into the `HL` register pair. The form is:
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    ARITHMETIC LOGIC UNIT OPERATIONS
 
@@ -1889,10 +1839,7 @@ calling program.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	SIMPLE MACRO LIBRARY FOR MESSAGE TYPEOUT
 REBOOT	EQU	0000H		;WARM START ENTRY POINT
@@ -1939,10 +1886,7 @@ PASTM:	ENDM
 	ENDM
 ```]
 
- #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+ #rect-listing[
 ```
 ;
 ENTCCP	MACRO	SSIZE	;ENTER PROGRAM FROM CCP, RESERVE 2*SSIZE STACK LOCS
@@ -1974,14 +1918,12 @@ ABORT	MACRO		;ABORT THE PROGRAM
 ;	END	OF MACRO LIBRARY
 
 ```]],
-caption: [*Assembly Listing*: A Sample Macro Library]
+caption: [*Progr Source*: A Sample Macro Library]
 ) <Fig10>
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    SAMPLE MESSAGE OUTPUT MACRO
 
@@ -2177,9 +2119,7 @@ begin within the repeat group (although the `ENDIF` is allowed).
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
+   #rect-print-listing[
 ```
 CP/M MACRO ASSEM 2.0    #001    SAMPLE REPT STATEMENT
 
@@ -2285,9 +2225,7 @@ are marked by a "`+`" sign following the machine code address.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	construct a data table
 ;
@@ -2313,10 +2251,7 @@ caption: [*Source File*: `IRPC` Example]
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       CONSTRUCT A DATA TABLE
                 ;
@@ -2430,10 +2365,7 @@ discussed in the macro parameter sections.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
 
                 ;       CREATE A "JUMP VECTOR" USING THE IRP GROUP
@@ -2532,10 +2464,7 @@ as well as marking the physical end of the macro body.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       SAMPLE USE OF THE EXITM STATEMENT WITH THE IRPC MACRO
                 ;
@@ -2641,10 +2570,7 @@ in order to follow this example completely.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H            ;BASE OF THE TRANSIENT AREA
  0005 =         BDOS    EQU     5               ;BDOS ENTRY POINT
@@ -2689,8 +2615,7 @@ caption: [*Program Listing*: `LOCAL` Example]
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 print x=??0001, y=??0002
 print x=??0003, y=??0004
@@ -2831,10 +2756,7 @@ Further, this program uses the CCP's stack throughout, which is only eight level
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
 
  0100                   ORG     100H    ;BASE OF TRANSIENT AREA
@@ -2919,10 +2841,7 @@ the two messages, separated by two lines, and returns to the CCP.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H    ;BASE OF THE TPA
  0005 =         BDOS    EQU     5       ;BDOS ENTRY POINT
@@ -3015,10 +2934,7 @@ in the definition of the `NULMAC` macro.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                         IF      NUL
  0000 7472756520        DB      'true case'
@@ -3178,10 +3094,7 @@ selected.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H    ;BASE OF THE TPA
  0000 =         FALSE   EQU     0000H   ;VALUE OF FALSE
@@ -3275,10 +3188,7 @@ each time `MOVE` is expanded.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H            ;BASE OF TPA
                 MOVE    MACRO   SOURCE,DEST,COUNT
@@ -3311,9 +3221,7 @@ each time `MOVE` is expanded.
                         MOVE    SOURCE,DEST,COUNT
                         ENDM
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;
                         MOVE    X1,X2,5 ;MOVE 5 CHARS FROM X1 TO X2
@@ -3416,10 +3324,7 @@ setup, the BDOS is called, and the macro has completed its expansion.
 
 #figure(
   [
-   #rect(width: 100%, inset: 0.5em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H    ;BASE OF TRANSIENT AREA
                 ;       SAMPLE PROGRAM SHOWING RECURSIVE MACROS
@@ -3618,10 +3523,7 @@ to the value of `A` and `D` to produce the label `LI16`.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       MACRO PARAMETER EVALUATION
                 ;
@@ -3683,10 +3585,7 @@ innermost level is required at the `IRP` heading within `IRPM1`.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 IRPM1   MACRO   X
                 ;;      INDEFINITE REPEAT MACRO
@@ -3762,10 +3661,7 @@ It is worthwhile examining the various parameters and their evaluations in @Fig2
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       SAMPLE BRACKETED PARAMETERS, WITH ESCAPE CHARACTER
                 ;
@@ -3952,10 +3848,7 @@ direction to the appropriate color.
 
 #figure(
   [
-   #rect(width: 100%, inset: 1em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for basic intersection
 ;
@@ -4012,7 +3905,7 @@ retry	macro	golabel
  ```]
 
 ],
-caption: [*Program Listing*: Macro Library for Basic Intersection]
+caption: [*Program Source*: Macro Library for Basic Intersection]
 ) <Fig26>
 
 The `TIMER` macro in @Fig26 uses the internal cycle time of the 8080 processor
@@ -4037,10 +3930,7 @@ the sensor is reset with control transferring to the label given by "`iftrue`"
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for street treadles
 ;
@@ -4066,7 +3956,7 @@ iffalse:
  ```]
 
 ],
-caption: [*Program Listing*: Macro Library for "treadle" Control]
+caption: [*Program Source*: Macro Library for "treadle" Control]
 ) <Fig27a>
 
 @Fig27b shows the macro library which processes pedestrian push-buttons.
@@ -4082,10 +3972,7 @@ support optional hardware manufactured by their company.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for pedestrian pushbuttons
 ;
@@ -4106,7 +3993,7 @@ push?	macro	iftrue
  ```]
 
 ],
-caption: [*Program Listing*: Macro Library for Corner Pushbuttons]
+caption: [*Program Source*: Macro Library for Corner Pushbuttons]
 ) <Fig27b>
 
 The intersection of Bumpenram Boulevard and Lullabye Lane presents a somewhat
@@ -4142,10 +4029,7 @@ and @Fig28c would be useful for macro debugging.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       INTERSECTION: BUMPENRAM BLVD / LULLABYE LN.
                 
@@ -4206,10 +4090,7 @@ caption: [*Assembly Listing*: Traffic Control Algorithm using "`-M`" Option]
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       INTERSECTION: BUMPENRAM BLVD / LULLABYE LN.
                 
@@ -4270,10 +4151,7 @@ caption: [*Assembly Listing*: Traffic Control Algorithm using "`*M`" Option (par
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 SWITCH:
                         ;SOMEONE IS WAITING, CHANGE LIGHTS
@@ -4357,10 +4235,7 @@ false in the application program, this trace code is not assembled.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for basic intersection
 ;
@@ -4410,7 +4285,7 @@ pastmsg:
 ;
 ```
 ]],
-  caption: [*Program Listing*: Library Segment with Debug Facility]
+  caption: [*Program Source*: Library Segment with Debug Facility]
 ) <Fig29>
 
 @Fig30a shows an application program for a particular intersection where the
@@ -4421,10 +4296,7 @@ to drive the actual _Hornblower_ hardware.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
 
  0100                   ORG             100H    ;READY FOR THE DEBUG RUN
@@ -4455,10 +4327,7 @@ appropriate wait time between print-outs.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 NS changing to RED
 EW changing to GREEN
@@ -4577,10 +4446,7 @@ used to set environmental controls.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       AVERAGE THE VALUES WHICH ARE READ FROM ANALOG
                 ;       INPUT PORTS, WRITE THE RESULTING VALUE TO ALL
@@ -4632,10 +4498,7 @@ the `SIZ` opcode.
 
 #figure(
   [
-   #rect(width: 100%, inset: 0.5em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 siz	macro	size
 ;;	set "org" and create stack
@@ -4693,7 +4556,7 @@ rdm	macro	?c
 	endm
 ```
 ]],
-  caption: [*Program Listing*: "Stack Machine" Opcode Macros]
+  caption: [*Program Source*: "Stack Machine" Opcode Macros]
 ) <Fig32>
 
 The `DUP` opcode simply pushes the `HL` register pair to memory, since the `HL`
@@ -4746,10 +4609,7 @@ and @Fig33 to ensure that the macro expansion processes are clearly understood.
 
 #figure(
   [
-   #rect(width: 100%, inset: 0.5em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       AVERAGE THE VALUES WHICH ARE READ FROM ANALOG
                 ;       INPUT PORTS, WRITE THE RESULTING VALUE TO ALL
@@ -4892,10 +4752,7 @@ in a hardware environment.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       AVERAGING PROGRAM WITH INTERSPERSED DEBUG CODE
                 ;
@@ -4938,10 +4795,7 @@ in a hardware environment.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 DDT VERS 2.2
 NEXT  PC
@@ -5033,10 +4887,7 @@ description is given below for each major section of this macro library, called
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for a zero address machine
 ;	*****************************************
@@ -5086,10 +4937,7 @@ ugen	macro
 	jmp	@ch	;;return thru @ch
 ;;
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 @hx:	;;write hex value in reg-a
 	push	psw
@@ -5141,10 +4989,7 @@ ugen	macro
 psub:
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ugen	macro
 ;;	redef to include once
@@ -5195,10 +5040,7 @@ included once, and only if they are required by the debugging macros.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;       *       begin trace(only) utilities     *
 ;	*****************************************
@@ -5255,10 +5097,7 @@ pmsg:
 ;
 
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 trt	macro	f
 ;;	turn on flag "f"
@@ -5308,10 +5147,7 @@ dmp	macro	vname,n
 	jmp	@dm0	;;for another value
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;
 @dt:	;;dump top of stack only
@@ -5371,10 +5207,7 @@ program, following the `XIT` opcode.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;       *       begin stack machine opcodes     *
 ;	*****************************************
@@ -5430,10 +5263,7 @@ lit	macro	val
 	?tr	lit
 	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 adr	macro	base,inx,con
@@ -5475,10 +5305,7 @@ val	macro	b,i,c
 	?tr	val	;;trace set?
 	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 sto	macro	b,i,c
@@ -5520,10 +5347,7 @@ dif	macro
 	?tr	dif
 	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 lsr	macro	len
@@ -5570,10 +5394,7 @@ xit	macro
 	ds	@stk*2	;;obtained from "siz"
 stack:	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 ;	*****************************************
@@ -5839,10 +5660,7 @@ the program.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                         MACLIB  DSTACK  ;STACK MACHINE SIMULATION
  0000                   SIZ     50      ;50 LEVEL STACK
@@ -5889,13 +5707,6 @@ the program.
  038C                   LIT     0       ;ZERO AT END
  038F                   VAL     V,I     ;AT END?
  0394                   GEQ     ENDF    ;0 GEQ X(I)?
-                
-```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
-```
                 ;       NOT AT END OF INVERVAL, COMPUTE NEXT TRAPEZOID
  03A1                   VAL     V,I
  03A5                   VAL     V,I,1   ;V(I),V(I+1)
@@ -6043,10 +5854,7 @@ port and displayed at the-console.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 
 DDT INTEG.HEX
@@ -6136,10 +5944,7 @@ codes offers distinct advantages over alternative approaches.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 
 DDT INTEG.HEX
@@ -6223,10 +6028,7 @@ line-feed sequence. These simple I/O macros are stored on the diskette in the fi
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for simple i/o
 bdos	equ	0005h	;bdos entry
@@ -6281,10 +6083,7 @@ be tested is assumed to exist in the 8080 accumulator when the macro is entered.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 test?	macro x,y
 ;;	utiltity macro to generate condition codes
@@ -6328,10 +6127,7 @@ neq	macro 	x,y,tl
 	jnz	tl
 	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 geq	macro 	x,y,tl
@@ -6400,10 +6196,7 @@ four letters cannot be found, the message at `ERROR` is typed.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                         MACLIB  SIMPIO          ;SIMPLE 10 LIBRARY
@@ -6460,10 +6253,7 @@ or the remainder of the program following the `NOTA` label.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;
                 CYCLE:  WRITE   <TYPE A CHARACTER FROM A TO D >
@@ -6536,10 +6326,7 @@ relational forms will be used within the control structures which are described 
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for 8-bit comparison operation
 ;
@@ -6588,10 +6375,7 @@ eql	macro	x,y,tl,fl
 	jz	tl
 	endm
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 neq	macro	x,y,tl,fl
@@ -6647,10 +6431,7 @@ included for readability of the program.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                         MACLIB  SIMPIO ;SIMPLE 10 LIBRARY
@@ -6702,10 +6483,7 @@ following the `NOTRAN` label is not present.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ...
 ```
                 ;       TEST FOR LOWER CASE ALPHABETIC
@@ -6749,10 +6527,7 @@ following the `NOTRAN` label is not present.
      +                  JNC     
      +                  ENDM
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       X IS GREATER OR EQUAL TO LOWER CASE A
                                 GTR     X,%'z',NOTRAN
@@ -6867,10 +6642,7 @@ structure.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for "when" construct
 ;
@@ -6966,10 +6738,7 @@ processor.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                         MACLIB  SIMPIO  ;SIMPLE I/O LIBRARY
@@ -7018,10 +6787,7 @@ properly stated, and that the restriction on nested parallel groups is, in fact,
 
 #figure(
   [
-   #rect(width: 100%, inset: 1em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       TEST FOR LOWER CASE ALPHABETIC
                         WHEN    X,GEQ,61H
@@ -7123,10 +6889,7 @@ macro increments the `DOCNT` counter in preparation for the next group.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for "dowhile" construct
 ;
@@ -7205,10 +6968,7 @@ false condition, and control transfers to the "`XRA A`" instruction following th
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                         MACLIB  SIMPIO  ;SIMPLE 10 LIBRARY
@@ -7276,10 +7036,7 @@ at the beginning of the `DOWHILE` group.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;
                 ;       CLEAR THE SCREEN (23 CRLF'S)
@@ -7357,10 +7114,7 @@ case receives control based upon the value obtained from this vector.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	macro library for "select" construct
 ;
@@ -7446,10 +7200,7 @@ encountered.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 selnext	macro
 ;;	generate the next case
@@ -7515,10 +7266,7 @@ of the listing gives the generated label addresses for the individual cases.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                         MACLIB  SELECT
  0000                   SELECT  X
@@ -7556,10 +7304,7 @@ end of the listing.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                         MACLIB  SELECT
                         SELECT  X
@@ -7608,10 +7353,7 @@ should be cross-referenced with the `SELECT` macro library given in @Fig49a and
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
       ...
 ```
                         SELECT
@@ -7684,10 +7426,7 @@ the letter `"E`" which will subsequently produce an error response.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H    ;BEGINNING OF TPA
                         MACLIB  SIMPIO  ;SIMPLE READ/WRITE.
@@ -8000,10 +7739,7 @@ the console processor through a system reboot (`JMP BOOT`).
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                 ;       COPY FILE 1 TO FILE 2, CONVERT
@@ -8131,10 +7867,7 @@ Guide_ for exact formats.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;	sequential file i/o library
 ;
@@ -8186,10 +7919,7 @@ fillnam	macro	fc,c
 @cnt	set	@cnt-1	;;decrement max length
 	endm			;;of irpc ?fc
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;
 ;;	pad remainder
@@ -8232,10 +7962,7 @@ fillnxt		macro	;;cancle macro after 1st use
 
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 fillfcb	macro	fid,dn,fn,ft,bs,ba
 ;;	fill the file control block with disk name
@@ -8284,10 +8011,7 @@ fcb&fid equ	$-12	;;beginning of the fcb
 ;;
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 	if	fid&typ<=2	;;in/outfile
 ;;	generate constants for infile/outfile
@@ -8341,10 +8065,7 @@ fid&typ	equ	md	;;set mode for later ref's
 	endif
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;	file control block and related parameters
 ;;	are created inline, now create io function
@@ -8399,10 +8120,7 @@ pnd:
 	jmp	pnd	;;process another sector
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;
 eod:
@@ -8456,10 +8174,7 @@ pnc:
 	ret
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;
 psub:				;;past inline subroutine
@@ -8506,10 +8221,7 @@ finis	macro	fid
 	local	eob?,peof,msq,pmsg
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;;	write all partially filled buffers
 eob?:	;;are we at the end of a buffer?
@@ -8560,10 +8272,7 @@ erase 	macro	fid
 	endm
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 direct	macro fid
@@ -8607,10 +8316,7 @@ rename	macro	n,o	;;redefine rename
 	endm
 ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 ;
 get	macro 	dev
@@ -8742,10 +8448,7 @@ is not shown.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
       ...
 ```
                         FILE    INFILE,SOURCE,,1,,2000
@@ -8797,10 +8500,7 @@ is not shown.
      +                  ENDM
      +                  ENDM
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  011A+C34401            JMP     ??0008
  011D+                  DS      @C
@@ -8857,10 +8557,7 @@ is not shown.
  013E+7003              DW      SOURCEBUF
      ```
 ]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0780+=         SOURCESIZ       EQU     @BS
      +          SOURCELEN:
@@ -8915,10 +8612,7 @@ is not shown.
  0178+B7                ORA     A
  0179+C28901            JNZ     ??0005
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  017C+118000            LXI     D,@SECT ;,SECTOR SIZE
  017F+2A4201            LHLD    SOURCEPTR
@@ -8969,10 +8663,7 @@ is not shown.
  01B0+224201            SHLD    SOURCEPTR
  01B3+C9                RET
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
 
      +          ??0001:
@@ -9035,10 +8726,7 @@ files are successfully printed, they are both erased from the diskette.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                         MACLIB  SEQIO   ;SEQUENTAIL I/O LIB
@@ -9089,10 +8777,7 @@ files are successfully printed, they are both erased from the diskette.
  0342 F9                SPHL    ;RESTORE STACK POINTER
  0343 C9                RET     ;TO CCP
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;
                 ;       UTILITY SUBROUTINES
@@ -9140,12 +8825,6 @@ files are successfully printed, they are both erased from the diskette.
                 EJECT:  ;PERFORM PAGE EJECT
  038A 3E0C              MVI     A,FF    ;FORM FEED
  038C C34403            JMP     LISTOUT
-```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
-```
                 ;
                 ;       DATA AREAS
  038F                   DS      64      ;32 LEVEL STACK
@@ -9234,10 +8913,7 @@ sequence number is set to `0FFH` as a signal that the input source has been exha
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  0100                   ORG     100H
                 ;       FILE MERGE PROGRAM
@@ -9293,10 +8969,7 @@ sequence number is set to `0FFH` as a signal that the input source has been exha
                         LXI     D,SEQERR&?F     ;ERROR MESSAGE
                         JC      SEQERR          ;SEQUENCE ERROR
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       NO SEQUENCE ERROR, FILL NEXT DIGIT POSITION
                         MOV     M,A
@@ -9349,10 +9022,7 @@ sequence number is set to `0FFH` as a signal that the input source has been exha
  01AC 216101            LXI     H,MSEQ  ;MASTER SEQ#
  01AF 0E06              MVI     C,SEQSIZ        ;SEQUENCE SIZE
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
  01B1 1A        CLOOP:  LDAX    D       ;UPDATE DIGIT
  01B2 BE                CMP     M       ;UPDATE-MASTER
@@ -9404,10 +9074,7 @@ sequence number is set to `0FFH` as a signal that the input source has been exha
  0485 FEFF              CPI     0FFH
  0487 CABE04            JZ      ENDMERGE
 ```]
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-print-listing[
 ```
                 ;       NOT THE SAME, DELETE MASTER RECORD
  048A           DELMAS: GET     MFILE
@@ -9527,10 +9194,7 @@ library.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 000100	ABERCROMBIE, SIDNEY
 000200	CARLSBAD, YOLANDA
@@ -9559,10 +9223,7 @@ library.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 000110	BERNSWEIGER, ALFRED
 000200	CRUENCE, CLARENCE
@@ -9586,10 +9247,7 @@ library.
 
 #figure(
   [
-   #rect(width: 100%, inset: 2em)[
-      #set align(left)
-      #set text(size: 0.70em)
-      #set raw(tab-size: 8)
+   #rect-listing[
 ```
 000100	ABERCROMBIE, SIDNEY
 000110	BERNSWEIGER, ALFRED
@@ -10267,10 +9925,15 @@ line. The assembly parameters are printed at the console up to the point of the 
 ]
 
 #pagebreak()
-= Notes on the Typst Edition
+= Notes on the #zcim-project Edition
 
-The _Typst_ edition of this manual was created by Jim Burlingame (_jb\@samplx.org_),
-for the site #link("https://www.z80cim.org")[z80cim.org].
+The #zcim-project goal is to improve the accessibility of legacy Z80 CP/M era content.
+As part of the project, Jim Burlingame (_jb\@samplx.org_) created a _Typst_ version of this manual.
+
+You can find out more about the project at its site #link("https://www.z80cim.org")[z80cim.org].
+The sources of this document are available on
+#link("https://github.com/samplx/zcimdocs")[GitHub].
+
 
 The source material is from the
 #link("http://cpm.z80.de/drilib.html")[_Tim Olmstead Memorial Digital Research CP/M Library_]
@@ -10291,17 +9954,13 @@ Additional documents are available from #link("https://bitsavers.org")[Bitsavers
 
 The contents of the manual were edited using the #link("https://Typst.app/")[Typst.app] site.
 
-The sources to the _Typst_ version of the document are available at
-#link("https://github.com/samplx/zcimdocs")[GitHub].
-
 == License
 
 The source documentation is under a license granted by the owner
 of the Digital Research intellectual property 
-in an email recreated at 
-#link("http://cpm.z80.de/license.html").
+in an email available at #link("http://cpm.z80.de/license.html").
 
-The _Typst_ version is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
+The #zcim-project edition is under the Creative Commons Attribution 4.0 International license. #link("https://creativecommons.org/licenses/by/4.0/")[*CC BY 4.0*].
 
 
 

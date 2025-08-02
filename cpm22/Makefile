@@ -1,27 +1,43 @@
 
 # a simple Makefile to compile the sources to a PDF
 
+CP		=	cp --preserve=timestamps
+RM		=	rm -f
 TYPST   =   typst
 
 FONTS_DIR = ../fonts
-MAKE_DEPENDENCIES = make.depend
+COMMON_DIR = ..
 
-SOURCE  = cpm22-manual.typ
+PDF_FILES  = \
+	cpm22-manual.pdf \
+	cpm22-alteration-guide.pdf	\
+	cpm22-features-and-facilities.pdf \
+	cpm22-interface-guide.pdf
 
-PDF     = cpm22-manual.pdf
+TYP_SOURCE_FILES = ${PDF_FILES:.pdf=.typ}
+
+ZCIM_LIBRARY = \
+	zcim-library.typ
+
 PDF_STANDARD	= a-2b
 
-all:    $(PDF)
+all:    ${PDF_FILES}
 
-$(PDF):	$(SOURCE)
-	$(TYPST) compile \
-		--font-path $(FONTS_DIR) \
-		--make-deps $(MAKE_DEPENDENCIES) \
-		--pdf-standard $(PDF_STANDARD) \
-			$(SOURCE) $(PDF)
+# create a local copy to work-around typst sandbox
+${ZCIM_LIBRARY}:	${COMMON_DIR}/${ZCIM_LIBRARY}
+	${RM} ${ZCIM_LIBRARY}
+	${CP} ${COMMON_DIR}/${ZCIM_LIBRARY} ${ZCIM_LIBRARY}
 
--include $(MAKE_DEPENDENCIES)
+${PDF_FILES}:	%.pdf: %.typ ${ZCIM_LIBRARY}
+	${TYPST} compile \
+		--font-path ${FONTS_DIR} \
+		--pdf-standard ${PDF_STANDARD} \
+			$< $@
 
 clean:
-	$(RM) $(PDF)
+	${RM} ${PDF_FILES} ${ZCIM_LIBRARY}
+
+clobber: clean
+
+.PHONY: all clean clobber
 

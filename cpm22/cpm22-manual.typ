@@ -24,9 +24,10 @@
 #show "PL/M" : box([PL/M])
 #show "PL/I" : box([PL/I])
 
+#import "@preview/tiptoe:0.3.1": *
 #import "@preview/headcount:0.1.0": *
 
-#let document-version = [version 2025-07-31]
+#let document-version = [version 2025-08-02]
 
 
 // -------------------------------------------------------------------------------
@@ -5096,29 +5097,77 @@ vector and stored into `LARGE` at the termination of the program.
 
 
 #block(breakable: false, below: 2em)[
-In the sample:
+In the example:
 / output text : `is in a monospace font`
 / input text : #text(fill: ui-fill)[`is in `#raw(ui-fill-name)]
 / carriage-return : is displayed as #text(fill: ui-fill)[↵]
-/ rubout/DEL key : is displayed as #text(fill: ui-fill)[⌫].
+/ rubout/DEL key : is displayed as #text(fill: ui-fill)[⌫]
+/ tab key : is displayed as #text(fill: ui-fill)[⇥]
 / CTRL-Z : #text(fill: ui-fill)[^Z]
 / comments : #text(font: cursive-font)[are displayed in #cursive-font-name].
 ]
 
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
-`A>`#text(fill: ui-fill)[`ED SCAN.ASM`↵] \
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (232pt, 20pt), end: (252pt, 37pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 220pt,
+      dy: 8pt,
+      [rubout]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (262pt, 20pt), end: (258pt, 35pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 260pt,
+      dy: 8pt,
+      [rubout echo]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (140pt, 20pt), end: (112pt, 36pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 8pt,
+      [tab character]
+    )
+    #place(
+      top + left,
+      dx: 360pt,
+      dy: 150pt,
+      block(width: 10em)[
+        #align(center)[Create Source Program.
+        #ui-fill-name characters are typed by programmer. \
+        "↵" represents carriage return ]]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (32pt, 350pt), end: (12pt, 350pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 345pt,
+      [CTRL-Z]
+    )
+  ],
+)[
+`A>`#text(fill: ui-fill)[`ED SCAN.ASM↵`] \
 `NEW FILE` \
-`     : *`#text(fill: ui-fill)[`I`↵]
-#text(fill: ui-fill)[```
-                ORG          100H           ;START OF TRANSIENT↵
+`     : *`#text(fill: ui-fill)[`I↵`] \
+#text(fill: ui-fill)[`                ORG⇥        100H           L⌫L;START OF TRANSIENT↵
                                             ;AREA↵
                 MVI          B, LEN         ;LENGTH OF VECTOR TO SCAN↵
                 MVI          C, 0           ;LARGER_RST VALUE SO FAR↵
@@ -5143,29 +5192,39 @@ VECT:           DB           2,0,4,3,5,6,1,5↵
 LEN             EQU          $-VECT         ;LENGTH↵
 LARGE:          DS           1              ;LARGEST VALUE ON EXIT↵
                 END↵
-```^Z
+^Z`]
 ]
-\
-`     : *`
 
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (85pt, 290pt), end: (65pt, 292pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 90pt,
+      dy: 288pt,
+      [End of Edit]
+    )
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: 315pt,
+      [Start Assembler]
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 375pt,
+      [Assembly Complete -- Look at Program Listing]
+    )
   ],
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 0.5em, left: 14em)[Create Source Program] \
-  ]
-))
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+)[
 `     : *`#text(fill: ui-fill)[`B0P`↵]
-```
+`
     1:                  ORG          100H           ;START OF TRANSIENT
     2:                                              ;AREA
     3:                  MVI          B, LEN         ;LENGTH OF VECTOR TO SCAN
@@ -5189,37 +5248,88 @@ LARGE:          DS           1              ;LARGEST VALUE ON EXIT↵
    21:  ;               TEST DATA
    22:  VECT:           DB           2,0,4,3,5,6,1,5
    23:  LEN             EQU          $-VECT         ;LENGTH
-```
-`    1: *`#text(fill: ui-fill)[`E`↵] \
+    1: *`#text(fill: ui-fill)[`E`↵] \
 \
 `A>`#text(fill: ui-fill)[`ASM SCAN`↵]
-```
-CP/M ASSEMBLER - VER 2.0
+`
+CP/M ASSEMBLER - VER 1.0
+
 0122
 002H USE FACTOR
 END OF ASSEMBLY
 
-```
+`  
+]
 
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: -5pt,
+      [Look at Program Listing]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (65pt, 20pt), end: (25pt, 28pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 70pt,
+      dy: 15pt,
+      [Code Address]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (65pt, 40pt), end: (52pt, 52pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 70pt,
+      dy: 35pt,
+      [Machine Code]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (145pt, 22pt), end: (160pt, 27pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 140pt,
+      dy: 10pt,
+      [Source Program]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (65pt, 250pt), end: (75pt, 260pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 8pt,
+      dy: 239pt,
+      align(center)[Code/Data listing \ truncated]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (35pt, 300pt), end: (25pt, 282pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 38pt,
+      dy: 299pt,
+      align(center)[value of Equate]
+    )
   ],
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 34em, left: 8em)[End of edit] \
-    #pad(top: -0.5em, left: 8em)[Start Assembler] \
-  ]
-))
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+)[
 `A>`#text(fill: ui-fill)[`TYPE SCAN.PRN`↵]
-#text(size: 10pt)[```
+#text(size: 10pt)[`
+
  0100                           ORG          100H           ;START OF TRANSIENT
                                                             ;AREA
  0100 0608                      MVI          B, LEN         ;LENGTH OF VECTOR TO SCAN
@@ -5247,54 +5357,139 @@ END OF ASSEMBLY
  0122                           END
 
 
-```]
+`]
 ]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: -1em, left: 14em)[Assembly complete; look at program listing] \
-    #pad(top: -2em, left: 10em)[⇘Source Program⇘] \
-    #pad(top: -4.0em, left: -3em)[⇘Code Address] \
-    #pad(top: -0.0em, left: 0.5em)[⇙Machine Code] \
-    #pad(top: 18.5em, left: 1em)[⇙Listing truncated] \
-    #pad(top: -1.0em, left: -1.3em)[⇖Value of] \
-    #pad(top: -2.7em, left: -0.0em)[Equate] \
-  ]
-))
-
 
 #pagebreak()
 
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: -2pt,
+      [Start Debugger with hex format machine code]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (50pt, 65pt), end: (21pt, 54pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 52pt,
+      dy: 60pt,
+      [last load address + 1]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (175pt, 105pt), end: (200pt, 95pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 97pt,
+      [examine registers before debug run]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (275pt, 62pt), end: (290pt, 86pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 270pt,
+      dy: 50pt,
+      align(center)[next instruction to execute \ at PC = 0]
+    )
+    #place(
+      top + left,
+      dx: 78pt,
+      dy: 118pt,
+      [change PC to 100]
+    )
+    #place(
+      top + left,
+      dx: 38pt,
+      dy: 140pt,
+      [look at registers again]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (235pt, 165pt), end: (265pt, 175pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 188pt,
+      dy: 160pt,
+      [PC changed]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (290pt, 200pt), end: (295pt, 185pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 285pt,
+      dy: 190pt,
+      align(center)[next instruction \ to execute at PC=100]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (135pt, 227pt), end: (135pt, 360pt), tip: bar, toe: bar)
+    )
+    #place(
+      top + left,
+      dx: 138pt,
+      dy: 275pt,
+      block(width: 10em)[
+        #align(center)[Diassembled machine code \
+      at 100H \
+      (See source listing \
+    for comparison)]
+      ]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (135pt, 385pt), end: (135pt, 510pt), tip: bar, toe: bar)
+    )
+    #place(
+      top + left,
+      dx: 138pt,
+      dy: 400pt,
+      block(width: 10em)[
+        #align(center)[A little more \
+        machine code \
+      (note that program \
+      ends at location 116 \
+      with a JMP to 0000)]
+      ]
+    )
+  ],
+)[
 `A>`#text(fill: ui-fill)[`DDT SCAN.HEX`↵] \
-```
-DDT VERS 2.2
+`
+16K DDT VERS 1.0
 NEXT PC
 0121 0000
-```
-`-`#text(fill: ui-fill)[`X`↵] \
-```
+-`#text(fill: ui-fill)[`X`↵] \
+`
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0000 JMP  FA03
 
-```
-`-`#text(fill: ui-fill)[`XP`↵] \
+-`#text(fill: ui-fill)[`XP`↵] \
 `P=0000 `#text(fill: ui-fill)[`100`↵] \
 `-`#text(fill: ui-fill)[`X`↵] \
-```
+`
 
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 
-```
-`-`#text(fill: ui-fill)[`L100`↵] \
-```
+-`#text(fill: ui-fill)[`L100`↵] \
+`
   0100  MVI  B,08
   0102  MVI  C,00
   0104  LXI  H,0119
@@ -5306,9 +5501,8 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
   010E  DCR  B
   010F  JNZ  0107
   0112  MOV  A,C
-```
-`-`#text(fill: ui-fill)[`L`↵] \
-```
+-`#text(fill: ui-fill)[`L`↵] \
+`
   0113  STA  0121
   0116  JMP  0000
   0119  STAX B
@@ -5320,44 +5514,104 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
   0120  DCR  B
   0121  ??=  20
   0122  MOV  D,D
-```
+`  
 ]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 0em, left: 14em)[Start debugger using hex format machine code] \
-    #pad(top: 1.5em, left: 7em)[⇖last load address + 1] \
-    #pad(top: -2.5em, left: 12em)[Examine registers before debug run] \
-    #pad(top: -1.5em, left: 12em)[Next instruction to execute at PC=0⇗] \
-    #pad(top: -0.9em, left: 14em)[Change PC to 100] \
-    #pad(top: -2.5em, left: 14em)[Look at registers again] \
-    #pad(top: -1.5em, left: 23em)[PC changed⇙] \
-    #pad(top: -1.7em, left: 11em)[Next instruction to execute at PC=100⇗] \
-    #pad(top: 3em, left: 20em)[Disassembled machine] \
-    #pad(top: -2.5em, left: 20em)[code at 100H] \
-    #pad(top: -2.5em, left: 20em)[(See Source listing] \
-    #pad(top: -2.5em, left: 20em)[for comparison)] \
-    #pad(top: 6em, left: 20em)[A little more machine] \
-    #pad(top: -2.5em, left: 20em)[code. (Note that the program] \
-    #pad(top: -2.5em, left: 20em)[ends at location 116] \
-    #pad(top: -2.5em, left: 20em)[with a JMP to 0000.)] \
-  ]
-))
 
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: -2pt,
+      [enter inline assembly mode to change the JMP to 0000 
+    into a RST 7, which will \
+    cause the program under test to return to DDT if 116H is ever executed \
+    (single carriage return stops assemble mode)]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (108pt, 65pt), end: (83pt, 85pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 110pt,
+      dy: 55pt,
+      [list code at 113H to check that RST 7 was properly inserted \ in place of JMP]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 200pt,
+      [look at registers]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 248pt,
+      [execute program for one step]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (275pt, 262pt), end: (290pt, 270pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 270pt,
+      dy: 248pt,
+      [initial CPU state, before instruction is executed]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 298pt,
+      [trace one step again (note 08H in B)]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (305pt, 295pt), end: (332pt, 282pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 270pt,
+      dy: 298pt,
+      [automatic breakpoint]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 345pt,
+      [trace again (register C is cleared)]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 395pt,
+      [trace three steps]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (315pt, 465pt), end: (332pt, 457pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 200pt,
+      dy: 460pt,
+      [automatic breakpoint at 10DH]
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`A116`↵] \
 `0116 `#text(fill: ui-fill)[`RST 7`↵] \
 `0117 `#text(fill: ui-fill)[↵] \
 `-`#text(fill: ui-fill)[`L113`↵] \
-```
+`
   0113  STA  0121
   0116  RST  07
   0117  NOP
@@ -5369,69 +5623,161 @@ C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
   011D  DCR  B
   011E  MVI  B,01
   0120  DCR  B
-```
-`-`#text(fill: ui-fill)[`X`↵] \
-```
+-`#text(fill: ui-fill)[`X`↵] \
+`
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08*0102
 
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0102 MVI C,00*0104
 
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0104 LXI H,0119*0107
 
-```
-`-`#text(fill: ui-fill)[`T3`↵] \
-```
+-`#text(fill: ui-fill)[`T3`↵] \
+`
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0119 S=0100 P=0107 MOV A,M
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0108 SUB C
 C0Z0M0E0I1 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JNC 010D*010D
 
-```
-
+`
 ]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: -0.5em, left: 14em)[Enter inline assembly mode to change the] \
-    #pad(top: -3em, left: 14em)[JMP to 0000 into a RST 7, which will] \
-    #pad(top: -3em, left: 14em)[return to DDT if ever executed] \
-    #pad(top: -2.2em, left: 14em)[single \<cr> stops assemble mode] \
-    #pad(top: -2.0em, left: 14em)[List code at 113H to check change] \
-    #pad(top: -0.5em, left: 10em)[⇐ in place of JMP] \
-    #pad(top: 10.5em, left: 14em)[Look at registers] \
-    #pad(top: -0.5em, left: 7em)[Execute program for one step] \
-    #pad(top: -2.8em, left: 10em)[initial CPU state, before execution⇘] \
-    #pad(top: -2.0em, left: 19em)[automatic break-point⇗] \
-    #pad(top: -2.7em, left: 5em)[Trace one step again (note 08H in B)] \
-    #pad(top: -0.0em, left: 5em)[Trace again (Register C is cleared)] \
-    #pad(top: -0.5em, left: 5em)[Trace three steps] \
-    #pad(top: 1.5em, left: 19em)[automatic break-point⇗] \
-  ]
-))
 
 #pagebreak()
 
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 0pt,
+      [display memory starting at 119H]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 20pt,
+      [program data]
+    )
+    #place(
+      top + left,
+      dx: 25pt,
+      dy: 36pt,
+      rect(height: 11pt, width: 115pt)
+    )
+    #place(
+      top + left,
+      dx: 25pt,
+      dy: 47pt,
+      rect(height: 11pt, width: 17pt)
+    )
+    #place(
+      top + left,
+      dx: 258pt,
+      dy: 47pt,
+      rect(height: 11pt, width: 17pt)
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      dy: 0pt,
+      path(
+        tip: stealth,
+        toe: stealth,
+        (265pt, 47pt),
+        ((315pt, 32pt), (-20pt, -2pt), (20pt, -2pt)),
+        (372pt, 47pt),
+      )
+    )
+    #place(
+      top + left,
+      dx: 372pt,
+      dy: 47pt,
+      rect(height: 11pt, width: 7pt)
+    )
+    #place(
+      top + left,
+      dx: 315pt,
+      dy: 20pt,
+      [lowercase x]
+    )
+    #place(
+      top + left,
+      dx: 355pt,
+      dy: 80pt,
+      align(center)[Data is displayed \ in ASCII with a "." \
+      in the position of \
+      non-graphic \
+      characters]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 190pt,
+      [current CPU state]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 240pt,
+      [trace 5 steps from current CPU state]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (360pt, 335pt), end: (332pt, 325pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 370pt,
+      dy: 328pt,
+      [automatic breakpoint]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 330pt,
+      [trace without listing intermediate states]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 365pt,
+      [CPU state at end of U5]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 415pt,
+      [run program from current PC until completion (in real-time)]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 435pt,
+      [breakpoint at 116H, caused by executing RST 7 in machine code]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 450pt,
+      [CPU state at end of program]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 495pt,
+      [examine and change program counter]
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`D119`↵] \
-```
+`
 
 0119 02 00 04 03 05 06 01 .......
 0120 05 11 00 22 21 00 02 7E EB 77 13 23 EB 0B 78 B1 ..."!..~.W.#..X.
@@ -5446,82 +5792,162 @@ C0Z0M0E0I1 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JNC 010D*010D
 01B0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 01C0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 
-```
-`-`#text(fill: ui-fill)[`X`↵] \
-```
+-`#text(fill: ui-fill)[`X`↵] \
+`
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=010D INX  H
 
-```
-`-`#text(fill: ui-fill)[`T5`↵] \
-```
+-`#text(fill: ui-fill)[`T5`↵] \
+`
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=010D INX  H
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=011A S=0100 P=010E DCR  B
 C0Z0M0E0I0 A=02 B=0700 D=0000 H=011A S=0100 P=010F JNZ  0107
 C0Z0M0E0I0 A=02 B=0700 D=0000 H=011A S=0100 P=0107 MOV  A,M
 C0Z0M0E0I0 A=00 B=0700 D=0000 H=011A S=0100 P=0108 SUB  C*0109
-```
-`-`#text(fill: ui-fill)[`U5`↵] \
-```
+-`#text(fill: ui-fill)[`U5`↵] \
+`
 C0Z1M0E0I0 A=00 B=0700 D=0000 H=011A S=0100 P=0109 JNC  010D*0108
-```
-`-`#text(fill: ui-fill)[`X`↵] \
-```
+-`#text(fill: ui-fill)[`X`↵] \
+`
 C0Z0M0E0I0 A=04 B=0600 D=0000 H=011B S=0100 P=0108 SUB  C
 
-```
-`-`#text(fill: ui-fill)[`G`↵] \
+-`#text(fill: ui-fill)[`G`↵] \
 
-`*0116` \
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 0.0em, left: 5em)[Display memory starting at 119H] \
-    #pad(top: -1.8em, left: 3em)[⇓ program data ⇘] \
-    #pad(top: -3.0em, left: 3em)[#rect(height: 1.1em, width: 10em)]
-    #pad(top: -0.8em, left: 3em)[#rect(height: 1.1em, width: 1.3em)]
-    #pad(top: -3.0em, left: 24.0em)[⇙ lower-case X ⇘] \
-    #pad(top: 2.0em, left: 28em)[Data is displayed] \
-    #pad(top: -2.5em, left: 28em)[in ASCII with a '.'] \
-    #pad(top: -2.5em, left: 28em)[in the position of] \
-    #pad(top: -2.5em, left: 28em)[non-graphic] \
-    #pad(top: -2.5em, left: 28em)[characters] \
-    #pad(top: 1.0em, left: 5em)[Current CPU State] \
-    #pad(top: 0em, left: 5em)[Trace 5 steps from current CPU state] \
-    #pad(top: 4.3em, left: 16em)[automatic break-point⇗] \
-    #pad(top: -2.9em, left: 5em)[Trace without listing intermediate states] \
-    #pad(top: -0.0em, left: 14em)[CPU state at end of U5] \
-    #pad(top: -0.1em, left: 5em)[Run program from current PC until completion (in real-time)] \
-    #pad(top: -2em, left: 5em)[breakpoint at 116H, caused by executing RST 7 in machine code] \
-  ]
-))
-
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
-`-`#text(fill: ui-fill)[`X`↵] \
-```
+`*0116
+-`#text(fill: ui-fill)[`X`↵] \
+`
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0116 RST  07
 
-```
-`-`#text(fill: ui-fill)[`XP`↵] \
+-`#text(fill: ui-fill)[`XP`↵] \
 `P=0116 `#text(fill: ui-fill)[`100`↵] \
 `-`#text(fill: ui-fill)[`X`↵] \
-```
+`
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0100 MVI  B,08
 
-```
+`
+]
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: -2pt,
+      [trace 10 (hexadecimal) steps]
+    )
+    #place(
+      top + left,
+      dx: 72pt,
+      dy: 71pt,
+      rect(height: 11pt, width: 12pt)
+    )
+    #place(
+      top + left,
+      dx: 111pt,
+      dy: 71pt,
+      rect(height: 11pt, width: 12pt)
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (89pt, 22pt), end: (84pt, 71pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 70pt,
+      dy: 12pt,
+      [first data element]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (170pt, 22pt), end: (123pt, 71pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 170pt,
+      dy: 12pt,
+      [current largest value]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (370pt, 52pt), end: (318pt, 77pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 350pt,
+      dy: 42pt,
+      align(center)[subtract for comparison \ A < C]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      [
+        #line(start: (370pt, 95pt), end: (318pt, 95pt), tip: stealth)
+        #line(start: (370pt, 125pt), end: (370pt, -6pt))
+        #line(start: (-80pt, 0pt), end: (80pt, 0pt), tip: bar, toe: bar)
+      ]
+    )
+    #place(
+      top + left,
+      dx: 305pt,
+      dy: 230pt,
+      block(width: 140pt)[
+        Program should have moved the value from A into C since A > C. Since this
+        case was not executed, it appears that the JNC should have been a JC
+        instruction
+      ]
+    )
+    #place(
+      top + left,
+      dx: 75pt,
+      dy: 225pt,
+      block(width: 140pt)[
+        Insert a "hot patch" into the machine code to change the JNC to JC
+      ]
+    )
+    #place(
+      top + left,
+      dx: 55pt,
+      dy: 255pt,
+      block(width: 140pt)[
+        stop DDT so that a version of the patched program can be saved
+      ]
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 284pt,
+      [program resides on first page, so save 1 page]
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 300pt,
+      [restart DDT with the saved memory image \ to continue testing]
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 370pt,
+      [list some code]
+    )
+    #place(
+      top + left,
+      dx: 150pt,
+      dy: 440pt,
+      [previous patch is present in SCAN.COM]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (145pt, 447pt), end: (95pt, 460pt), tip: stealth)
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`T10`↵] \
-```
+`
 C0Z1M0E0I0 A=00 B=0000 D=0000 H=0121 S=0100 P=0100 MVI  B,08
 C0Z1M0E0I0 A=00 B=0800 D=0000 H=0121 S=0100 P=0102 MVI  C,00
 C0Z1M0E0I0 A=00 B=0800 D=0000 H=0121 S=0100 P=0104 LXI  H,0119
@@ -5539,56 +5965,20 @@ C0Z1M0E0I0 A=00 B=0700 D=0000 H=011B S=0100 P=010E DCR  B
 C0Z0M0E0I0 A=00 B=0600 D=0000 H=011B S=0100 P=010F JNZ  0107
 C0Z0M0E0I0 A=00 B=0600 D=0000 H=011B S=0100 P=0107 MOV  A,M*0108
 
-```
+`
 `-`#text(fill: ui-fill)[`A109`↵] \
 `-`#text(fill: ui-fill)[`JC 10D`↵] \
 `010C`#text(fill: ui-fill)[↵] \
 `-`#text(fill: ui-fill)[`G0`↵] \
 `A>`#text(fill: ui-fill)[`SAVE 1 SCAN.COM`↵] \
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 0em, left: 7em)[CPU State at end of program] \
-    #pad(top: -0.5em, left: 7em)[Examine and change program counter] \
-    #pad(top: 3.5em, left: 7em)[Trace 10 (hexadecimal) steps] \
-    #pad(top: 3.3em, left: 8.5em)[#rect(height: 1.2em, width: 2em)]
-    #pad(top: -2.5em, left: 12.8em)[#rect(height: 1.2em, width: 1.0em)] \
-    #pad(top: -5.0em, left: 10em)[#text(size: 0.8em)[⇙ first data element]] \
-    #pad(top: -2.0em, left: 6em)[#text(size: 0.8em)[current largest ⇗]] \
-    #pad(top: -2.7em, left: 30em)[⇐⇐ A=02 C=00] \
-    #pad(top: -3.0em, left: 19em)[#rect(height: 6.0em, width: 22.0em, fill: rgb(255, 255, 255, 155))] \
-    #pad(top: -8.5em, left: 20em)[program should have moved the ⇑] \
-    #pad(top: -2.5em, left: 20em)[value from A into C since A > C] \
-    #pad(top: -2.5em, left: 20em)[it appears that the JNC should be a JC] \
-    #pad(top: 7.0em, left: 14em)[insert a "hot patch"] \
-    #pad(top: -2.5em, left: 14em)[to change JNC to JC] \
-    #pad(top: -0.5em, left: 14em)[Stop DDT so program can be saved] \
-    #pad(top: -2.5em, left: 14em)[Program resides on first page, so save 1 page] \
-  ]
-))
-
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
 `A>`#text(fill: ui-fill)[`DDT SCAN.COM`↵] \
-```
+`
 DDT VERS 2.2
 NEXT PC
 0200 0100
 
-```
-`-`#text(fill: ui-fill)[`L100`↵] \
-```
+-`#text(fill: ui-fill)[`L100`↵] \
+`
   0100  MVI  B,08
   0102  MVI  C,00
   0104  LXI  H,0119
@@ -5601,11 +5991,106 @@ NEXT PC
   010F  JNZ  0107
   0112  MOV  A,C
 
-```
+`
 `-`#text(fill: ui-fill)[`XP`↵] \
 `P=0100 `#text(fill: ui-fill)[↵] \
+
+]
+
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: -2pt,
+      [trace to see how patched version operates]
+    )
+    #place(
+      top + left,
+      dx: 72pt,
+      dy: 71pt,
+      rect(height: 11pt, width: 12pt)
+    )
+    #place(
+      top + left,
+      dx: 111pt,
+      dy: 107pt,
+      rect(height: 11pt, width: 12pt)
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (80pt, 82pt), end: (110pt, 107pt), tip: triangle, stroke: 2pt)
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (170pt, 22pt), end: (123pt, 107pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 170pt,
+      dy: 12pt,
+      [data is moved from A to C]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (305pt, 220pt), end: (332pt, 212pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 210pt,
+      dy: 215pt,
+      [breakpoint after 16 steps]
+    )
+    #place(
+      top + left,
+      dx: 50pt,
+      dy: 265pt,
+      [run from current PC and breakpoint at 108H]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (78pt, 290pt), end: (80pt, 305pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 285pt,
+      [next data item]
+    )
+    #place(
+      top + left,
+      dx: 110pt,
+      dy: 325pt,
+      [single step for a few cycles]
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 442pt,
+      [run to completion]
+    )
+    #place(
+      top + left,
+      dx: 60pt,
+      dy: 505pt,
+      [look at the value of "LARGE"]
+    )
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: 520pt,
+      [Wrong value!]
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`T10`↵] \
-```
+`
 C0Z0M0E0I0 A=00 B=0000 D=0000 H=0000 S=0100 P=0100 MVI B,08
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0102 MVI C,00
 C0Z0M0E0I0 A=00 B=0800 D=0000 H=0000 S=0100 P=0104 LXI H,0119
@@ -5623,76 +6108,108 @@ C1Z0M1E0I0 A=FE B=0702 D=0000 H=011A S=0100 P=010D INX H
 C1Z0M1E0I0 A=FE B=0702 D=0000 H=011B S=0100 P=010E DCR B
 C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=010F JNZ 0107*0107
 
-```
+-`#text(fill: ui-fill)[`X`↵] \
+`C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=0107 MOV A,M
 
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: -0.0em, left: 12em)[restart DDT with the saved image to continue testing] \
-    #pad(top: 3.0em, left: 14em)[List some code] \
-    #pad(top: 4.3em, left: 12em)[⇐ Previous patch is present in SCAN.COM] \
-    #pad(top: 8em, left: 14em)[Trace to see how patched version operates] \
-    #pad(top: 3.5em, left: 8.5em)[#rect(height: 1.2em, width: 2em)]
-    #pad(top: -2.7em, left: 32em)[Data is moved] \
-    #pad(top: -2.5em, left: 32em)[from A to C] \
-    #pad(top: -0.9em, left: 12.8em)[#rect(height: 1.2em, width: 1.0em)] \
-    #pad(top: 7.8em, left: 19em)[Breakpoint after 16 steps⇗] \
-  ]
-))
-
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
-`-`#text(fill: ui-fill)[`X`↵] \
-```
-C1Z0M0E1I1 A=FE B=0602 D=0000 H=011B S=0100 P=0107 MOV A,M
-
-```
-`-`#text(fill: ui-fill)[`G,108`↵] \
-\
+-`#text(fill: ui-fill)[`G,108`↵] \
 `*0108` \
 `-`#text(fill: ui-fill)[`X`↵] \
-```
-C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C
+`C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C
 
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
-C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C*0109
+-`#text(fill: ui-fill)[`T`↵] \
+`C1Z0M0E1I1 A=04 B=0602 D=0000 H=011B S=0100 P=0108 SUB C*0109
 
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
-C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=0109 JC 010D*010C
+-`#text(fill: ui-fill)[`T`↵] \
+`C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=0109 JC 010D*010C
 
-```
-`-`#text(fill: ui-fill)[`X`↵] \
-```
-C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=010C MOV C,A
+-`#text(fill: ui-fill)[`X`↵] \
+`C0Z0M0E0I1 A=02 B=0602 D=0000 H=011B S=0100 P=010C MOV C,A
 
-```
-`-`#text(fill: ui-fill)[`G`↵] \
+-`#text(fill: ui-fill)[`G`↵] \
 `*0116` \
 `-`#text(fill: ui-fill)[`X`↵] \
-```
-C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
+`C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
 
-```
-`-`#text(fill: ui-fill)[`S121`↵] \
+-`#text(fill: ui-fill)[`S121`↵] \
 ` 0121   03  `#text(fill: ui-fill)[↵] \
 ` 0122   52  `#text(fill: ui-fill)[`.`↵] \
+
+]
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 150pt,
+      dy: 145pt,
+      [Review the code]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (135pt, 20pt), end: (135pt, 310pt), tip: bar, toe: bar)
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 330pt,
+      [reset the PC]
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 352pt,
+      [single step, and watch data values]
+    )
+    #place(
+      top + left,
+      dx: 60pt,
+      dy: 400pt,
+      [count set]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (90pt, 410pt), end: (105pt, 428pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 122pt,
+      dy: 440pt,
+      ["largest" set]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (123pt, 448pt), end: (115pt, 465pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 200pt,
+      dy: 480pt,
+      [base address of data set]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (198pt, 487pt), end: (185pt, 505pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: 520pt,
+      [first data item brought to A]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (118pt, 531pt), end: (82pt, 542pt), tip: stealth)
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`L100`↵] \
-```
+`
   0100  MVI  B,08
   0102  MVI  C,00
   0104  LXI  H,0119
@@ -5704,36 +6221,8 @@ C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
   010E  DCR  B
   010F  JNZ  0107
   0112  MOV  A,C
-```
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 3.5em, left: 14em)[Run from current PC and breakpoint at 108H] \
-    #pad(top: 2.0em, left: 10.5em)[⇙next data item] \
-    #pad(top: -1.0em, left: 10em)[Single step for a few cycles] \
-    #pad(top: 7.0em, left: 10em)[run to completion] \
-    #pad(top: 3.5em, left: 12em)[look at the value of "LARGE"] \
-    #pad(top: -2.5em, left: 12em)[wrong value!] \
-    #pad(top: -1.2em, left: 9.7em)[⇖End of the S command] \
-    #pad(top: 2em, left: 20em)[Review the code] \
-  ]
-))
-
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
-`-`#text(fill: ui-fill)[`L`↵] \
-```
+-`#text(fill: ui-fill)[`L`↵] \
+`
   0113  STA  0121
   0116  RST  07
   0117  NOP
@@ -5745,29 +6234,95 @@ C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0116 RST 07
   011D  DCR  B
   011E  MVI  B,01
   0120  DCR  B
-```
-`-`#text(fill: ui-fill)[`XP`↵] \
-`P=0116 `#text(fill: ui-fill)[`100`↵] \
+-`#text(fill: ui-fill)[`XP`↵] \
+`
+P=0116 `#text(fill: ui-fill)[`100`↵] \
 `-`#text(fill: ui-fill)[`T`↵] \
-```
+`
 C0Z1M0E1I1 A=03 B=0003 D=0000 H=0121 S=0100 P=0100 MVI B,08*0102
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z1M0E1I1 A=03 B=0803 D=0000 H=0121 S=0100 P=0102 MVI C,00*0104
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z1M0E1I1 A=03 B=0800 D=0000 H=0121 S=0100 P=0104 LXI H,0119*0107
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
 C0Z1M0E1I1 A=03 B=0800 D=0000 H=0119 S=0100 P=0107 MOV A,M*0108
-```
-`-`#text(fill: ui-fill)[`T`↵] \
-```
-C0Z1M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0108 SUB  C*0109
-```
+-`#text(fill: ui-fill)[`T`↵] \
+`
+C0Z1M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0108 SUB  C*0109`
+]
+
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 150pt,
+      dy: 75pt,
+      [first data item moved to C correctly]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (145pt, 80pt), end: (115pt, 100pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 235pt,
+      [second data item brought to A]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (115pt, 240pt), end: (78pt, 260pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 280pt,
+      [subtract destroys data value which was loaded!]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (115pt, 285pt), end: (78pt, 300pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 180pt,
+      dy: 425pt,
+      [This should have been a CMP so that register A \ would not be changed]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (175pt, 430pt), end: (120pt, 430pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 90pt,
+      dy: 522pt,
+      [hot patch at 108H changes SUB to CMP]
+    )
+    #place(
+      top + left,
+      dx: 90pt,
+      dy: 547pt,
+      [stop DDT for Save]
+    )
+    #place(
+      top + left,
+      dx: 120pt,
+      dy: 565pt,
+      [save memory image]
+    )
+  ],
+)[
 `-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I0 A=02 B=0800 D=0000 H=0119 S=0100 P=0109 JC   010D*010C
@@ -5784,33 +6339,6 @@ C0Z0M0E0I1 A=02 B=0802 D=0000 H=0119 S=0100 P=010D INX H*010E
 ```
 C0Z0M0E0I1 A=02 B=0802 D=0000 H=011A S=0100 P=010E DCR B*010F
 ```
-
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 10em, left: 20em)[Review the code (continued)] \
-    #pad(top: 3.7em, left: 14em)[Reset the PC] \
-    #pad(top: -0.9em, left: 14em)[Single step, and watch data values] \
-    #pad(top: 4.8em, left: 11.5em)[⇙count set] \
-    #pad(top: -2.2em, left: 5em)["largest" set⇗] \
-    #pad(top: -2.0em, left: 18.5em)[⇙base address of data set] \
-    #pad(top: 0.0em, left: 9em)[⇙first data item brought into A] \
-    #pad(top: 7.2em, left: 12.5em)[⇙first data item moved to C correctly] \
-  ]
-))
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -31.5em,
-    [
 `-`#text(fill: ui-fill)[`T`↵] \
 ```
 C0Z0M0E0I1 A=02 B=0702 D=0000 H=011A S=0100 P=010F JNZ 0107*0107
@@ -5846,10 +6374,107 @@ C1Z0M1E0I0 A=FE B=0702 D=0000 H=011A S=0100 P=010D INX H*010E
  0112   MOV        A,C
 ```
 `-`#text(fill: ui-fill)[`A108`↵] \
-`-`#text(fill: ui-fill)[`CMP C`↵] \
-`0109`#text(fill: ui-fill)[↵] \
+`0108 `#text(fill: ui-fill)[`CMP C`↵] \
+`0109 `#text(fill: ui-fill)[↵] \
 `-`#text(fill: ui-fill)[`G0`↵] \
 `A>`#text(fill: ui-fill)[`SAVE 1 SCAN.COM`↵] \
+]
+
+#pagebreak()
+
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: 0pt,
+      [restart DDT]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (145pt, 100pt), end: (145pt, 170pt), tip: bar, toe: bar)
+    )
+    #place(
+      top + left,
+      dx: 160pt,
+      dy: 115pt,
+      align(center)[look at code to see if it was properly loaded \ 
+      (long typeout aborted with rubout)]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 185pt,
+      [run from 100H to completion]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 235pt,
+      [look at Carry (accidental typo)]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 265pt,
+      [look at CPU state]
+    )
+    #place(
+      top + left,
+      dx: 90pt,
+      dy: 305pt,
+      [look at "LARGE" -- it appears to be correct]
+    )
+    #place(
+      top + left,
+      dx: 90pt,
+      dy: 360pt,
+      [stop DDT]
+    )
+    #place(
+      top + left,
+      dx: 140pt,
+      dy: 370pt,
+      [Re-edit the source program, and make both changes]
+    )
+    #place(
+      top + left,
+      dx: 96pt,
+      dy: 428pt,
+      rect(height: 13pt, width: 13pt, radius: 6pt)
+    )
+    #place(
+      top + left,
+      dx: 66pt,
+      dy: 428pt,
+      rect(height: 13pt, width: 13pt, radius: 6pt)
+    )
+    #place(
+      top + left,
+      dx: 81pt,
+      dy: 479pt,
+      rect(height: 13pt, width: 10pt, radius: 6pt)
+    )
+    #place(
+      top + left,
+      dx: 62pt,
+      dy: 479pt,
+      rect(height: 13pt, width: 10pt, radius: 6pt)
+    )
+    #place(
+      top + left,
+      dx: 100pt,
+      dy: 400pt,
+      [CTRL-Z]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (110pt, 410pt), end: (102pt, 428pt), tip: stealth)
+    )
+  ],
+)[
 `A>`#text(fill: ui-fill)[`DDT SCAN.COM`↵] \
 ```
 DDT VERS 2.2
@@ -5858,34 +6483,6 @@ NEXT PC
 ```
 `-`#text(fill: ui-fill)[`XP`↵] \
 `P=0100 `#text(fill: ui-fill)[↵] \
-]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 8.4em, left: 7.5em)[⇙Second data item brought to A] \
-    #pad(top: 0em, left: 7.5em)[⇙Subtract destroys data value that was loaded!] \
-    #pad(top: 9.7em, left: 11em)[⇐ This should have been a CMP so that] \
-    #pad(top: -2.4em, left: 13em)[register A would not be destroyed] \
-    #pad(top: 5.0em, left: 16em)[Hot patch at 108H changes SUB to CMP] \
-    #pad(top: 1.0em, left: 16em)[Stop DDT for save] \
-    #pad(top: -2.5em, left: 16em)[Save memory image] \
-    #pad(top: -2.0em, left: 16em)[Restart DDT] \
-  ]
-))
-
-
-#pagebreak()
-
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
-
 `-`#text(fill: ui-fill)[`L116`↵] \
 ```
  0116   RST        07
@@ -5924,34 +6521,86 @@ C1Z1M0E1I1 A=06 B=0006 D=0000 H=0121 S=0100 P=0116 RST 07
 `    8: *`#text(fill: ui-fill)[`E`↵] \
 \
 ]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: 0.0em, left: 14em)[Look at code to see if it was properly loaded] \
-    #pad(top: 5.5em, left: 14em)[(long type-out aborted with rubout/DEL)] \
-    #pad(top: -2.5em, left: 14em)[Run from 100H to completion] \
-    #pad(top: 1.0em, left: 14em)[Look at carry (typo)] \
-    #pad(top: 3.5em, left: 14em)[Look at "LARGE"] \
-    #pad(top: -2.0em, left: 14em)[it appears to be correct] \
-    #pad(top: 1.5em, left: 14em)[Stop DDT] \
-    #pad(top: -2.5em, left: 14em)[Re-edit the source program] \
-    #pad(top: 2.5em, left: 14em)[Change SUB to CMP] \
-    #pad(top: 2.5em, left: 14em)[Change JNC to JC] \
-  ]
-))
+
 
 
 #pagebreak()
 
-#box(
-  stroke: 2pt,
-  outset: 16pt,
-  radius: 8pt,
-  width: 1fr,
-  stack(
-    dir: ltr,
-    spacing: -34em,
-    [
+#sample-stack(
+  commentary: [
+    #place(
+      top + left,
+      dx: 180pt,
+      dy: 0pt,
+      align(center)[Re-assemble. Selection source from disk A \ hex to disk A \ print to Z (selects no file)]
+    )
+    #place(
+      top + left,
+      dx: 180pt,
+      dy: 70pt,
+      [Re-run debugger to check changes]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 140pt,
+      [check to ensure end is still at 116H]
+    )
+    #place(
+      top + left,
+      dx: 20pt,
+      dy: 215pt,
+      [(rubout)]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 230pt,
+      [Go from beginning with breakpoint at end]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 250pt,
+      [breakpoint reached]
+    )
+    #place(
+      top + left,
+      dx: 80pt,
+      dy: 267pt,
+      [look at "LARGE"]
+    )
+    #place(
+      top + left,
+      dx: 26pt,
+      dy: 289pt,
+      rect(height: 13pt, width: 14pt, radius: 6pt)
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 328pt,
+      [(rubout) abort long typeout]
+    )
+    #place(
+      top + left,
+      dx: 70pt,
+      dy: 278pt,
+      [correct value computed]
+    )
+    #place(
+      top + left,
+      dx: 0pt,
+      line(start: (68pt, 285pt), end: (35pt, 289pt), tip: stealth)
+    )
+    #place(
+      top + left,
+      dx: 40pt,
+      dy: 345pt,
+      [stop DDT, debug session complete]
+    )
+  ],
+)[
 `A>`#text(fill: ui-fill)[`ASM SCAN.AAZ`↵] \
 ```
 CP/M ASSEMBLER - VER 2.0
@@ -5989,29 +6638,10 @@ NEXT PC
 #text(fill: ui-fill)[⌫] \
 `-`#text(fill: ui-fill)[`G0`↵] \
 \
-
 ]
-  ,
-  block(spacing: 0.9em)[
-    #set text(font: cursive-font)
-    #pad(top: -0.5em, left: 14em)[Re-assemble, selecting source from disk A] \
-    #pad(top: -2.5em, left: 18em)[hex to disk A] \
-    #pad(top: -2.5em, left: 18em)[Print to Z (selects no print file)] \
-    #pad(top: 1.5em, left: 14em)[Re-run debugger to check changes] \
-    #pad(top: 4.0em, left: 14em)[check to ensure end is still at 116H] \
-    #pad(top: 4.0em, left: 14em)[(long type-out aborted with rubout/DEL)] \
-    #pad(top: -2.0em, left: 14em)[Run from beginning with breakpoint at end] \
-    #pad(top: -2.0em, left: 7em)[Breakpoint reached] \
-    #pad(top: -0.5em, left: 4.0em)[#rect(height: 1.2em, width: 1.5em)]
-    #pad(top: -4.5em, left: 7em)[Look at "LARGE"] \
-    #pad(top: -2.7em, left: 5em)[⇙Correct value computed] \
-    #pad(top: 1.9em, left: 14em)[(rubout) aborts long type-out] \
-    #pad(top: -2.5em, left: 14em)[Stop DDT, debug session complete.] \
-  ]
-))
+
 
 #pagebreak()
-#show raw : set text(font: "Source Code Pro")
 #set heading(numbering: "1.", supplement: [Section])
 = CP/M 2 System Interface
 
@@ -11351,7 +11981,6 @@ assembly with `MAC`.
 
 #line(length: 98%)
 #set text(size: 10pt)
-#show raw : set text(font: "Source Code Pro")
 
 ```
      1                  ;		COMBINED GETSYS AND PUTSYS PROGRAMS FROM

@@ -180,6 +180,10 @@
 
 #let zcim-project = text(font: title-font)[Zcim Project]
 
+#let cmd-line(content) = {
+  pad(left: 5em, content)
+}
+
 #let paged-listing(
   list-fill: listing-fill,
   content
@@ -250,3 +254,40 @@
   ]
 }
 
+
+#let sample-stack(
+  tabs: default-tab-stop,
+  commentary: [],
+  content
+) = {
+  pad(
+    y: 2em,
+    box(
+      stroke: 2pt,
+      outset: 16pt,
+      radius: 8pt,
+      width: 1fr,
+      stack(
+        dir: ltr,
+        spacing: -100%,
+        block(
+          width: 100%,
+          [
+            #set align(left)
+            #set raw(tab-size: tabs)
+            #set par(leading: listing-leading-length)
+            #content
+          ]
+        ),
+        block(
+          width: 100%,
+          [
+            #set text(font: cursive-font)
+            #set par(leading: listing-leading-length)
+            #commentary
+          ]
+        )
+      )
+    )
+  )
+}

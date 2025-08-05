@@ -1,4 +1,4 @@
-# ignode common library file that gets copied to work-around
+# ignore common files that gets copied to work-around
 # the typst sandbox.
 zcim-library.typ
-
+bdos-common.typ

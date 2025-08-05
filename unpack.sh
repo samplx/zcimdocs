@@ -13,7 +13,7 @@ TARGET="$(pwd)"
 cd "$WORKING" || exit 86
 unzip "$SOURCE_ZIP"
 
-rsync -av asm cbasic cpm13 cpm14 cpm20 cpm22 cpm30 ddt ed link80 mac80 pascal pli80 sid tex zcim zcim-library.typ "$TARGET"/
+rsync -av asm bdos-common.typ cbasic cpm13 cpm14 cpm20 cpm22 cpm30 ddt ed link80 mac80 pascal pli80 sid tex zcim zcim-library.typ "$TARGET"/
 
 cd "$TARGET" || exit 86
 

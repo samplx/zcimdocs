@@ -71,8 +71,8 @@ is a registered trademark of MicroSoft Corporation.
   title: [List of Tables],
   target: figure.where(kind: table),
 )
-#counter(page).update(0)
 #pagebreak()
+#counter(page).update(1)
 #set page(numbering: "1")
 #set heading(numbering: "1.", supplement: [Section])
 = Introduction to CP/M 3

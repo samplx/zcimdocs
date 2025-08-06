@@ -25,15 +25,15 @@
 
 #import "@preview/headcount:0.1.0": *
 
-#let document-version = [version 2025-08-01]
+#let document-version = [stub 2025-08-05]
 
 // -------------------------------------------------------------------------------
 // END of COMMON
 // -------------------------------------------------------------------------------
 #title-page(
   title-text: [
-    _ED: A Context Editor for the CP/M® \
-    Disk System User's Guide_
+Digital Research \
+    _CP/M® System Alteration Guide_
   ],
   version: document-version
 )
@@ -41,7 +41,7 @@
 #pagebreak()
 #credits-page(
   copyright: [
-Copyright ©1976, 1978 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
+Copyright ©1976 by Digital Research. All rights reserved. No part of this publication may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form or by any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of \
 #strike[Digital Research, Post Office Box  579, Pacific Grove, California 93950]. \
 #strike[http://www.lineo.com] \
 DRDOS, Inc [Bryan Sparks] \
@@ -57,6 +57,7 @@ time to time in the content hereof without obligation of Digital  Research to
 notify any person of such revision or changes.    
   ],
   printing: [
+    Version 1.3 \
     #zcim-project edition: #document-version
   ]
 )
@@ -95,11 +96,16 @@ The source material is from the
 
 The individual documents from the archive include:
 
-- #link("http://cpm.z80.de/randyfiles/DRI/ED.pdf")[_ED: A Context Editor for the CP/M Disk System User's Guide_ (pdf)]
+- #link("http://cpm.z80.de/randyfiles/DRI/CPM_1_4_System_Alteration_Guide.pdf")[_CP/M 1.4 Alteration Guide_ (PDF)]
+
+Additional documents are available from #link("https://www.icl1900.co.uk/unix4fun/z80pack/index.html")[z80pack], including:
+
+- #link("https://www.icl1900.co.uk/unix4fun/z80pack/ftp/manuals/DRI/cpm-1.3/CPM%201.3%20System%20Alteration%20Guide.pdf")[_CP/M 1.3 System Alteration Guide_ (PDF)]
 
 The contents of the manual were edited using the #link("https://Typst.app/")[Typst.app] site.
 
-
+The sources of the document are available at
+#link("https://github.com/samplx/zcimdocs")[GitHub].
 
 == License
 

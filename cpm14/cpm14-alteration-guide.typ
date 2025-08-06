@@ -71,8 +71,8 @@ notify any person of such revision or changes.
   title: [List of Tables],
   target: figure.where(kind: table),
 )
-#counter(page).update(0)
 #pagebreak()
+#counter(page).update(1)
 #set page(numbering: "1")
 #set heading(numbering: "1.", supplement: [Section])
 = Introduction
@@ -96,7 +96,11 @@ The source material is from the
 
 The individual documents from the archive include:
 
-- #link("http://cpm.z80.de/randyfiles/DRI/CPM_2_0_System_Alteration_Guide.pdf")[_CP/M 2.0 Alteration Guide_ (pdf)]
+- #link("http://cpm.z80.de/randyfiles/DRI/CPM_1_4_System_Alteration_Guide.pdf")[_CP/M 1.4 Alteration Guide_ (PDF)]
+
+Additional documents are available from #link("https://www.icl1900.co.uk/unix4fun/z80pack/index.html")[z80pack], including:
+
+- #link("https://www.icl1900.co.uk/unix4fun/z80pack/ftp/manuals/DRI/cpm-1.4/CPM_1.4_Alteration_Guide.pdf")[_CP/M 1.4 System Alteration Guide_ (PDF)]
 
 The contents of the manual were edited using the #link("https://Typst.app/")[Typst.app] site.
 

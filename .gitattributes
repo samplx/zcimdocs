@@ -8,3 +8,6 @@
 /pli80/originals/pl1lrm/*   text eol=crlf
 /sid/originals/*.txt        text eol=crlf
 /sid/originals/*.TXT        text eol=crlf
+/cpm13/load.plm             text eol=crlf
+/cpm13/dump.asm             text eol=crlf
+

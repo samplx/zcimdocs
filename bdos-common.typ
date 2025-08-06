@@ -326,6 +326,7 @@
     format: format,
     depth: depth,
     return-other: [*Does not return*],
+    plm: [`CALL MON1(0, 0)`],
     [
       The *System Reset* function returns control to the CP/M operating
       system at the CCP level.  The CCP re-initializes the disk
@@ -348,6 +349,7 @@
     format: format,
     depth: depth,
     return-a: [ASCII Character],
+    plm: [`I = MON2(1,O)`],
     [
       The *Console Input* function reads the next console character to
       register `A`.  Graphic characters, along with carriage return, line-feed,
@@ -374,11 +376,7 @@
     depth: depth,
     e: [ASCII character to output],
     perFlavor: (
-      "1.3": [really cool stuff],
-      "2.0": [IOBYTE functionality],
       "3.0": [Now with console redirection instead of IOBYTE],
-      "3.0nb": [Does nothing],
-      "3.0b": [Does something else],
     ),
     globals: (
       "console-column": "updated",
@@ -405,6 +403,7 @@
     format: format,
     depth: depth,
     return-a: [ASCII Character],
+    plm: [`I = MON2(3, 0)`],
     [
       The *Reader Input* function reads the next character from the
       logical reader into register `A`.
@@ -425,6 +424,7 @@
     format: format,
     depth: depth,
     e: [ASCII Character],
+    plm: [`CALL MON1(4, 'B')`],
     [
       The *Punch Output* function sends the character from register `E` to
       the logical punch device.
@@ -444,6 +444,7 @@
     format: format,
     depth: depth,
     e: [ASCII Character],
+    plm: [`CALL MON1(5, 'C')`],
     [
       The *List Output* function sends the ASCII character in register `E`
       to the logical listing device.
@@ -464,6 +465,7 @@
     depth: depth,
     supported: cpm1-only,
     return-hl: [Base Address of the CCP],
+    plm: [`A = MON3(6, 0)`],
     [
       The *Memory Size* function returns the base address of the
       Console Command Processor (CCP) in `HL`.
@@ -520,6 +522,7 @@
     depth: depth,
     return-a: [IOBYTE value],
     supported: cpm22-and-before,
+    plm: [`IOSTAT = MON2(7, 0)`],
     [
       The *Get IOBYTE* function returns the current value of IOBYTE in
       register `A`.
@@ -559,6 +562,7 @@
     depth: depth,
     supported: cpm22-and-before,
     e: [IOBYTE value],
+    plm: [`CALL MON1(8, IOSTAT)`],
     [
       The *Set IOBYTE* function changes the IOBYTE value to that given
       in register `E`.
@@ -599,6 +603,7 @@
     format: format,
     depth: depth,
     de: [String Address],
+    plm: [`CALL MON1(9, .'PRINT THIS$')`],
     [
       The *Print String* function sends the character string stored in
       memory at the location given by `DE` to the console device, until a
@@ -621,6 +626,7 @@
     depth: depth,
     de: [Buffer Address],
     return-other: [Characters input are in the Buffer],
+    plm: [`CALL MON1(10, .RDBUFF)`],
     [
       The *Read Buffer* functions reads a line of edited console input
       into a buffer addressed by registers `DE`.  Console input is
@@ -706,6 +712,7 @@
     format: format,
     depth: depth,
     return-a: [`0FFH` if a character is ready, \ `0` if not],
+    plm: [`I = MON2(11, 0)`],
     [
       The *Console Status* function checks to see if a character has been
       typed at the console.  If a character is ready, the value `0FFH` is
@@ -729,6 +736,7 @@
     return-a: [`00H`],
     return-hl: [`FCBDSK` variable address or `0`],
     supported: cpm1-only,
+    plm: [`CALL MON2(12, 0)`],
     [
       
     ]
@@ -774,6 +782,7 @@
     format: format,
     depth: depth,
     return-a: [`0FFH` if `$` file present, \ `0` if not],
+    plm: [`CALL MON1(13, 0)`],
     [
       The *Reset Disk* function is used to programmatically restore the
       file system to a reset state where all disks are set to
@@ -808,6 +817,7 @@
     depth: depth,
     e: [Drive number: `0` for `A`, `1` for `B`, ... `15` for `P`],
     return-a: [`0` if successful, `0FFH` on error],
+    plm: [`CALL MON1(14, 1)`],
     [
       The *Select Disk* function designates the disk drive named in register
       E as the default disk for subsequent file operations, with `E` = `0`
@@ -839,6 +849,7 @@
     de: [FCB Address],
     return-a: [Directory Code],
     globals: ("dirbuf": "contents updated"),
+    plm: [`I = MON2(15, .FCB)`],
     [
       The *Open* File operation is used to activate a file that currently
       exists in the disk directory for the currently active user
@@ -877,6 +888,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(16, .FCB)`],
     [
       The *Close* File function performs the inverse of the *Open* File
       function.  Given that the FCB addressed by `DE` has been previously
@@ -907,6 +919,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(17, .FCB)`],
     [
       *Search for First* scans the directory for a match with the file given
       by the FCB addressed by `DE`.  The value `255` (hexadecimal `0FFH`) is
@@ -945,6 +958,7 @@
     format: format,
     depth: depth,
     return-a: [Directory Code],
+    plm: [`I = MON2(18, .FCB)`],
     [
       The *Search for Next* function is similar to the *Search for First* function, except
       that the directory scan continues from the last matched entry.
@@ -967,6 +981,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(19, .FCB)`],
     [
       The *Delete* File function removes files that match the FCB
       addressed by `DE`.  The filename and type may contain ambiguous
@@ -993,6 +1008,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(20, .FCB)`],
     [
       Given that the FCB addressed by `DE` has been activated through an
       *Open* or *Make* function, the *Read Sequential* function reads the
@@ -1022,6 +1038,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(21, .FCB)`],
     [
       Given that the FCB addressed by `DE` has been activated through an
       *Open* or *Make* function, the *Write Sequential*
@@ -1053,6 +1070,7 @@
     depth: depth,
     de: [FCB Address],
     return-a: [Directory Code],
+    plm: [`I = MON2(22, .FCB)`],
     [
       The *Make* File operation is similar to the *Open* File operation
       except that the FCB must name a file that does not exist in the
@@ -1088,6 +1106,7 @@
       "3.0": [`H` with be `0` if the file was not found, a non-zero
       value indicates a hardware error code.]
     ),
+    plm: [`I = MON2(23, .FCB)`],
     [
       The *Rename* function uses the FCB addressed by `DE` to change all
       occurrences of the file named in the first 16 bytes to the file
@@ -1113,6 +1132,7 @@
     format: format,
     depth: depth,
     return-hl: [Log-in Vector],
+    plm: [`I = MON2(24, 0)`],
     [
       The log-in vector value returned by CP/M is a 16-bit value in `HL`, where the
       least significant bit of L corresponds to the first drive `A` and
@@ -1140,6 +1160,7 @@
     format: format,
     depth: depth,
     return-a: [Current Disk. `0` for `A`, ... `15` for `P`],
+    plm: [`I = MON2(25, 0))`],
     [
       Function 25 returns the currently selected default disk number in
       register `A`.  The disk numbers range from `0` through `15`
@@ -1160,6 +1181,7 @@
     format: format,
     depth: depth,
     de: [DMA Address],
+    plm: [`CALL MON1(26, 2000H)`],
     [
       DMA is an acronym for Direct Memory Address, which is often used
       in connection with disk controllers that directly access the
@@ -1191,6 +1213,7 @@
     format: format,
     depth: depth,
     return-hl: [`ALLOC` Address],
+    plm: [`A = MON3(27, 0)`],
     [
       An allocation vector (`ALLOC`) is maintained in main memory for each
       on-line disk drive.  Various system programs use the information
@@ -1198,9 +1221,8 @@
       remaining storage (see the `STAT` program).  Function 27 returns
       the base address of the allocation vector for the currently
       selected disk drive.  However, the allocation information might be
-      invalid if the selected disk has been marked Read-Only.  Although
-      this function is not normally used by application programs,
-      additional details of the allocation vector are found in Section 6.
+      invalid if the selected disk has been marked Read-Only.  
+      This function is not normally used by application programs.
     ]
   )
 }
@@ -1216,6 +1238,7 @@
     flavor,
     format: format,
     depth: depth,
+    supported: cpm2-and-later,
     [
       The Write Protect Disk function provides temporary write
       protection for the currently selected disk.  Any attempt to write
@@ -1239,6 +1262,7 @@
     format: format,
     depth: depth,
     return-hl: [R/O Vector Value],
+    supported: cpm2-and-later,
     [
       Function 29 returns a bit vector in register pair `HL`, which
       indicates drives that have the temporary Read-Only bit set.  As

@@ -1,8 +1,7 @@
 
 # a simple Makefile to compile the sources to a PDF
 
-CP		=	cp
-RM		=	rm -f
+RM		=	rm --force
 TYPST   =   typst
 
 FONTS_DIR = ../fonts
@@ -20,13 +19,9 @@ PDF_STANDARD	= a-2b
 
 all:    ${PDF_FILES}
 
-# create a local copy to work-around typst sandbox
-${ZCIM_LIBRARY}:	${COMMON_DIR}/${ZCIM_LIBRARY}
-	${RM} ${ZCIM_LIBRARY}
-	${CP} ${COMMON_DIR}/${ZCIM_LIBRARY} ${ZCIM_LIBRARY}
-
-${PDF_FILES}:	%.pdf: %.typ ${ZCIM_LIBRARY}
+${PDF_FILES}:	%.pdf: %.typ ${COMMON_DIR}/${ZCIM_LIBRARY}
 	${TYPST} compile \
+		--root ${COMMON_DIR} \
 		--font-path ${FONTS_DIR} \
 		--pdf-standard ${PDF_STANDARD} \
 			$< $@

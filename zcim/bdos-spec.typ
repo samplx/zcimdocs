@@ -70,7 +70,7 @@ is a trademark of Texas Instruments Incorporated. Zilog and Z80  are registered
 trademarks of Zilog, Inc.    
   ],
   printing: [
-    _Typst_ Edition: #document-version
+    #zcim-project edition: #document-version
   ]
 )
 #pagebreak()
@@ -83,8 +83,8 @@ trademarks of Zilog, Inc.
   title: [List of Tables],
   target: figure.where(kind: table),
 )
-#counter(page).update(0)
 #pagebreak()
+#counter(page).update(1)
 #set page(numbering: "1")
 #set heading(numbering: "1.", supplement: [Section])
 #show figure: set block(breakable: true)
@@ -99,7 +99,8 @@ imitate, the behavior of CP/M as part of the #zcim-project.
 
 == Known Versions
 
-Since CP/M is a legacy product, the known versions are largely fixed.
+Since CP/M is a legacy product, the list of known versions, or more accurately, the versions
+where the source code is available, is largely fixed.
 Copies of these versions are available. Other versions are known to have
 existed but are not available (e.g. `2.1`).
 
@@ -114,7 +115,7 @@ existed but are not available (e.g. `2.1`).
     [`1.4`], [CP/M 1.4 - supports 4 drives],
     [`2.0`], [CP/M 2.0 - first 2.x release, BDOS/BIOS split, 16 drive support, random I/O],
     [`2.2`], [CP/M 2.2 - fixes bugs in 2.0, adds function 40],
-    [`3.0`], [CP/M 3.0 aka CP/M Plus - nonbanked - without banked-memory],
+    [`3.0nb`], [CP/M 3.0 aka CP/M Plus - non-banked - without banked-memory],
     [`3.0b`], [CP/M 3.0 aka CP/M Plus - banked - with banked-memory],
   ),
   caption: [Known CP/M Versions],
@@ -161,12 +162,6 @@ Memory organization of the original CP/M system is shown in
 
 === CP/M Version 2 Memory Layout
 
-The major change in version 2 was the introduction of the BDOS/BIOS interface.
-While the existing FDOS view had minimal changes from version 1, there was
-an additional division of the FDOS into a Basic Disk Operating System (BDOS),
-and a separate Basic Input/Output System (BIOS). The BDOS was the same
-for all CP/M systems, while the BIOS contained system specific portions,
-which were customized for most systems.
 
 #align(center)[
 #figure(
@@ -271,6 +266,40 @@ add more features.
 
 #pagebreak()
 
+
+#figure(
+  table(
+  align: center,
+  columns: (auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto),
+  [*Field*], [*DR*], [*F1* … *F8*], [*T1*], [*T2*], [*T3*], [*EX*],
+  [*S1*], [*S2*], [*RC*], [*D0* … *D15*],
+  [*CR*], 
+  [*Decimal*], [`00`],
+  [`01 … 08`],
+  [`09`],
+  [`10`],
+  [`11`],
+  [`12`],
+  [`13`],
+  [`14`],
+  [`15`],
+  [`16 … 31`],
+  [`32`],
+  [*Hex*],[`00`],
+  [`01 … 08`],
+  [`09`],
+  [`0A`],
+  [`0B`],
+  [`0C`],
+  [`0D`],
+  [`0E`],
+  [`0F`],
+  [`10 … 1F`],
+  [`20`],
+),
+  caption: [File Control Block Format in CP/M 1]
+)
+
 #figure(
   table(
   align: center,
@@ -279,7 +308,7 @@ add more features.
   [*S1*], [*S2*], [*RC*], [*D0* … *D15*],
   [*CR*], [*R0*], [*R1*], [*R2*],
   [*Decimal*], [`00`],
-  [`01` … `08`],
+  [`01 … 08`],
   [`09`],
   [`10`],
   [`11`],
@@ -287,13 +316,13 @@ add more features.
   [`13`],
   [`14`],
   [`15`],
-  [`16` … `31`],
+  [`16 … 31`],
   [`32`],
   [`33`],
   [`34`],
   [`35`],
   [*Hex*],[`00`],
-  [`01` … `08`],
+  [`01 … 08`],
   [`09`],
   [`0A`],
   [`0B`],
@@ -301,13 +330,13 @@ add more features.
   [`0D`],
   [`0E`],
   [`0F`],
-  [`10` … `1F`],
+  [`10 … 1F`],
   [`20`],
   [`21`],
   [`22`],
   [`23`],
 ),
-  caption: [File Control Block Format]
+  caption: [File Control Block Format in CP/M 2 and later]
 )
 
 #figure(
@@ -317,19 +346,22 @@ add more features.
     align: (center, left),
     table.header([*Field*], [*Definition*]),
     [*DR*], [drive code (0-16). 0=default, 1=Drive `A`:, 2=`B`:, … 16=`P`:],
-    [*F1* … *F8*], [contain the filename in ASCII upper-case,
-with high bits = `f1'` … `f8'` normally zero],
+    [*F1* … *F8*], [contains the filename in ASCII upper-case,
+with high bits = `f1' … f8'` normally zero. \
+*note*: although the CCP will convert
+filename characters into upper-case, the underlying BDOS calls make no such requirement.
+In fact, no errors are returned from the MAKE BDOS call (code 22) because of an invalid
+filename.],
     [*T1*], [contains the first character of the filetype in ASCII upper-case,
 with high bit = `t1'`. Set for Read/Only file.],
     [*T2*], [contains the second character of the filetype in ASCII upper-case with high bit = `t2'`. Set for SYS file, no DIR list.],
     [*T3*], [contains the third character of the filetype in ASCII upper-case with high bit = `t3'` normally zero.],
     [*EX*], [contains the current extent number, normally
-set to 00 by the user, but in range 0-31
-during file I/O],
-    [*S1*], [reserved for internal system use],
-    [*S2*], [reserved for internal system use. Set to zero on calls to *Open*, *Make* and *Search for First*],
-    [*RC*], [record count for extent *EX*; takes on values from 0-127],
-    [*D0* … *D15*], [filled in by CP/M; reserved for system use],
+set to `00H` by the user, but in range `0 … 31` during file I/O],
+    [*S1*], [reserved for internal system use.],
+    [*S2*], [reserved for internal system use. Set to zero on calls to *Open*, *Make* and *Search for First*. Before CP/M 3, this field was zero. In CP/M 3, this field becomes the number of unused bytes for exact file size support. range of `0 … 127`],
+    [*RC*], [record count for extent *EX*; takes on values from `0 … 127`],
+    [*D0* … *D15*], [filled in by CP/M; reserved for system use. contains either a single-byte map of 16 entries, or a double-byte (word) map of 8 entries. each entry defines an allocated block.],
     [*CR*], [current record to read or write in a
 sequential file operation; normally set to
 zero by user],

@@ -10,6 +10,8 @@
 #let all-versions = (name: "All versions", members: all-flavors)
 #let cpm1975-only = (name: "CP/M 1975 version only", members: ("1975"))
 #let cpm1-only = (name: "CP/M 1 only", members: ("1", "1975", "1.3", "1.4"))
+#let cpm1x-only = (name: "CP/M 1.x only", members: ("1", "1.3", "1.4"))
+#let cpm1x-and-later = (name: "CP/M 1.3 and later", members: ("1", "1.3", "1.4", "2.0", "2.2", "3.0", "3.0b", "3.0nb"))
 #let cpm2-only = (name: "CP/M 2 only", members: ("2", "2.0", "2.2"))
 #let cpm2-and-later = (name: "CP/M 2 and later", members: ("2", "2.0", "2.2", "3.0", "3.0b", "3.0nb"))
 #let cpm22-and-before = (name: "CP/M 1 and CP/M 2", members: ("2.0", "2.2", "1975", "1.3", "1.4"))
@@ -815,7 +817,7 @@
     flavor,
     format: format,
     depth: depth,
-    e: [Drive number: `0` for `A`, `1` for `B`, ... `15` for `P`],
+    e: [Drive number: `0` for `A`, `1` for `B`, ... ],
     return-a: [`0` if successful, `0FFH` on error],
     plm: [`CALL MON1(14, 1)`],
     [
@@ -1238,7 +1240,8 @@
     flavor,
     format: format,
     depth: depth,
-    supported: cpm2-and-later,
+    plm: [`CALL MON1(28, 0)`],
+    supported: cpm1x-and-later,
     [
       The Write Protect Disk function provides temporary write
       protection for the currently selected disk.  Any attempt to write
@@ -1262,7 +1265,8 @@
     format: format,
     depth: depth,
     return-hl: [R/O Vector Value],
-    supported: cpm2-and-later,
+    plm: [`A = MON3(29, 0)`],
+    supported: cpm1x-and-later,
     [
       Function 29 returns a bit vector in register pair `HL`, which
       indicates drives that have the temporary Read-Only bit set.  As
@@ -1291,6 +1295,27 @@
     [
       This function is used to alter the behavior of function 1. When the echo flag
       is set, characters input will be echoed to the console.
+    ]
+  )
+}
+
+
+#let bdos-function-30-set-dir-dma(
+  flavor,
+  format: default-format,
+  depth: default-depth,
+) = {
+  create-bdos-entry(
+    30,
+    [Set DMA Address for Directory Operations],
+    flavor,
+    format: format,
+    depth: depth,
+    de: [DMA Address],
+    plm: [`CALL MON1(30, 1000H)`],
+    supported: cpm1x-only,
+    [
+      This function is used to change the DMA address used for directory operations.
     ]
   )
 }
@@ -2769,6 +2794,10 @@
     children.push(result)
   }
   result = bdos-function-30-echo(flavor, format: format, depth: depth)
+  if result != none {
+    children.push(result)
+  }
+  result = bdos-function-30-set-dir-dma(flavor, format: format, depth: depth)
   if result != none {
     children.push(result)
   }

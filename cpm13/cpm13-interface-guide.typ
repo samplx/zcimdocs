@@ -352,6 +352,75 @@ WOW MOM
   numbering: "1"
 ) <TableI>
 
+
+#align(center)[
+  #block(breakable: false)[
+    Note: The Read Buffer takes the form:
+        #table(
+          columns: (auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto),
+          align: center,
+          [`DE`:],
+          [`+0`],
+          [`+1`],
+          [`+2`],
+          [`+3`],
+          [`+4`],
+          [`+5`],
+          [`+6`],
+          [`+7`],
+          [`+8`],
+          […],
+          [`+n`],
+          [],
+          [*mx*],
+          [*nc*],
+          [_c1_],
+          [_c2_],
+          [_c3_],
+          [_c4_],
+          [_c5_],
+          [_c6_],
+          [_c7_],
+          […],
+          [??],
+        )
+        Where *mx* is the maximum buffer length, \
+        and *nc* is the current buffer length. 
+    ]
+]
+
+#align(center)[
+  #block(breakable: false)[
+    Note: The I/O status byte is defined as four fields A, B, C, and D.
+        #grid(
+          columns: (auto, auto, auto, auto),
+          align: center,
+          inset: 7pt,
+          [2b],
+          [2b],
+          [2b],
+          [2b],
+          grid.cell(stroke: 1pt)[`A`],
+          grid.cell(stroke: 1pt)[`B`],
+          grid.cell(stroke: 1pt)[`C`],
+          grid.cell(stroke: 1pt)[`D`],
+          grid.cell(colspan: 2, align: left)[`msb`],
+          grid.cell(colspan: 2, align: right)[`lsb`],
+        )
+        requiring two bits each, listed from the most significant to
+        least significant bit, which define the current device as follows:
+        #grid(
+          columns: (auto, auto, 1fr, auto, auto, 1fr, auto, auto, 1fr, auto, auto, 1fr),
+          inset: 3pt,
+          align: (center, center, left, center, center, left, center, center, left, center, center, left),
+          [], [`0`], [`TTY`], [], [`0`], [`TTY`], [], [`0`], [`TTY`], [], [`0`], [`TTY`],
+          [A], [`1`], [`CRT`], [B], [`1`], [`Fast Punch`], [C], [`1`], [`Fast Reader`], [D], [`1`], [`CRT`],
+          [List], [`2`], [-], [Punch], [`2`], [-], [Reader], [`2`], [-], [Console], [`2`], [`Batch`],
+          [], [`3`], [-], [], [`3`], [-], [], [`3`], [-], [], [`3`], [-],
+        )
+    ]
+]
+
 #pagebreak()
 = Disk I/O Facilities <BDOSFacilities>
 

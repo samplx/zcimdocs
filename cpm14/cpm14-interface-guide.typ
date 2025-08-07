@@ -1792,14 +1792,12 @@ You can find out more about the project at its site #link("https://www.z80cim.or
 The sources of this document are available on
 #link("https://github.com/samplx/zcimdocs")[GitHub].
 
-*This document is a stub. Please use the source material*
-
 The source material is from the
 #link("http://cpm.z80.de/drilib.html")[_Tim Olmstead Memorial Digital Research CP/M Library_]
 
 The individual documents from the archive include:
 
-- #link("http://cpm.z80.de/randyfiles/DRI/CPM_1_4_Interface_Guide.pdf")[_CP/M 1.4 Interface Guide_ (pdf)]
+- #link("http://cpm.z80.de/randyfiles/DRI/CPM_1_4_Interface_Guide.pdf")[_CP/M 1.4 Interface Guide_ (PDF)]
 
 
 Additional documents are available from #link("https://www.icl1900.co.uk/unix4fun/z80pack/index.html")[z80pack], including:

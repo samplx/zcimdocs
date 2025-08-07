@@ -108,7 +108,7 @@
       children.push([])
       children.push([Register `A`:])
       children.push([#return-a])
-      if return-h != none {
+      if return-h != none and flavor == "3.0" {
         children.push([Register `H`:])
         children.push([#return-h])
       }
